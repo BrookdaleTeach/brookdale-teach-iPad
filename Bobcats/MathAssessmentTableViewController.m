@@ -203,7 +203,7 @@
                      componentsSeparatedByString:kContent_Delimiter] mutableCopy] objectAtIndex:1];
 
     if (![currentText isEqualToString:@"nil"]) {
-        UIImageView *contentStatus = [[UIImageView alloc] initWithFrame:CGRectMake(-30, 14, 18, 18)];
+        UIImageView *contentStatus = [[UIImageView alloc] initWithFrame:CGRectMake(-30, 21, 18, 18)];
         contentStatus.image = [UIImage imageNamed:@"check"];
         [cell.contentView addSubview:contentStatus];
     }
@@ -254,6 +254,15 @@
     NSString *formattedInsertStringData = [NSString stringWithFormat:@"%@%@%@", currentSegment, kContent_Delimiter, modalTextView.text];
     [MathAssessmentModel insertDataIntoClassDatabase:[student uid] section:section row:row text:formattedInsertStringData];
     self.studentObjectData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel retrieveStudentDataFromDatabase:[student uid]] copyItems:YES];
+    
+    if (![oldText isEqualToString:modalTextView.text])
+    {
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:row inSection:section]];
+        
+        UIImageView *contentStatus = [[UIImageView alloc] initWithFrame:CGRectMake(-30, 21, 18, 18)];
+        contentStatus.image = [UIImage imageNamed:@"check"];
+        [cell.contentView addSubview:contentStatus];
+    }
 
     [self.tableView reloadData];
 

@@ -245,13 +245,17 @@
     bgLayer.frame = shelfView.bounds;
 
     [shelfView.layer insertSublayer:bgLayer atIndex:0];
-    shelfView.layer.cornerRadius = 1;
-    shelfView.layer.shadowColor = [UIColor darkGrayColor].CGColor;
-    shelfView.layer.shadowOpacity = 1.0f;
-    shelfView.layer.shadowRadius = 4.0;
-    shelfView.layer.shadowOffset = CGSizeMake(0, 4);
     shelfView.hidden = YES;
     [self.view addSubview:shelfView];
+    
+    shelfViewShadow = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, shelfView.bounds.size.width, shelfView.bounds.size.height - 4)];
+    shelfViewShadow.layer.shadowColor = [UIColor blackColor].CGColor;
+    shelfViewShadow.layer.shadowOffset = CGSizeMake(0, 1);
+    shelfViewShadow.layer.shadowOpacity = 1;
+    shelfViewShadow.layer.shadowRadius = 10.0;
+    shelfViewShadow.clipsToBounds = NO;
+    shelfViewShadow.hidden = YES;
+    [self.view insertSubview:shelfViewShadow belowSubview:shelfView];
 
     // Set Student Image
     studentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10,
@@ -296,6 +300,8 @@
 
     if (shelfView.hidden)
         shelfView.hidden = !shelfView.hidden;
+    if (shelfViewShadow.hidden)
+        shelfViewShadow.hidden = !shelfViewShadow.hidden;
 
     self.title = [student fullName];
 
@@ -309,12 +315,15 @@
     [self.view addSubview:ribbon];
 
     shelfView.alpha = 0.09f;
-
+    shelfViewShadow.alpha = 0.09f;
+    
     CATransition *animation = [CATransition animation];
     animation.type = kCATransitionFade;
     animation.duration = .5f;
     [shelfView.layer addAnimation:animation forKey:nil];
     shelfView.alpha = 1.0f;
+    [shelfViewShadow.layer addAnimation:animation forKey:nil];
+    shelfViewShadow.alpha = 1.0f;
 
     UIButton *customButton = [UIButton buttonWithType:UIButtonTypeCustom];
     customButton.bounds = CGRectMake(0, 0, 30, 30);

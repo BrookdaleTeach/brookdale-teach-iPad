@@ -19,6 +19,7 @@
     AppDelegate *appDelegate;
 
     UIView *shelfView;
+    UILabel *shelfViewShadow;
     Student *student;
     UIImageView *studentImageView;
     UILabel *nameLabel;
