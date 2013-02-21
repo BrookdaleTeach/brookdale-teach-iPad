@@ -1,9 +1,8 @@
 //
-//  DocPadAppDelegate.h
-//  DocSets
+//  AppDelegate
+//  Bobcats
 //
-//  Created by Ole Zorn on 05.12.10.
-//  Copyright 2010 omz:software. All rights reserved.
+//  Created by Burchfield, Neil on 1/27/13.
 //
 
 #import <UIKit/UIKit.h>
@@ -16,12 +15,12 @@
 @class MasterViewController, DetailViewController, SwipeSplitViewController;
 
 @interface AppDelegate : NSObject <UIApplicationDelegate> {
-    
-	UIWindow *window;
-	SwipeSplitViewController *splitViewController;
-	MasterViewController *rootViewController;
-	UINavigationController *rootNavigationController;
-	DetailViewController *detailViewController;
+
+    UIWindow *window;
+    SwipeSplitViewController *splitViewController;
+    MasterViewController *rootViewController;
+    UINavigationController *rootNavigationController;
+    DetailViewController *detailViewController;
     NSString *databaseName;
 }
 
@@ -34,7 +33,14 @@
 @property (nonatomic, strong) NSMutableArray *alphaIndex;
 @property (nonatomic, strong) NSMutableArray *studentSectionHeaders;
 @property (nonatomic, strong) NSString *databasePath;
+@property (nonatomic, strong) NSString *mathDatabasePath;
 
-- (void) reloadData;
+@property (nonatomic, strong) NSMutableArray *mathStudentsArray;
+@property (nonatomic, strong) NSMutableArray *readingStudentsArray;
+@property (nonatomic, strong) NSMutableArray *writingStudentsArray;
+@property (nonatomic, strong) NSMutableArray *behavioralStudentsArray;
+
+
+- (void) reloadCoreData;
 
 @end

@@ -1,16 +1,15 @@
 //
 //  AboutViewController.h
-//  DocSets
+//  Bobcats
 //
-//  Created by Ole Zorn on 11.03.12.
-//  Copyright (c) 2012 omz:software. All rights reserved.
+//  Created by Burchfield, Neil on 1/27/13.
 //
 
 #import <UIKit/UIKit.h>
 
 @interface AboutViewController : UIViewController <UIWebViewDelegate> {
 
-	UIWebView *_webView;
+    UIWebView *_webView;
 }
 
 @property (nonatomic, strong) UIWebView *webView;

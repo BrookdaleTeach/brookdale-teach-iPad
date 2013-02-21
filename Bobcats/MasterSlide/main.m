@@ -1,6 +1,8 @@
 //
-//  main.m
-//  Bobcat
+//  Main
+//  Bobcats
+//
+//  Created by Burchfield, Neil on 1/27/13.
 //
 
 #import <UIKit/UIKit.h>

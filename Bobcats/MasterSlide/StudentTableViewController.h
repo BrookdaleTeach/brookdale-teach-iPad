@@ -10,13 +10,23 @@
 #import "AppDelegate.h"
 #import "DetailViewController.h"
 
-@interface StudentTableViewController : UITableViewController {
-    
+@interface StudentTableViewController : UITableViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIPopoverControllerDelegate> {
+
     AppDelegate *appDelegate;
     DetailViewController *detailViewController;
+    UIPopoverController *popoverController;
+
+    NSMutableArray *classArray;
+    NSString *classTitle;
+    int classkey;
+
 }
 
-- (void)reloadTableViewData:(NSNotification *)notif;
+@property (nonatomic, retain) NSMutableArray *studentArraySectioned;
+@property (nonatomic) int classkey;
 
+- (void) reloadTableViewData :(NSNotification *)notif;
+- (id) init :(NSString *)title arraySectioned :(NSMutableArray *)as classkey :(int)ck;
+- (void) realloc :(NSMutableArray *)array;
 
 @end

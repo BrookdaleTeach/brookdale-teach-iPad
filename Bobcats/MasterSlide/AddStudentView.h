@@ -12,7 +12,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 @interface AddStudentView : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate> {
-    
+
     UITableView *headTableView;
     UITableView *restTableView;
     UIButton *addImageButton;
@@ -22,22 +22,33 @@
     AppDelegate *appDelegate;
     NSString *databasePath;
     NSString *databaseName;
-    
+
     NSMutableArray *userInput;
-    
+
     UIScrollView *scrollView;
-    
+
     StudentTableViewController *studentTableViewController;
-    
+
     NSIndexPath *restIndexPath;
     BOOL newMedia;
+    BOOL imageSavedAsDefaultTitle;
     UIImageView *imageView;
 
+    int classKey;
 
+    UIDatePicker *datePicker;
+
+    int month;
+    int day;
+    int year;
 }
 @property (nonatomic, retain) IBOutlet UIImageView *imageView;
 @property (nonatomic, retain) UIPopoverController *popoverController;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
-- (IBAction)useCamera: (id)sender;
-- (IBAction)useCameraRoll: (id)sender;
+@property (nonatomic) int classKey;
+
+- (IBAction) useCameraRoll :(id)sender;
+
+- (id) init :(int)key;
+
 @end

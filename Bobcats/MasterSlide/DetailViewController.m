@@ -1,178 +1,249 @@
 //
 //  DetailViewController.m
-//  DocSets
+//  Bobcats
 //
-//  Created by Ole Zorn on 05.12.10.
-//  Copyright 2010 omz:software. All rights reserved.
+//  Created by Burchfield, Neil on 1/27/13.
 //
 
 #import "DetailViewController.h"
 #import "SwipeSplitViewController.h"
 #import <QuartzCore/QuartzCore.h>
+
 #import "MathAssessmentTableViewController.h"
+#import "ReadingAssesmentViewController.h"
+#import "WritingAssesmentViewController.h"
+#import "BehavioralAssesmentViewController.h"
 
-#define EXTERNAL_LINK_ALERT_TAG	1
-#define LANDSCAPE_PADDING 55
+#import "MathTestTableViewController.h"
+#import "ReadingTestTableViewController.h"
+#import "WritingTestTableViewController.h"
+#import "BehavioralTestTableViewController.h"
 
-@interface DetailViewController ()
+#import "MGBox.h"
+#import "MGScrollView.h"
+#import "MGTableBoxStyled.h"
+#import "MGLineStyled.h"
 
-- (void)updateBackForwardButtons;
-- (void)dismissOutline:(id)sender;
+#define HEADER_FONT   [UIFont fontWithName:@"HelveticaNeue" size:18]
+#define ROW_SIZE      (CGSize) {666, 44 }
+#define BOX_LANDSCAPE (CGRect) {12, 150, 768, 960 }
+#define BOX_PORTRAIT  (CGRect) {40, 150, 704, 960 }
 
-@end
+@implementation DetailViewController {
+    MGBox *table1;
+    MGBox *table2;
+    MGLineStyled *header;
+}
+@synthesize scroller = _scroller;
 
-@implementation DetailViewController
+- (id) initWithNibName :(NSString *)nibNameOrNil bundle :(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nil bundle:nil];
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-	self = [super initWithNibName:nil bundle:nil];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-	
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-	UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-	outlineButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Outline.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(showOutline:)];
-	outlineButtonItem.width = 32.0;
-	outlineButtonItem.enabled = NO;
-	
-	backButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Back.png"] style:UIBarButtonItemStylePlain target:self action:@selector(goBack:)];
-	backButtonItem.enabled = NO;
-	forwardButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Forward.png"] style:UIBarButtonItemStylePlain target:self action:@selector(goForward:)];
-	forwardButtonItem.enabled = NO;
-	bookmarksButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(showBookmarks:)];
-	bookmarksButtonItem.enabled = NO;
-	actionButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(showActions:)];
-	actionButtonItem.enabled = NO;
-	
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-		UIBarButtonItem *browseButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"DocSets", nil) style:UIBarButtonItemStyleBordered target:self action:@selector(showLibrary:)];
-		UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-		spaceItem.width = 24.0;
-		portraitToolbarItems = [NSArray arrayWithObjects:browseButtonItem, spaceItem, backButtonItem, spaceItem, forwardButtonItem, flexSpace, bookmarksButtonItem, spaceItem, actionButtonItem, spaceItem, outlineButtonItem, nil];
-		landscapeToolbarItems = [NSArray arrayWithObjects:backButtonItem, spaceItem, forwardButtonItem, flexSpace, bookmarksButtonItem, spaceItem, actionButtonItem, spaceItem, outlineButtonItem, nil];
-	}
-    
-    tableViewHeaders = [[NSArray alloc] initWithObjects:@"Phone", @"Address", @"Parent First", @"Parent Last", @"Parent Email", @"Parent Phone", @"Relationship", nil];
+    tableViewHeaders = [[NSArray alloc] initWithObjects:@"Phone", @"Address", @"Birthday", @"Parent First",
+                        @"Parent Last", @"Parent Email", @"Parent Phone", @"Relationship", nil];
 
-    studentContentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 0, 0) style:UITableViewStyleGrouped];
-    [studentContentTableView setDelegate:self];
-    [studentContentTableView setDataSource:self];
-    UIView *clearBackground = [[UIView alloc] initWithFrame:CGRectMake(200, 400, 800, 1200)];
-    clearBackground.backgroundColor = [UIColor clearColor];
-    [studentContentTableView setBackgroundView:clearBackground];
-    [self.view addSubview:studentContentTableView];
+    self.scroller = [[MGScrollView alloc] init];
 
-	return self;
-}
+    if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
+        [self.scroller setFrame:BOX_PORTRAIT];
+    else if ( UIInterfaceOrientationIsLandscape(self.interfaceOrientation) )
+        [self.scroller setFrame:BOX_LANDSCAPE];
 
-- (void)viewDidAppear:(BOOL)animated
-{
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone && self.navigationController.toolbarHidden) {
-		[self.navigationController setToolbarHidden:NO animated:animated];
-	}
-}
+    self.scroller.contentLayoutMode = MGLayoutGridStyle;
+    self.scroller.bottomPadding = 8;
+    [self.view addSubview:self.scroller];
 
-- (void)viewDidLoad
-{
+    MGBox *tablesGrid = [MGBox boxWithSize:self.scroller.bounds.size];
+    tablesGrid.contentLayoutMode = MGLayoutGridStyle;
+    [self.scroller.boxes addObject:tablesGrid];
+
+    table1 = MGBox.box;
+    [tablesGrid.boxes addObject:table1];
+    table1.sizingMode = MGResizingShrinkWrap;
+
+    table2 = MGBox.box;
+    [tablesGrid.boxes addObject:table2];
+    table2.sizingMode = MGResizingShrinkWrap;
+
+    return self;
+} /* initWithNibName */
+
+
+- (void) loopValuesIntoMGBox :(int)section :(int)row {
+    [table1.boxes removeAllObjects];
+    [table2.boxes removeAllObjects];
+
+    if ([nextView isEqualToString:@"Math"])
+        student = (Student *)[[appDelegate.mathStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else if ([nextView isEqualToString:@"Reading"])
+        student = (Student *)[[appDelegate.readingStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else if ([nextView isEqualToString:@"Writing"])
+        student = (Student *)[[appDelegate.writingStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else if ([nextView isEqualToString:@"Behavioral"])
+        student = (Student *)[[appDelegate.behavioralStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else
+        student = (Student *)[[appDelegate.studentArraySectioned objectAtIndex:section] objectAtIndex:row];
+
+    tableViewContent = [[NSMutableArray alloc] initWithObjects:
+                        [student phone],
+                        [student address],
+                        [NSString stringWithFormat:@"%d/%d/%d", [student dob_month], [student dob_day], [student dob_year]],
+                        [student parent_firstName],
+                        [student parent_lastName],
+                        [student parent_email],
+                        [student parent_phone],
+                        [student relationship], nil];
+
+    MGTableBoxStyled *menu = MGTableBoxStyled.box;
+    [table1.boxes addObject:menu];
+
+    __block DetailViewController *dtv = self;
+
+    int x = 0;
+    for (; x < tableViewHeaders.count; x++) {
+        // header line
+        header = [MGLineStyled lineWithLeft:[tableViewHeaders objectAtIndex:x]
+                                      right:[tableViewContent objectAtIndex:x]
+                                       size:ROW_SIZE];
+        header.tag = x;
+        header.font = HEADER_FONT;
+        header.onTap = ^{
+            [dtv buttonpress:x];
+        };
+
+        [menu.topLines addObject:header];
+    }
+
+    [table1 layoutWithSpeed:0.3 completion:nil];
+
+
+    MGTableBoxStyled *menu2 = MGTableBoxStyled.box;
+    [table2.boxes addObject:menu2];
+
+    NSArray *testsContent = [[NSArray alloc] initWithObjects:[NSString stringWithFormat:@"Modify %@ Test Scores", [nextView capitalizedString]],
+                             [NSString stringWithFormat:@"Modify %@ Assessment Scores", [nextView capitalizedString]], nil];
+
+    for (int y = 0; y < 2; y++) {
+        // header line
+        header = [MGLineStyled lineWithLeft:[testsContent objectAtIndex:y]
+                                      right:[UIImage imageNamed:@"arrow"]
+                                       size:ROW_SIZE];
+        header.font = HEADER_FONT;
+        header.tag = x + y;
+        header.onTap = ^{
+            [dtv buttonpress:x + y];
+        };
+
+        [menu2.topLines addObject:header];
+    }
+
+    [table2 layoutWithSpeed:0.3 completion:nil];
+
+    [self.scroller layoutWithSpeed:0.3 completion:nil];
+} /* loopValuesIntoMGBox */
+
+
+- (void) buttonpress :(int)row {
+    switch (row) {
+        case 8 :
+        {
+            if ([[nextView lowercaseString] isEqualToString:@"math"]) {
+                MathAssessmentTableViewController *asvc = [[MathAssessmentTableViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:asvc animated:YES];
+            } else if ([[nextView lowercaseString] isEqualToString:@"reading"]) {
+                ReadingAssesmentViewController *ravc = [[ReadingAssesmentViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:ravc animated:YES];
+            } else if ([[nextView lowercaseString] isEqualToString:@"writing"]) {
+                WritingAssesmentViewController *wavc = [[WritingAssesmentViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:wavc animated:YES];
+            } else if ([[nextView lowercaseString] isEqualToString:@"behavioral"]) {
+                BehavioralAssesmentViewController *bavc = [[BehavioralAssesmentViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:bavc animated:YES];
+            }
+        }
+        break;
+        case 9 :
+        {
+            if ([[nextView lowercaseString] isEqualToString:@"math"]) {
+                MathTestTableViewController *mttvc = [[MathTestTableViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:mttvc animated:YES];
+            } else if ([[nextView lowercaseString] isEqualToString:@"reading"]) {
+                ReadingTestTableViewController *rttvc = [[ReadingTestTableViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:rttvc animated:YES];
+            } else if ([[nextView lowercaseString] isEqualToString:@"writing"]) {
+                WritingTestTableViewController *wttvc = [[WritingTestTableViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:wttvc animated:YES];
+            } else if ([[nextView lowercaseString] isEqualToString:@"behavioral"]) {
+                BehavioralTestTableViewController *bttvc = [[BehavioralTestTableViewController alloc] initWithStyle:UITableViewStyleGrouped :student];
+                [self.navigationController pushViewController:bttvc animated:YES];
+            }
+        }
+        break;
+        default :
+            break;
+    } /* switch */
+} /* buttonpress */
+
+
+- (void) viewDidAppear :(BOOL)animated {
+    if (( [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) && self.navigationController.toolbarHidden) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    }
+} /* viewDidAppear */
+
+
+- (void) viewDidLoad {
     [super viewDidLoad];
-    
+
     [[NSNotificationCenter defaultCenter]
      addObserver:self
-     selector:@selector(receiveTestNotification:)
-     name:@"UpdateContent"
-     object:nil];
-}
+        selector:@selector(updateContent:)
+            name:@"UpdateContent"
+          object:nil];
+} /* viewDidLoad */
 
-- (void) receiveTestNotification:(NSNotification *) notification
-{
-    if ([[notification name] isEqualToString:@"UpdateContent"])
-    {
-        NSDictionary* userInfo = [notification userInfo];
-        NSIndexPath * indexPath = [userInfo objectForKey:@"messageTotal"];
-        
-        if ( indexPath.section >= 0 && indexPath.row >= 0 )
-            [self loadContentDataView:indexPath.section :indexPath.row];
+
+- (void) updateContent :(NSNotification *)notification {
+    if ([[notification name] isEqualToString:@"UpdateContent"]) {
+        NSDictionary *userInfo = [notification userInfo];
+        NSIndexPath *indexPath = [userInfo objectForKey:@"indexPath"];
+        nextView = [userInfo objectForKey:@"view"];
+
+        if (self.navigationController.view.subviews.count > 1)
+            [self.navigationController popToRootViewControllerAnimated:YES];
+
+        if ((indexPath.section >= 0) && (indexPath.row >= 0)) {
+            [self loopValuesIntoMGBox:indexPath.section:indexPath.row];
+            [self loadContentDataView:indexPath.section:indexPath.row];
+        }
     }
-}
+} /* receiveTestNotification */
 
-- (void)loadView
-{
-	[super loadView];
-	self.view.backgroundColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-	
-	titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 360, 34)];
-	titleLabel.textColor = [UIColor colorWithRed:0.443 green:0.471 blue:0.502 alpha:1.0];
-	titleLabel.shadowColor = [UIColor whiteColor];
-	titleLabel.shadowOffset = CGSizeMake(0, 1);
-	titleLabel.font = [UIFont boldSystemFontOfSize:17.0];
-	titleLabel.textAlignment = UITextAlignmentCenter;
-	titleLabel.backgroundColor = [UIColor clearColor];
-	titleLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-	
-    topToolbarHeight = ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) ? 44.0 : 0.0;
-	webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
-	webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	webView.scalesPageToFit = YES;//([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad);
-	
-	webView.delegate = self;
-	[self.view addSubview:webView];
-	
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-//		toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, topToolbarHeight)];
-		toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-		toolbar.items = UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? portraitToolbarItems : landscapeToolbarItems;
-		[self.view addSubview:toolbar];
-		titleLabel.center = CGPointMake(toolbar.bounds.size.width * 0.5, toolbar.bounds.size.height * 0.5);
-		[toolbar addSubview:titleLabel];
-	} else {
-		UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-		UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-		spaceItem.width = 24.0;
-		self.toolbarItems = [NSArray arrayWithObjects:bookmarksButtonItem, flexSpace, backButtonItem, spaceItem, forwardButtonItem, flexSpace, actionButtonItem, nil];
-		self.navigationItem.rightBarButtonItem = outlineButtonItem;
-	}
-	
-	coverView = [[UIView alloc] initWithFrame:webView.frame];
-	coverView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"whitey.png"]];
-	coverView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	[self.view addSubview:coverView];
-    
+
+- (void) loadView {
+    [super loadView];
+
+    self.view.backgroundColor = [UIColor scrollViewTexturedBackgroundColor];
+
     [self allocContentDataView];
-}
+
+} /* loadView */
 
 
-- (CAGradientLayer*) blueGradient {
-    
-    UIColor *colorOne = [UIColor colorWithRed:(120/255.0) green:(135/255.0) blue:(150/255.0) alpha:1.0];
-    UIColor *colorTwo = [UIColor colorWithRed:(57/255.0)  green:(79/255.0)  blue:(96/255.0)  alpha:1.0];
-    
-    NSArray *colors = [NSArray arrayWithObjects:(id)colorOne.CGColor, colorTwo.CGColor, nil];
-    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
-    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
-    
-    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
-    
-    CAGradientLayer *headerLayer = [CAGradientLayer layer];
-    headerLayer.colors = colors;
-    headerLayer.locations = locations;
-    
-    return headerLayer;
-    
-}
+- (void) allocContentDataView {
 
-
-- (void)allocContentDataView
-{
     // Set Student Shelf
-    shelfView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width + LANDSCAPE_PADDING, self.view.bounds.size.height / 8)];
+    shelfView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width + 55, self.view.bounds.size.height / 8)];
     shelfView.backgroundColor = [UIColor colorWithRed:0.94 green:0.94 blue:0.95 alpha:1];
     shelfView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     shelfView.layer.masksToBounds = YES;
     shelfView.alpha = .9;
-    CAGradientLayer *bgLayer = [self blueGradient];
+
+    CAGradientLayer *bgLayer = [self customGradient:[UIColor whiteColor] :[UIColor lightGrayColor]];
     bgLayer.frame = shelfView.bounds;
+
     [shelfView.layer insertSublayer:bgLayer atIndex:0];
     shelfView.layer.cornerRadius = 1;
     shelfView.layer.shadowColor = [UIColor darkGrayColor].CGColor;
@@ -181,283 +252,146 @@
     shelfView.layer.shadowOffset = CGSizeMake(0, 4);
     shelfView.hidden = YES;
     [self.view addSubview:shelfView];
-    
-    // Set Student Tableview frame
-    [studentContentTableView setFrame:CGRectMake(0, shelfView.bounds.size.height,
-                                                 self.view.bounds.size.width - 45, 800)];
 
-    studentContentTableView.hidden = YES;
-    
     // Set Student Image
-    studentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 20,
+    studentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10,
                                                                      88, 88)];
     [self.view addSubview:studentImageView];
-    
-    // Set Student Name Label
-    nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(150, 22, 300, 23)];
-    [nameLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Bold" size:22.0f]];
-    [nameLabel setBackgroundColor:[UIColor clearColor]];
-    [nameLabel setTextColor:[UIColor lightTextColor]];
-    [self.view addSubview:nameLabel];
-    
-    // Set Student Email Label
-    emailLabel = [[UILabel alloc] initWithFrame:CGRectMake(150, 49, 300, 19)];
-    [emailLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Medium" size:17.0f]];
-    [emailLabel setBackgroundColor:[UIColor clearColor]];
-    [emailLabel setTextColor:[UIColor lightTextColor]];
-    [self.view addSubview:emailLabel];
-    
-    // Set Student UID Label
-    uidLabel = [[UILabel alloc] initWithFrame:CGRectMake(150, 71, 300, 19)];
-    [uidLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Medium" size:17.0f]];
-    [uidLabel setBackgroundColor:[UIColor clearColor]];
-    [uidLabel setTextColor:[UIColor lightTextColor]];
-    [self.view addSubview:uidLabel];
-}
 
-- (void)loadContentDataView:(int)section :(int)row
-{
-    student = (Student *)[[appDelegate.studentArraySectioned objectAtIndex:section] objectAtIndex:row];
-    
+    // Set Student Name Label
+    nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 15, 300, 23)];
+    [nameLabel setFont:[UIFont fontWithName:@"ArialRoundedMTBold" size:22.0f]];
+    [nameLabel setBackgroundColor:[UIColor clearColor]];
+    [nameLabel setTextColor:[UIColor darkGrayColor]];
+    [self.view addSubview:nameLabel];
+
+    // Set Student Email Label
+    emailLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 40, 300, 19)];
+    [emailLabel setFont:[UIFont fontWithName:@"ArialRoundedMTBold" size:17.0f]];
+    [emailLabel setBackgroundColor:[UIColor clearColor]];
+    [emailLabel setTextColor:[UIColor grayColor]];
+    [self.view addSubview:emailLabel];
+
+    // Set Student UID Label
+    uidLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 62, 300, 19)];
+    [uidLabel setFont:[UIFont fontWithName:@"ArialRoundedMTBold" size:17.0f]];
+    [uidLabel setBackgroundColor:[UIColor clearColor]];
+    [uidLabel setTextColor:[UIColor grayColor]];
+    [self.view addSubview:uidLabel];
+} /* allocContentDataView */
+
+
+- (void) loadContentDataView :(int)section :(int)row {
+
+    if ([nextView isEqualToString:@"Math"])
+        student = (Student *)[[appDelegate.mathStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else if ([nextView isEqualToString:@"Reading"])
+        student = (Student *)[[appDelegate.readingStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else if ([nextView isEqualToString:@"Writing"])
+        student = (Student *)[[appDelegate.writingStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else if ([nextView isEqualToString:@"Behavioral"])
+        student = (Student *)[[appDelegate.behavioralStudentsArray objectAtIndex:section] objectAtIndex:row];
+    else
+        student = (Student *)[[appDelegate.studentArraySectioned objectAtIndex:section] objectAtIndex:row];
+
     if (shelfView.hidden)
         shelfView.hidden = !shelfView.hidden;
-    
-    if (studentContentTableView.hidden)
-        studentContentTableView.hidden = !studentContentTableView.hidden;
-    
+
+    self.title = [student fullName];
+
+    [ribbon removeFromSuperview];
+    ribbon = [[UIImageView alloc] initWithFrame:CGRectMake(600, -10, 80, 146)];
+    ribbon.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@_ribbon.png", [nextView lowercaseString]]];
+    ribbon.layer.shadowColor = [UIColor darkGrayColor].CGColor;
+    ribbon.layer.shadowOffset = CGSizeMake(-2, 2);
+    ribbon.layer.shadowOpacity = 1.0f;
+    ribbon.layer.shadowRadius = 3.0f;
+    [self.view addSubview:ribbon];
+
     shelfView.alpha = 0.09f;
-    studentContentTableView.alpha = 0.0f;
-    
+
     CATransition *animation = [CATransition animation];
     animation.type = kCATransitionFade;
     animation.duration = .5f;
     [shelfView.layer addAnimation:animation forKey:nil];
     shelfView.alpha = 1.0f;
-    [studentContentTableView.layer addAnimation:animation forKey:nil];
-    studentContentTableView.alpha = 1.0f;
 
-    // Set Student Image
-    if (![student image])
-        studentImageView.image = [UIImage imageNamed:[student image]];
-    else
+    UIButton *customButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    customButton.bounds = CGRectMake(0, 0, 30, 30);
+    [customButton setImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_icon.png", [nextView lowercaseString]]] forState:UIControlStateNormal];
+    UIBarButtonItem *customBarButton = [[UIBarButtonItem alloc] initWithCustomView:customButton];
+
+    self.navigationItem.rightBarButtonItem = customBarButton;
+
+    NSString *asd = [NSString stringWithFormat:@"%@.jpg", [student uid]];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:asd];
+    NSFileManager *filemanager = [NSFileManager defaultManager];
+
+    if ([filemanager fileExistsAtPath:imagePath]) {
+        NSLog(@"IMAGE FOUND");
+        studentImageView.image = [UIImage imageWithContentsOfFile:imagePath];
+    } else {
+        NSLog(@"IMAGE NOT FOUND");
         studentImageView.image = [UIImage imageNamed:@"person.png"];
-    
+    }
+
     // Set Student Name Label
     [nameLabel setText:[student fullName]];
 
     // Set Student Email Label
     [emailLabel setText:[student email]];
-    
+
     // Set Student UID Label
     [uidLabel setText:[student uid]];
-    
+
     [tableViewContent removeAllObjects];
     tableViewContent = [[NSMutableArray alloc] initWithObjects:
                         [student phone],
                         [student address],
+                        [NSString stringWithFormat:@"%d/%d/%d", [student dob_month], [student dob_day], [student dob_year]],
                         [student parent_firstName],
                         [student parent_lastName],
                         [student parent_email],
                         [student parent_phone],
                         [student relationship], nil];
 
-    [studentContentTableView reloadData];
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 2;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    if (section == 0)
-        return tableViewHeaders.count;
-    else return 2;
-}
-// RootViewController.m
-- (UITableViewCell *) getCellContentViewForPassword:(NSString *)cellIdentifier :(int)headtag :(int)contentTag {
-    
-    CGRect CellFrame = CGRectMake(0, 0, 300, 60);
-    
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-    [cell setFrame:CellFrame];
-    
-    cell.accessoryType = UITableViewCellAccessoryNone;
-    
-    UILabel *formTitleField = [[UILabel alloc] initWithFrame:CGRectMake(6, 12, 116, 20)];
-    formTitleField.textColor = [UIColor darkGrayColor];
-    formTitleField.backgroundColor = [UIColor clearColor];
-    formTitleField.textAlignment = NSTextAlignmentRight;
-    formTitleField.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0f];
-    formTitleField.tag = headtag;
-    [cell.contentView addSubview:formTitleField];
-    
-    UILabel *formContentField = [[UILabel alloc] initWithFrame:CGRectMake(180, 9, 475, 30)];
-    formContentField.textColor = [UIColor darkGrayColor];
-    formContentField.backgroundColor = [UIColor clearColor];
-    formContentField.textAlignment = NSTextAlignmentRight;
-    formContentField.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:15.0f];
-    formContentField.tag = contentTag;
-    [cell addSubview:formContentField];
-    
-    UILabel *vLine = [[UILabel alloc] initWithFrame:CGRectMake(132, 1, 1, cell.frame.size.height - 18)];
-    vLine.backgroundColor = [UIColor colorWithRed:173.0f/255.0f green:175.0f/255.0f blue:179.0f/255.0f alpha:.7f];
-    [cell.contentView addSubview:vLine];
-    
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
-    return cell;
-} /* getCellContentViewForPassword */
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *cellIdentifier = [NSString stringWithFormat:@"Cell_%d_%d", indexPath.section, indexPath.row];
-    UITableViewCell *cell = [studentContentTableView dequeueReusableCellWithIdentifier:cellIdentifier];
-
-    if ( indexPath.section == 0 )
-    {
-        if (cell == nil)
-            cell = [self getCellContentViewForPassword :cellIdentifier :indexPath.row :10 + indexPath.row];
-        
-        UILabel *mainContentLabel = (UILabel *)[cell viewWithTag:indexPath.row];
-        mainContentLabel.text = [tableViewHeaders objectAtIndex:indexPath.row];
-        UILabel *mainContentValueLabel = (UILabel *)[cell viewWithTag:10 + indexPath.row];
-        mainContentValueLabel.text = [tableViewContent objectAtIndex:indexPath.row];
-        
-        if (indexPath.row == 0)
-        {
-            cell.textLabel.textColor = [UIColor darkGrayColor];
-            cell.textLabel.backgroundColor = [UIColor clearColor];
-            cell.textLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0f];
-            cell.textLabel.text = [NSString stringWithFormat:@"              %@", [tableViewHeaders objectAtIndex:indexPath.row]];
-        }
-    }
-    else if (indexPath.section == 1)
-    {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-        UILabel *formTitleField = [[UILabel alloc] initWithFrame:CGRectMake(6, 12, 600, 20)];
-        formTitleField.textColor = [UIColor darkGrayColor];
-        formTitleField.backgroundColor = [UIColor clearColor];
-        formTitleField.textAlignment = NSTextAlignmentCenter;
-        formTitleField.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16.0f];
-        
-        if (indexPath.row)
-            formTitleField.text = @"Modify Math Test Scores";
-        else
-            formTitleField.text = @"Modify Math Assessment Report";
-        
-        [cell.contentView addSubview:formTitleField];
-
-    }
-
-    return cell;
-}
-
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
-{
-    if (section == 1)
-        return @"math";
-    else
-        return @"";
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-    if ( indexPath.section == 1)
-    {
-        MathAssessmentTableViewController *asvc = [[MathAssessmentTableViewController alloc] init];
-        [self.navigationController pushViewController:asvc animated:YES];
-
-    }
-}
-
-- (void)docSetWillBeDeleted:(NSNotification *)notification
-{
-
-}
-
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-
-}
-
-- (void)goBack:(id)sender
-{
-
-}
-
-- (void)goForward:(id)sender
-{
-
-}
-
-- (void)updateBackForwardButtons
-{
-}
-
-- (void)showOutline:(id)sender
-{
-}
-
-- (void)dismissOutline:(id)sender
-{
-	[self dismissModalViewControllerAnimated:YES];
-}
-
-- (void)showActions:(id)sender
-{
-
-}
+} /* loadContentDataView */
 
 
-- (void)showBookmarks:(id)sender
-{
+- (CAGradientLayer *) customGradient :(UIColor *)first :(UIColor *)second {
 
-}
+    NSArray *colors = [NSArray arrayWithObjects:(id)first.CGColor, second.CGColor, nil];
+    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
+    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
 
-- (void)showLibrary:(id)sender
-{
-}
+    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
 
+    CAGradientLayer *headerLayer = [CAGradientLayer layer];
+    headerLayer.colors = colors;
+    headerLayer.locations = locations;
 
-
-- (void)openURL:(NSURL *)URL withAnchor:(NSString *)anchor
-{
-	if (anchor) {
-		NSURL *URLWithAnchor = [NSURL URLWithString:[[URL absoluteString] stringByAppendingFormat:@"#%@", anchor]];
-		[webView loadRequest:[NSURLRequest requestWithURL:URLWithAnchor]];
-	} else {
-		[webView loadRequest:[NSURLRequest requestWithURL:URL]];
-	}
-	[self updateBackForwardButtons];
-
-}
-
-#pragma mark -
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-//	if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
-//		[toolbar setItems:portraitToolbarItems animated:YES];
-//	} else {
-//		[toolbar setItems:landscapeToolbarItems animated:YES];
-//	}
-}
+    return headerLayer;
+} /* customGradient */
 
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-		return YES;
-	}
-	return UIInterfaceOrientationIsLandscape(interfaceOrientation) || interfaceOrientation == UIInterfaceOrientationPortrait;
-}
+- (void) didRotateFromInterfaceOrientation :(UIInterfaceOrientation)fromInterfaceOrientation {
+    NSLog(@"self.view.width: %f", self.view.bounds.size.width);
+    NSLog(@"self.view.height: %f", self.view.bounds.size.height);
+} /* didRotateFromInterfaceOrientation */
+
+
+- (void) willAnimateRotationToInterfaceOrientation :(UIInterfaceOrientation)orient duration :(NSTimeInterval)duration {
+
+    if ( UIInterfaceOrientationIsPortrait(orient) )
+        [self.scroller setFrame:BOX_PORTRAIT];
+    else if ( UIInterfaceOrientationIsLandscape(orient) )
+        [self.scroller setFrame:BOX_LANDSCAPE];
+
+    // relayout the sections
+    [self.scroller layoutWithSpeed:0.0f completion:nil];
+} /* willAnimateRotationToInterfaceOrientation */
+
+
 @end
