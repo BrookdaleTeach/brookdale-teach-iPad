@@ -12,8 +12,8 @@
 @class AppDelegate;
 
 @interface MasterViewController : UITableViewController <UIAlertViewDelegate> {
-	
-	DetailViewController *detailViewController;
+
+    DetailViewController *detailViewController;
     NSArray *headers;
     NSArray *images;
     AppDelegate *appDelegate;

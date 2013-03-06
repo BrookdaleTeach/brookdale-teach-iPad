@@ -10,26 +10,49 @@
 #import "Student.h"
 #import "MGScrollView.h"
 
+#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
+
+#import <MapKit/MapKit.h>
+
+#import <EventKit/EventKit.h>
+#import <EventKitUI/EventKitUI.h>
+
 @class AppDelegate;
 
-@interface DetailViewController : UIViewController {
+@interface DetailViewController : UIViewController <UIActionSheetDelegate, MFMailComposeViewControllerDelegate, MKMapViewDelegate, EKEventEditViewDelegate, UIWebViewDelegate> {
+
+    Student *student;
+    AppDelegate *appDelegate;
 
     NSArray *tableViewHeaders;
     NSMutableArray *tableViewContent;
-    AppDelegate *appDelegate;
 
     UIView *shelfView;
     UILabel *shelfViewShadow;
-    Student *student;
-    UIImageView *studentImageView;
     UILabel *nameLabel;
     UILabel *emailLabel;
     UILabel *uidLabel;
-    NSString *nextView;
+
+    UIImageView *studentImageView;
     UIImageView *ribbon;
+
+    NSString *nextView;
+    NSIndexPath *indexPath;
+
+    int selectedContactActionSheetButton;
 }
 
 @property (nonatomic, strong) MGScrollView *scroller;
+@property (nonatomic, strong) UIActionSheet *emailActionSheet;
+@property (nonatomic, strong) UIActionSheet *contactActionSheet;
+@property (nonatomic, strong) UIActionSheet *addEventActionSheet;
+@property (nonatomic, retain) MKMapView *mapView;
+
+@property (nonatomic, retain) EKEventStore *eventStore;
+@property (nonatomic, retain) EKCalendar *defaultCalendar;
+@property (nonatomic, retain) NSMutableArray *eventsList;
+@property (nonatomic, retain) EKEventViewController *detailViewController;
 
 - (void) loadContentDataView :(int)section :(int)row;
 

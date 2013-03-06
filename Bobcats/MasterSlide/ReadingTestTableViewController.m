@@ -28,10 +28,10 @@
     [super viewDidLoad];
 
     // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
+    self.clearsSelectionOnViewWillAppear = NO;
 
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
 
     standardizedTests = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
     formativeAssessments = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
@@ -113,6 +113,7 @@
             cell.textLabel.text = @"New Standardized Assessment";
             cell.textLabel.backgroundColor = [UIColor clearColor];
             cell.accessoryView = greenAddView;
+            cell.detailTextLabel.text = @"";
         } else {
             NSMutableArray *parsedStandard = [[NSMutableArray alloc] initWithArray:[[[standardizedTests objectAtIndex:indexPath.row] componentsSeparatedByString:@"/"] mutableCopy] copyItems:YES];
 
@@ -131,6 +132,7 @@
             cell.textLabel.text = @"New Formative Assessment";
             cell.textLabel.backgroundColor = [UIColor clearColor];
             cell.accessoryView = greenAddView;
+            cell.detailTextLabel.text = @"";
         } else {
             NSMutableArray *parsedFormative = [[NSMutableArray alloc] initWithArray:[[[formativeAssessments objectAtIndex:indexPath.row] componentsSeparatedByString:@"/"] mutableCopy] copyItems:YES];
 
@@ -151,73 +153,83 @@
     return cell;
 } /* tableView */
 
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 10, 500, 30)];
+    view.backgroundColor = [UIColor clearColor];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50, 2, view.bounds.size.width, view.bounds.size.height)];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor clearColor];
+    label.font = [UIFont boldSystemFontOfSize:18.0f];
+    label.textColor = [UIColor colorWithWhite:.95f alpha:1.0f];
+    
+    [view addSubview:label];
+    
+    return view;
+}
 
-/*
-   // Override to support conditional editing of the table view.
-   - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-   {
-   // Return NO if you do not want the specified item to be editable.
-   return YES;
-   }
- */
+// Override to support conditional editing of the table view.
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ((indexPath.row == standardizedTests.count) && (indexPath.section == 0)) {
+        return NO;
+    }
+    else if ((indexPath.row == formativeAssessments.count) && (indexPath.section == 1)) {
+        return NO;
+    }
+    else {
+        return YES;
+    }
+}
 
-/*
-   // Override to support editing the table view.
-   - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-   {
-   if (editingStyle == UITableViewCellEditingStyleDelete) {
-   // Delete the row from the data source
-   [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-   }
-   else if (editingStyle == UITableViewCellEditingStyleInsert) {
-   // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-   }
-   }
- */
-
-/*
-   // Override to support rearranging the table view.
-   - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-   {
-   }
- */
-
-/*
-   // Override to support conditional rearranging of the table view.
-   - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-   {
-   // Return NO if you do not want the item to be re-orderable.
-   return YES;
-   }
- */
+// Override to support editing the table view.
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // Delete the row from the data source
+        if (indexPath.section == 0)
+            [ReadingAssessmentModel deleteFromTestAssesments:[student uid] :[standardizedTests objectAtIndex:indexPath.row] :kStandardized_Key];
+        else if (indexPath.section == 1)
+            [ReadingAssessmentModel deleteFromTestAssesments:[student uid] :[formativeAssessments objectAtIndex:indexPath.row] :kFormative_Key];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadReadingTestTableView" object:nil];
+    }
+}
 
 #pragma mark - Table view delegate
 
 - (void) tableView :(UITableView *)tableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
     // Navigation logic may go here. Create and push another view controller.
-    /*
-       <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-       // ...
-       // Pass the selected object to the new view controller.
-       [self.navigationController pushViewController:detailViewController animated:YES];
-       [detailViewController release];
-     */
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-
+    
     if ((indexPath.row == standardizedTests.count) && (indexPath.section == 0)) {
-        NewStandardizedTest *nst = [[NewStandardizedTest alloc] initWithStyle:UITableViewStyleGrouped :student :2];
+        NewStandardizedTest *nst = [[NewStandardizedTest alloc] initWithStyle:UITableViewStyleGrouped :student :2 :kEditingMode_NewEntity :nil];
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:nst];
         navController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self presentModalViewController:navController animated:YES];
+        
     } else if ((indexPath.row == formativeAssessments.count) && (indexPath.section == 1)) {
-        NewFormativeAssessment *nfa = [[NewFormativeAssessment alloc] initWithStyle:UITableViewStyleGrouped :student :2];
+        NewFormativeAssessment *nfa = [[NewFormativeAssessment alloc] initWithStyle:UITableViewStyleGrouped :student :2 :kEditingMode_NewEntity :nil];
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:nfa];
         navController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self presentModalViewController:navController animated:YES];
     }
-
+    else if ((indexPath.row < standardizedTests.count) && (indexPath.section == 0))
+    {
+        NewStandardizedTest *nst = [[NewStandardizedTest alloc] initWithStyle:UITableViewStyleGrouped :student :2 :kEditingMode_EntityExists :indexPath];
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:nst];
+        navController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self presentModalViewController:navController animated:YES];
+    }
+    else if ((indexPath.row < formativeAssessments.count) && (indexPath.section == 1))
+    {
+        NewFormativeAssessment *nst = [[NewFormativeAssessment alloc] initWithStyle:UITableViewStyleGrouped :student :2 :kEditingMode_EntityExists :indexPath];
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:nst];
+        navController.modalPresentationStyle = UIModalPresentationFormSheet;
+        [self presentModalViewController:navController animated:YES];
+    }
 } /* tableView */
-
 
 @end
 

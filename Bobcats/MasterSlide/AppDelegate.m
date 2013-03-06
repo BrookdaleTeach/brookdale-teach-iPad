@@ -7,57 +7,119 @@
 
 #import "AppDelegate.h"
 #import "ClassDefinitions.h"
+#import "LoginViewController.h"
+#import "UserCredentials.h"
 
 #define DATABASE_NAME @"students.sql"
-#define MATH_DATABASE @"math.sql"
 #define DEMO          TRUE
 
+static BOOL isDemo = NO;
+static NSString *merchantEmail = nil;
+static NSString *merchantPassword = nil;
+static BOOL remember_me;
+
 @implementation AppDelegate
-@synthesize window, splitViewController, rootViewController, detailViewController;
+@synthesize window;
 @synthesize alphaIndex;
 @synthesize studentArray = _studentArray;
 @synthesize studentArraySectioned = _studentArraySectioned;
 @synthesize databasePath = _databasePath;
 @synthesize studentSectionHeaders = _studentSectionHeaders;
-@synthesize mathDatabasePath = _mathDatabasePath;
 @synthesize mathStudentsArray = _mathStudentsArray;
 @synthesize readingStudentsArray = _readingStudentsArray;
 @synthesize writingStudentsArray = _writingStudentsArray;
 @synthesize behavioralStudentsArray = _behavioralStudentsArray;
 
+-(NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    /* iPad */
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        return UIInterfaceOrientationMaskAll;
+    /* iPhone */
+    else  
+        return UIInterfaceOrientationMaskAllButUpsideDown;
+}
 
 - (BOOL) application :(UIApplication *)application didFinishLaunchingWithOptions :(NSDictionary *)launchOptions {
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                                 /*  Get the path to the documents directory and append the databaseName */
-                                                                 NSUserDomainMask, YES);
-    NSString *documentsDir = [documentPaths objectAtIndex:0];
-    self.databasePath = [documentsDir stringByAppendingPathComponent:DATABASE_NAME];
-
-    /*    Check and create employee database */
-    [self checkAndCreateDatabase];
-
-    /*    Read employees from DB and insert into main employeeArray */
-    [self readEmployeesFromDatabase];
-
-    self.rootViewController = [[MasterViewController alloc] initWithNibName:nil bundle:nil];
-    rootNavigationController = [[UINavigationController alloc] initWithRootViewController:rootViewController];
-
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.detailViewController = [[DetailViewController alloc] initWithNibName:nil bundle:nil];
-        UINavigationController *asd = [[UINavigationController alloc] initWithRootViewController:self.detailViewController];
-        self.splitViewController = [[SwipeSplitViewController alloc] initWithMasterViewController:rootNavigationController
-                                                                             detailViewController:asd];
-        self.window.rootViewController = self.splitViewController;
-    } else {
-        self.window.rootViewController = rootNavigationController;
-    }
+    LoginViewController *lvc = [[LoginViewController alloc] initWithNibName:@"LoginViewController" bundle:[NSBundle mainBundle]];
+    rootNavigationController = [[UINavigationController alloc] initWithRootViewController:lvc];
+    self.window.rootViewController = rootNavigationController;
+    
     [self.window makeKeyAndVisible];
 
     return YES;
 } /* application */
 
+- (void)loadApplicationFromLogin:(BOOL)flag {
+    
+    UserCredentials *uc = [[UserCredentials alloc] init];
+    
+    if ([uc fetchDemoStateFromPlist]) { [self deleteAllSQL]; }
+    
+    /*  Get the path to the documents directory and append the databaseName */
+    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                                 NSUserDomainMask, YES);
+    NSString *documentsDir = [documentPaths objectAtIndex:0];
+    self.databasePath = [documentsDir stringByAppendingPathComponent:DATABASE_NAME];
+    
+    /*    Check and create employee database */
+    [self checkAndCreateDatabase];
+    
+    /*    Read employees from DB and insert into main employeeArray */
+    [self readEmployeesFromDatabase];
+    
+    [uc writeDemoStateIntoPlist:NO];
+}
+
+- (void)deleteAllSQL
+{
+    /*  Get the path to the documents directory and append the databaseName */
+    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                                 NSUserDomainMask, YES);
+
+    [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kStudents_Database] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kMath_Database] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kReading_Database] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kWriting_Database] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kBehavioral_Database] error:nil];
+}
+
+- (void)loadApplicationFromDemo {
+    
+    NSError *err = nil;
+
+    isDemo = YES;
+    
+    /*  Get the path to the documents directory and append the databaseName */
+    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                                 NSUserDomainMask, YES);
+    NSString *documentsDir = [documentPaths objectAtIndex:0];
+    self.databasePath = [documentsDir stringByAppendingPathComponent:DATABASE_NAME];
+    
+    [self deleteAllSQL];
+
+    NSString *studentSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLStudents_Database];
+    NSString *mathSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLMath_Database];
+    NSString *readingSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLReading_Database];
+    NSString *writingSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLWriting_Database];
+    NSString *behavioralSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLBehavioral_Database];
+    
+    [[NSFileManager defaultManager] copyItemAtPath:studentSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kStudents_Database] error:&err];
+    [[NSFileManager defaultManager] copyItemAtPath:mathSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kMath_Database] error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:readingSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kReading_Database] error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:writingSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kWriting_Database] error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:behavioralSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kBehavioral_Database] error:nil];
+    
+    if (err != nil)
+        NSLog(@"ERROR_COPYING: %@", err);
+    /*    Read employees from DB and insert into main employeeArray */
+    [self readEmployeesFromDatabase];
+}
+
++ (BOOL) isDemo { return isDemo; }
 
 - (void) allocStudentArraysByClass {
     self.mathStudentsArray = [[NSMutableArray alloc] init];
@@ -310,6 +372,34 @@
     [self setBehavioralStudentsArray];
 } /* readEmployeesFromDatabase */
 
++ (BOOL) getRememberMeState {
+    return remember_me;
+} /* getRememberMeState */
+
++ (void) setRememberMeState:(BOOL)flag {
+    remember_me = flag;
+} /* setRememberMeState */
+
++ (NSString *) getEmail {
+    return merchantEmail;
+} /* getMerchantEmail */
+
++ (void) setEmail:(NSString *)email {
+    if (merchantEmail != email) {
+        merchantEmail = [email copy];
+    }
+} /* setMerchantEmail */
+
++ (NSString *) getPassword {
+    return merchantPassword;
+} /* getMerchantPassword */
+
+
++ (void) setPassword:(NSString *)pass {
+    if (merchantPassword != pass) {
+        merchantPassword = [pass copy];
+    }
+} /* setMerchantPassword */
 
 - (void) applicationDidEnterBackground :(UIApplication *)application {
 } /* applicationDidEnterBackground */

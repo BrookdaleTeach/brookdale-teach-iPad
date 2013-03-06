@@ -5,6 +5,7 @@
 //
 
 #import "SwipeSplitViewController.h"
+#import "AppDelegate.h"
 
 #define MASTER_VIEW_WIDTH_PORTRAIT  384.0
 #define MASTER_VIEW_WIDTH_LANDSCAPE 320.0
@@ -28,6 +29,17 @@
 
         [self addChildViewController:detailVC];
         [self addChildViewController:masterVC];
+        
+        if ([AppDelegate isDemo])
+        {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Demo View"
+                                                            message:@"You are granted full functionality although all of your data \
+                                                                      will be erased once the application terminates."
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Ok"
+                                                  otherButtonTitles:nil];
+            [alert show];
+        }
     }
     return self;
 } /* initWithMasterViewController */
@@ -35,7 +47,7 @@
 
 - (void) loadView {
     [super loadView];
-
+    
     self.detailViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     self.masterViewController.view.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleHeight;
 
@@ -58,7 +70,38 @@
     UISwipeGestureRecognizer *rightSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(rightSwipe:)];
     rightSwipeRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
     [self.detailViewController.view addGestureRecognizer:rightSwipeRecognizer];
+    
 } /* loadView */
+
+/*
+ DisplayBlurViewMessage
+ --------
+ Purpose:        General Blur Modal Object
+ Parameters:     -- title
+ -- message
+ Returns:        none
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+- (void) displayBlurViewMessage:(NSString *)title message:(NSString *)mes {
+    blurModalView = [[RNBlurModalView alloc] initWithViewController:self title:title message:mes];
+    [blurModalView show];
+} /* displayBlurViewMessage */
+
+/*
+ DismissBlurViewMessage
+ --------
+ Purpose:        General Blur Modal Object
+ Parameters:     --
+ Returns:        none
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+//- (BOOL) dismissBlurViewMessage {
+//    [blurModalView hide];
+//    
+//    return ![blurModalView isVisible];
+//} /* dismissBlurViewMessage */
 
 
 - (void) viewDidAppear :(BOOL)animated {
@@ -66,6 +109,15 @@
         [self showMasterViewControllerAnimated:YES];
     }
 } /* viewDidAppear */
+
+- (void) notifyUser
+{
+    if ([AppDelegate isDemo])
+    {
+        [self displayBlurViewMessage:@"Demo View"
+                         message:@"You are granted full functionality although all of your data will be erased once the application terminates."];
+    }
+}
 
 
 - (void) willRotateToInterfaceOrientation :(UIInterfaceOrientation)toInterfaceOrientation duration :(NSTimeInterval)duration {
@@ -98,6 +150,7 @@
     self.masterViewController.view.frame = CGRectInset(self.masterContainerView.bounds, 3, 3);
 
     self.detailViewController.view.frame = detailFrame;
+    
 } /* layoutViewControllers */
 
 

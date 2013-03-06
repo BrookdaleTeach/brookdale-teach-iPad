@@ -152,7 +152,11 @@
 
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    cell.detailTextLabel.text = @"asdasd";
+
+    UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
+    [iv setFrame:CGRectMake(0, 0, 17, 17)];
+    cell.accessoryView = iv;
+    
     return cell;
 } /* tableView */
 
@@ -233,24 +237,24 @@
 } /* customGradient */
 
 
-- (UIView *) tableView :(UITableView *)tableView viewForHeaderInSection :(NSInteger)section {
-
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.sectionHeaderHeight - 2)];
-    [headerView setBackgroundColor:[UIColor clearColor]];
-
-    CAGradientLayer *bgLayer = [self blueGradient];
-    bgLayer.frame = headerView.bounds;
-    [headerView.layer insertSublayer:bgLayer atIndex:0];
-
-    UILabel *headerText = [[UILabel alloc] initWithFrame:CGRectMake(10, 0.5f, tableView.bounds.size.width - 10, 18)];
-    headerText.font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0f];
-    headerText.text = [tableView.dataSource tableView:tableView titleForHeaderInSection:section];
-    headerText.textColor = [UIColor whiteColor];
-    headerText.backgroundColor = [UIColor clearColor];
-    [headerView addSubview:headerText];
-
-    return headerView;
-} /* tableView */
+//- (UIView *) tableView :(UITableView *)tableView viewForHeaderInSection :(NSInteger)section {
+//
+//    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.sectionHeaderHeight - 2)];
+//    [headerView setBackgroundColor:[UIColor clearColor]];
+//
+//    CAGradientLayer *bgLayer = [self blueGradient];
+//    bgLayer.frame = headerView.bounds;
+//    [headerView.layer insertSublayer:bgLayer atIndex:0];
+//
+//    UILabel *headerText = [[UILabel alloc] initWithFrame:CGRectMake(10, 0.5f, tableView.bounds.size.width - 10, 18)];
+//    headerText.font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0f];
+//    headerText.text = [tableView.dataSource tableView:tableView titleForHeaderInSection:section];
+//    headerText.textColor = [UIColor whiteColor];
+//    headerText.backgroundColor = [UIColor clearColor];
+//    [headerView addSubview:headerText];
+//
+//    return headerView;
+//} /* tableView */
 
 
 - (BOOL) shouldAutorotate :(UIInterfaceOrientation)interfaceOrientation {

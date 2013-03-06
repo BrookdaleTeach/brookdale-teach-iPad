@@ -19,8 +19,14 @@
 
     UIDatePicker *datePicker;
     NSString *datePickerValue;
+    
+    NSArray *existingColumnData;
+    
+    NSIndexPath *ip;
+    
+    NSMutableDictionary *preExistingDict;
 }
 
-- (id) initWithStyle :(UITableViewStyle)style :(Student *)st :(int)ck;
+- (id) initWithStyle :(UITableViewStyle)style :(Student *)st :(int)ck :(int)mode :(NSIndexPath *)index;
 
 @end

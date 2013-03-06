@@ -6,6 +6,23 @@
 //
 //
 
+// Demo SQL files
+#define kDemoSQLStudents_Database   @"students_demo.sql"
+#define kDemoSQLMath_Database       @"math_demo.sql"
+#define kDemoSQLReading_Database    @"reading_demo.sql"
+#define kDemoSQLWriting_Database    @"writing_demo.sql"
+#define kDemoSQLBehavioral_Database @"behavioral_demo.sql"
+
+
+// Segmented Control Objects Tags
+#define kSegmentControlTagFirst 111
+#define kSegmentControlTagSecond 112
+#define kSegmentControlTagThird 113
+
+// Editing Mode Keys
+#define kEditingMode_EntityExists 98765
+#define kEditingMode_NewEntity 98764
+
 // Delimiter
 #define kContent_Delimiter                 @"$$"
 
@@ -24,6 +41,10 @@
 
 #define kColumn_formative                  @"formative"
 #define kColumn_standard                   @"standardized"
+
+// Test Keys
+#define kFormative_Key      6781
+#define kStandardized_Key   6782
 
 // Math Class Definitions
 #define kMath_Key                          1

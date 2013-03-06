@@ -26,7 +26,7 @@
 @implementation NewStandardizedTest
 
 
-- (id) initWithStyle :(UITableViewStyle)style :(Student *)st :(int)ck {
+- (id) initWithStyle :(UITableViewStyle)style :(Student *)st :(int)ck :(int)mode :(NSIndexPath *)index {
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         // Custom initialization
@@ -34,6 +34,8 @@
         classes = [[NSMutableArray alloc] initWithObjects:@"Math", @"Reading", @"Writing", @"Behavioral", nil];
         self.title = [NSString stringWithFormat:@"New %@ Standardized Assessment", [classes objectAtIndex:classKey - 1]];
         student = st;
+        editingMode = mode;
+        ip = index;
     }
     return self;
 } /* initWithStyle */
@@ -47,13 +49,39 @@
 
     titles = [[NSMutableArray alloc] initWithObjects:@"Name", @"Test Score", @"Date", nil];
     titleKeys = [[NSMutableArray alloc] initWithObjects:@"name", @"score", @"date", nil];
+    
+    if (editingMode == kEditingMode_EntityExists) {
+        existingColumnData = [[NSArray alloc] initWithArray:[self existingDataForColumn]];
+        preExistingDict = [[NSMutableDictionary alloc] init];
+    }
 } /* viewDidLoad */
 
+- (NSArray *) existingDataForColumn
+{
+    NSArray *contentData = nil;
+    switch (classKey) {
+        case kMath_Key:
+            contentData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+            break;
+        case kReading_Key:
+            contentData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+            break;
+        case kWriting_Key:
+            contentData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+            break;
+        case kBehavioral_Key:
+            contentData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+            break;   
+        default:
+            break;
+    }
+    
+    return contentData;
+}
 
 - (void) cancel :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
 } /* cancel */
-
 
 - (void) done :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
@@ -67,6 +95,7 @@
 
         if (textField.text != nil) {
             [dataDictionary setObject:textField.text forKey:[titleKeys objectAtIndex:x]];
+            NSLog(@"dataDictionary: %@", textField.text);
         } else {
             textfieldNull = YES;
             break;
@@ -76,19 +105,31 @@
     if (!textfieldNull) {
         switch (classKey) {
             case 1 :
-                [MathAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
+                if (editingMode == kEditingMode_EntityExists)
+                    [MathAssessmentModel updateDataIntoClassDatabase:[student uid] :dataDictionary :preExistingDict :kStandardized_Key];
+                else
+                    [MathAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadMathTestTableView" object:nil];
                 break;
             case 2 :
-                [ReadingAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
+                if (editingMode == kEditingMode_EntityExists)
+                    [ReadingAssessmentModel updateDataIntoClassDatabase:[student uid] :dataDictionary :preExistingDict :kStandardized_Key];
+                else
+                    [ReadingAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadReadingTestTableView" object:nil];
                 break;
             case 3 :
-                [WritingAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
+                if (editingMode == kEditingMode_EntityExists)
+                    [WritingAssessmentModel updateDataIntoClassDatabase:[student uid] :dataDictionary :preExistingDict :kStandardized_Key];
+                else
+                    [WritingAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadWritingTestTableView" object:nil];
                 break;
             case 4 :
-                [BehavioralAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
+                if (editingMode == kEditingMode_EntityExists)
+                    [BehavioralAssessmentModel updateDataIntoClassDatabase:[student uid] :dataDictionary :preExistingDict :kStandardized_Key];
+                else
+                    [BehavioralAssessmentModel insertStandardizedDataIntoClassDatabase:[student uid] :dataDictionary];
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadBehavioralTestTableView" object:nil];
                 break;
             default :
@@ -103,7 +144,6 @@
         [alertNullField show];
     }
 } /* done */
-
 
 #pragma mark - Table view data source
 
@@ -128,8 +168,19 @@
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [self getCellContentViewWithTextfield:CellIdentifier :[titles objectAtIndex:indexPath.section] :100 + indexPath.section];
-        NSLog(@"tag: %d", indexPath.section + 100);
+        NSString *value = @"";
+        if (editingMode == kEditingMode_EntityExists)
+        {
+            NSMutableArray *parsedData = [[NSMutableArray alloc] initWithArray:[[[existingColumnData objectAtIndex:ip.row] componentsSeparatedByString:@"/"] mutableCopy] copyItems:YES];
+            value = [parsedData objectAtIndex:indexPath.section];
+            [preExistingDict setObject:value forKey:[titleKeys objectAtIndex:indexPath.section]];
+            NSLog(@"value: %@ key: %@", value, [titleKeys objectAtIndex:indexPath.section]);
+        }
+            
+        cell = [self getCellContentViewWithTextfield:CellIdentifier
+                                                    :[titles objectAtIndex:indexPath.section]
+                                                    :100 + indexPath.section
+                                                    :value];
     }
 
     // Configure the cell...
@@ -139,7 +190,7 @@
 
 
 // RootViewController.m
-- (UITableViewCell *) getCellContentViewWithTextfield :(NSString *)cellIdentifier :(NSString *)text :(int)tag {
+- (UITableViewCell *) getCellContentViewWithTextfield :(NSString *)cellIdentifier :(NSString *)text :(int)tag :(NSString *)value {
 
     CGRect CellFrame = CGRectMake(0, 0, 300, 60);
 
@@ -159,6 +210,7 @@
     formEntryField.autocapitalizationType = UITextAutocapitalizationTypeNone; // no auto capitalization support
     formEntryField.textAlignment = NSTextAlignmentLeft;
     formEntryField.tag = tag;
+    formEntryField.text = value;
     formEntryField.delegate = self;
     formEntryField.clearButtonMode = UITextFieldViewModeNever; // no clear 'x' button to the right
     [formEntryField setEnabled:YES];

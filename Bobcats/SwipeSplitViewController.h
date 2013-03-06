@@ -5,6 +5,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RNBlurModalView.h"
 
 @interface SwipeSplitViewController : UIViewController {
 
@@ -13,6 +14,9 @@
     UIViewController *_detailViewController;
 
     UIView *_shieldView;
+    
+    RNBlurModalView *blurModalView;
+
 }
 
 @property (nonatomic, strong) UIImageView *masterContainerView;

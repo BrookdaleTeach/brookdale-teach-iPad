@@ -228,7 +228,13 @@
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
+
+    NSString *imagePath;
+    if ([AppDelegate isDemo])
+        imagePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
+    else
+        imagePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
+    
     NSFileManager *filemanager = [NSFileManager defaultManager];
 
     if ([filemanager fileExistsAtPath:imagePath])
@@ -238,6 +244,8 @@
 
     cell.textLabel.backgroundColor = [UIColor clearColor];
     cell.imageView.backgroundColor = [UIColor clearColor];
+    
+    cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
 
     return cell;
 } /* tableView */
@@ -326,39 +334,39 @@
 } /* customGradient */
 
 
-- (UIView *) tableView :(UITableView *)tableView viewForHeaderInSection :(NSInteger)section {
-
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.sectionHeaderHeight - 2)];
-    [headerView setBackgroundColor:[UIColor clearColor]];
-
-    CAGradientLayer *bgLayer = [self blueGradient];
-
-    if ([self.title isEqualToString:@"Math"])
-        bgLayer = [self customGradient:[UIColor colorWithRed:235.0f / 255.0f green:79.0f / 255.0f blue:66.0f / 255.0f alpha:0.7f]  // 235	79	66
-                                      :[UIColor colorWithRed:229.0f / 255.0f green:51.0f / 255.0f blue:46.0f / 255.0f alpha:1.0f]];  // 229	51	46
-    else if ([self.title isEqualToString:@"Reading"])
-        bgLayer = [self customGradient:[UIColor colorWithRed:(7 / 255.0) green:(175 / 255.0) blue:(228 / 228) alpha:1.0] // 7	175	228
-                                      :[UIColor colorWithRed:(0 / 255.0)  green:(163 / 255.0)  blue:(223 / 255.0)  alpha:1.0]];      // 0	163	223
-    else if ([self.title isEqualToString:@"Writing"])
-        bgLayer = [self customGradient:[UIColor colorWithRed:(80 / 255.0) green:(185 / 255.0) blue:(65 / 255.0) alpha:1.0]
-                                      :[UIColor colorWithRed:(65 / 255.0)  green:(162 / 255.0)  blue:(52 / 255.0)  alpha:1.0]];
-    else if ([self.title isEqualToString:@"Behavioral"])
-        bgLayer = [self customGradient:[UIColor colorWithRed:(249 / 255.0) green:(121 / 255.0) blue:(55 / 255.0) alpha:1.0] // 249	121	55
-                                      :[UIColor colorWithRed:(232 / 255.0)  green:(85 / 255.0)  blue:(19 / 255.0)  alpha:1.0]];      // 232	85	19
-
-    bgLayer.frame = headerView.bounds;
-    [headerView.layer insertSublayer:bgLayer atIndex:0];
-    [headerView.layer setMasksToBounds:YES];
-
-    UILabel *headerText = [[UILabel alloc] initWithFrame:CGRectMake(10, 0.5f, tableView.bounds.size.width - 10, 18)];
-    headerText.font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0f];
-    headerText.text = [tableView.dataSource tableView:tableView titleForHeaderInSection:section];
-    headerText.textColor = [UIColor whiteColor];
-    headerText.backgroundColor = [UIColor clearColor];
-    [headerView addSubview:headerText];
-
-    return headerView;
-} /* tableView */
+//- (UIView *) tableView :(UITableView *)tableView viewForHeaderInSection :(NSInteger)section {
+//
+//    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.sectionHeaderHeight - 2)];
+//    [headerView setBackgroundColor:[UIColor clearColor]];
+//
+//    CAGradientLayer *bgLayer = [self blueGradient];
+//
+//    if ([self.title isEqualToString:@"Math"])
+//        bgLayer = [self customGradient:[UIColor colorWithRed:235.0f / 255.0f green:79.0f / 255.0f blue:66.0f / 255.0f alpha:0.7f]  // 235	79	66
+//                                      :[UIColor colorWithRed:229.0f / 255.0f green:51.0f / 255.0f blue:46.0f / 255.0f alpha:1.0f]];  // 229	51	46
+//    else if ([self.title isEqualToString:@"Reading"])
+//        bgLayer = [self customGradient:[UIColor colorWithRed:(7 / 255.0) green:(175 / 255.0) blue:(228 / 228) alpha:1.0] // 7	175	228
+//                                      :[UIColor colorWithRed:(0 / 255.0)  green:(163 / 255.0)  blue:(223 / 255.0)  alpha:1.0]];      // 0	163	223
+//    else if ([self.title isEqualToString:@"Writing"])
+//        bgLayer = [self customGradient:[UIColor colorWithRed:(80 / 255.0) green:(185 / 255.0) blue:(65 / 255.0) alpha:1.0]
+//                                      :[UIColor colorWithRed:(65 / 255.0)  green:(162 / 255.0)  blue:(52 / 255.0)  alpha:1.0]];
+//    else if ([self.title isEqualToString:@"Behavioral"])
+//        bgLayer = [self customGradient:[UIColor colorWithRed:(249 / 255.0) green:(121 / 255.0) blue:(55 / 255.0) alpha:1.0] // 249	121	55
+//                                      :[UIColor colorWithRed:(232 / 255.0)  green:(85 / 255.0)  blue:(19 / 255.0)  alpha:1.0]];      // 232	85	19
+//
+//    bgLayer.frame = headerView.bounds;
+//    [headerView.layer insertSublayer:bgLayer atIndex:0];
+//    [headerView.layer setMasksToBounds:YES];
+//
+//    UILabel *headerText = [[UILabel alloc] initWithFrame:CGRectMake(10, 0.5f, tableView.bounds.size.width - 10, 18)];
+//    headerText.font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0f];
+//    headerText.text = [tableView.dataSource tableView:tableView titleForHeaderInSection:section];
+//    headerText.textColor = [UIColor whiteColor];
+//    headerText.backgroundColor = [UIColor clearColor];
+//    [headerView addSubview:headerText];
+//
+//    return headerView;
+//} /* tableView */
 
 
 - (void) tableView :(UITableView *)tableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {

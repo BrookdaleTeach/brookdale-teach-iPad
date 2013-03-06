@@ -292,11 +292,11 @@
         }
 
         [resultMessage show];
+        
+        [appDelegate reloadCoreData];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadStudentTableView" object:nil];
+        [self dismissModalViewControllerAnimated:YES];
     }
-
-    [appDelegate reloadCoreData];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadStudentTableView" object:nil];
-    [self dismissModalViewControllerAnimated:YES];
 } /* done */
 
 
@@ -463,12 +463,21 @@
         UILabel *label = (UILabel *)[self.view viewWithTag:x + 1];
 
         if ((label.text == NULL) || [label.text isEqualToString:@""])
-            break;
-        else if (x == NUM_OBJECTS - 1) {
+        {
+            if (x < 4)
+                break;
+            else
+                [userInput addObject:@" "];
+        }
+        else
+        {
             [userInput addObject:label.text];
+        }
+        
+        if (x == NUM_OBJECTS - 1)
+        {
             return YES;
-        } else
-            [userInput addObject:label.text];
+        }
     }
 
     UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Form Incomplete"

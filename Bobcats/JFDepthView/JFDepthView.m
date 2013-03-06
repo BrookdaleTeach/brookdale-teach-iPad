@@ -287,8 +287,6 @@
                                      postWidth,
                                      postHeight);
     
-    CGFloat shadowRadius  = (isiPad) ? 20 : 10;
-    CGFloat shadowOpacity = (isiPad) ? 1.0 : 0.5;
     self.topViewWrapper = [[UIView alloc] initWithFrame:preTopViewWrapperFrame];
     self.topViewWrapper.autoresizesSubviews = YES;
 //    self.topViewWrapper.layer.shadowOffset  = CGSizeMake(0, 0);

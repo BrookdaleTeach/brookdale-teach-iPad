@@ -20,5 +20,7 @@
 + (void) insertStandardizedDataIntoClassDatabase :(NSString *)uid :(NSMutableDictionary *)dictionary;
 + (NSMutableArray *) selectFormativeDataIntoClassDatabase :(NSString *)uid;
 + (NSMutableArray *) selectStandardizedDataIntoClassDatabase :(NSString *)uid;
++ (void) updateDataIntoClassDatabase :(NSString *)uid :(NSMutableDictionary *)dictionary :(NSMutableDictionary *)oldDictionary :(int)key;
++ (void) deleteFromTestAssesments :(NSString *)uid :(NSMutableDictionary *)dictionary :(int)key;
 
 @end
