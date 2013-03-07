@@ -20,7 +20,7 @@
 
 @class AppDelegate;
 
-@interface DetailViewController : UIViewController <UIActionSheetDelegate, MFMailComposeViewControllerDelegate, MKMapViewDelegate, EKEventEditViewDelegate, UIWebViewDelegate> {
+@interface DetailViewController : UIViewController <UIActionSheetDelegate, MFMailComposeViewControllerDelegate, MKMapViewDelegate, EKEventEditViewDelegate, UIScrollViewDelegate, UIWebViewDelegate> {
 
     Student *student;
     AppDelegate *appDelegate;
@@ -39,6 +39,8 @@
 
     NSString *nextView;
     NSIndexPath *indexPath;
+    
+    UIToolbar *toolbar;
 
     int selectedContactActionSheetButton;
 }

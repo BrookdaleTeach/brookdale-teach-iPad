@@ -302,20 +302,14 @@
    Notes:          Writes Creds to .plist
    Author:         Neil Burchfield
  */
-- (BOOL) cacheCredentialsInPlist {
+- (void) cacheCredentialsInPlist {
     if ([self cacheUsersCredentialsOffline]) {
         /* Cache User Credentials From KeyChain */
         UserCredentials *userCredentials = [[UserCredentials alloc] init];
         if ([userCredentials initilize:NO]) {
             [userCredentials writeUsernamePasswordStateToPlist:loginId.text password:password.text state:YES];
             [self setUpLogin];
-            return YES;
         }
-        return NO;
-    }
-    else
-    {
-        return NO;
     }
 } /* cacheCredentialsInPlist */
 
@@ -532,10 +526,9 @@
 
     if (sender == loginButton) {
         if ([password.text isEqualToString:kLoginPassword]) {
-            if ([self cacheCredentialsInPlist]) {
+                [self cacheCredentialsInPlist];
                 [appDelegate loadApplicationFromLogin:NO];
                 [self createMBProgressHUD:@selector(loadApplicationRoot:)];
-            }
         } else
             return;
     } else if (sender == demoButton) {

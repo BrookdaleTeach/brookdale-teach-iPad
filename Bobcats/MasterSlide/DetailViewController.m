@@ -69,7 +69,19 @@
     [self setupMGBoxes];
 
     [self allocContentDataView];
+    
+    CGRect tbarFrame;
+    toolbar = [[UIToolbar alloc] init];
 
+    // Layout scroller based on interface orientation
+    if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
+        tbarFrame = CGRectMake(0, BOX_PORTRAIT.size.height - 300, BOX_PORTRAIT.size.width, 44);
+    else
+        tbarFrame = CGRectMake(0, BOX_LANDSCAPE.size.height - 300, BOX_LANDSCAPE.size.width, 44);
+
+    [toolbar setFrame:tbarFrame];
+    [toolbar setTintColor:self.navigationController.navigationBar.tintColor];
+    [self.view addSubview:toolbar];
 } /* viewDidLoad */
 
 
@@ -88,11 +100,13 @@
     // Init Scroller
     self.scroller = [[MGScrollView alloc] init];
 
+    self.scroller.delegate = self;
+
     // Layout scroller based on interface orientation
     if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
         [self.scroller setFrame:BOX_PORTRAIT];
     else if ( UIInterfaceOrientationIsLandscape(self.interfaceOrientation) )
-        [self.scroller setFrame:BOX_LANDSCAPE];
+        [self.scroller setFrame:CGRectMake(12, 135, 768, 525)];
 
     // MGBox Scroller layout mode
     self.scroller.contentLayoutMode = MGLayoutGridStyle;
