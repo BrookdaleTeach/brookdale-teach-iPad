@@ -41,16 +41,16 @@
                                  @"Student has friends and engages in appropriate behaviors with friends.", nil];
 
     titles_behavioral_responsibility = [[NSMutableArray alloc] initWithObjects:
-                                        @"Student manages his/her schoolwork.",
-                                        @"Student manages his/her homework.",
-                                        @"Student manages his/her school supplies.",
-                                        @"Student follows teacher directions.",
-                                        @"Student remains on-task and focused throughout whole group instruction.",
-                                        @"Student remains on-task and focused throughout small group instruction.",
-                                        @"Student remains on-task and focused throughout independent work time.",
-                                        @"Student remains on-task and focused throughout center time.",
-                                        @"Student transitions appropriately.",
-                                        @"Student takes initiative on schoolwork.", nil];
+                                @"Student manages his/her schoolwork.",
+                                @"Student manages his/her homework.",
+                                @"Student manages his/her school supplies.",
+                                @"Student follows teacher directions.",
+                                @"Student remains on-task and focused throughout whole group instruction.",
+                                @"Student remains on-task and focused throughout small group instruction.",
+                                @"Student remains on-task and focused throughout independent work time.",
+                                @"Student remains on-task and focused throughout center time.",
+                                @"Student transitions appropriately.",
+                                @"Student takes initiative on schoolwork.", nil];
 
     titles_behavioral_feelings = [[NSMutableArray alloc] initWithObjects:
                                   @"Student keeps hands and feet to self.",
@@ -379,14 +379,14 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context){
 
     if (![oldText isEqualToString:modalTextView.text]) {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:row inSection:section]];
-        
+
         UIImageView *contentStatus = [[UIImageView alloc] initWithFrame:CGRectMake(-30, 21, 18, 18)];
         contentStatus.image = [UIImage imageNamed:@"check"];
         [cell.contentView addSubview:contentStatus];
     }
-    
+
     [self.tableView reloadData];
-    
+
     [self dismissModalViewControllerAnimated:YES];
 } /* insertStringIntoDatabase */
 

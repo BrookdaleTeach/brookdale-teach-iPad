@@ -1,6 +1,19 @@
+//
+//  Students.h
+//  Bobcats
+//
+
+/* Imports */
+
 #import <UIKit/UIKit.h>
 
-@interface Student : NSObject
+/*
+ * Class Main Interface
+ */
+
+@interface Student : NSObject {}
+
+/* Global Declarations */
 
 @property (strong, nonatomic) NSString *firstName;
 @property (strong, nonatomic) NSString *lastName;
@@ -26,6 +39,8 @@
 @property (nonatomic, readwrite) int key;
 @property (nonatomic, readwrite) int primaryKey;
 
+
+/* Global Method Declarations */
 
 - (id) initWithName :(NSString *)n firstName :(NSString *)first lastName :(NSString *)last gender :(NSString *)gen dob_month :(int)month dob_day :(int)day dob_year :(int)year image :(NSString *)im uid :(NSString *)d email :(NSString *)em phone :(NSString *)ph address :(NSString *)addr parent_firstName :(NSString *)pf parent_lastName :(NSString *)pl parent_email :(NSString *)pe parent_phone :(NSString *)pp relationship :(NSString *)rel notes :(NSString *)note classkey :(NSString *)ck key :(int)k primaryKey :(int)pk;
 

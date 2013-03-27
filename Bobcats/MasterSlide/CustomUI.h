@@ -6,15 +6,14 @@
 //  Copyright (c) 2013 Burchfield, Neil. All rights reserved.
 //
 
+/* Imports */
+
 #import <Foundation/Foundation.h>
 
 /*
- CustomUI Interface
- --------
- Delegate:        NSObject
- Inheritance:     none
- Author:          Neil Burchfield
+ * Class Main Interface
  */
+
 @interface CustomUI : NSObject
 
 + (UIButton *) makeButton:(NSString *)title title_font:(UIFont *)font x_value:(int)x y_value:(int)y width:(int)w height:(int)h back_image_normal:(UIImage *)bin

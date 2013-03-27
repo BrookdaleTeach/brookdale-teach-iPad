@@ -15,17 +15,13 @@
     NSMutableArray *titles_behavioral_respect;
     NSMutableArray *titles_behavioral_responsibility;
     NSMutableArray *titles_behavioral_feelings;
-
     Student *student;
-
     UITextView *modalTextView;
     NSString *oldText;
-
-    int section;
-    int row;
-
     UISegmentedControl *cellSegmentedControl;
     NSString *currentText;
+    int section;
+    int row;
 }
 
 @property (nonatomic, retain) NSMutableArray *studentObjectData;

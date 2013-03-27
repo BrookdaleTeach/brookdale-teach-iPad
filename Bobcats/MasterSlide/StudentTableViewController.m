@@ -6,6 +6,8 @@
 //
 //
 
+/* Imports */
+
 #import "StudentTableViewController.h"
 #import "Student.h"
 #import "AddStudentView.h"
@@ -15,22 +17,49 @@
 #import "ClassDefinitions.h"
 #import "MathAssessmentModel.h"
 #import "UIImage+UIColor.h"
+#import "MGBoxLine.h"
 
-#define start_color [UIColor colorWithHex:0xEEEEEE]
-#define end_color   [UIColor colorWithHex:0xDEDEDE]
+/* Definitions */
 
+#define start_color      [UIColor colorWithHex:0xEEEEEE]
+#define end_color        [UIColor colorWithHex:0xDEDEDE]
 #define kLandscapeHeight 748.0
 
+/*
+ * Class Main Implementation
+ */
+
 @implementation StudentTableViewController
+
+/* Synthesizations */
+
 @synthesize studentArraySectioned = _studentArraySectioned;
 @synthesize classkey = _classkey;
 
+/*
+   InitWithNibName
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     nib
+   Returns:        self
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (id) initWithNibName :(NSString *)nibNameOrNil bundle :(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nil bundle:nil];
     return self;
 } /* initWithNibName */
 
 
+/*
+   Init
+   --------
+   Purpose:        Initilizes Class
+   Parameters:     string, array, int
+   Returns:        self
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (id) init :(NSString *)title arraySectioned :(NSMutableArray *)arraySectioned classkey :(int)key {
     self.title = NSLocalizedString(title, nil);
     self.studentArraySectioned = [[NSMutableArray alloc] initWithArray:arraySectioned];
@@ -39,6 +68,15 @@
 } /* initWithNibName */
 
 
+/*
+   viewDidLoad
+   --------
+   Purpose:        Load View
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
 
@@ -54,7 +92,7 @@
                                                                      resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)]];
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-                                                                                               target:self action:@selector(addStudent:)];
+                                                                                           target:self action:@selector(addStudent:)];
 
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 64)];
     UIButton *aboutButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -67,17 +105,39 @@
     [aboutButton addTarget:self action:@selector(showInfo:) forControlEvents:UIControlEventTouchUpInside];
     [footerView addSubview:aboutButton];
     self.tableView.tableFooterView = footerView;
-    
+
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+
     // Fixes Navigation Height On Landscape
     if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
         [self performSelectorInBackground:@selector(correctNavigationHeightOnLandscape) withObject:nil];
     }
 } /* viewDidLoad */
 
-- (void)correctNavigationHeightOnLandscape {
-    [self.navigationController.view setHeight:kLandscapeHeight];
-}
 
+/*
+   correctNavigationHeightOnLandscape
+   --------
+   Purpose:        Initially Installs View Height
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (void) correctNavigationHeightOnLandscape {
+    [self.navigationController.view setHeight:kLandscapeHeight];
+} /* correctNavigationHeightOnLandscape */
+
+
+/*
+   showInfo
+   --------
+   Purpose:        Show About
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) showInfo :(id)sender {
     // Show info dialog with libxar license
     AboutViewController *vc = [[AboutViewController alloc] initWithNibName:nil bundle:nil];
@@ -89,11 +149,15 @@
 } /* showInfo */
 
 
-- (void) viewWillAppear :(BOOL)animated {
-    [super viewWillAppear:animated];
-} /* viewWillAppear */
-
-
+/*
+   realloc
+   --------
+   Purpose:        realloc
+   Parameters:     array
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) realloc :(NSMutableArray *)array {
     [self.studentArraySectioned removeAllObjects];
     self.studentArraySectioned = [[NSMutableArray alloc] initWithArray:array];
@@ -111,14 +175,22 @@
             [self realloc:appDelegate.writingStudentsArray];
         else if (self.classkey == 4)
             [self realloc:appDelegate.behavioralStudentsArray];
-        }
-    else
+    } else
         [self realloc:appDelegate.studentArraySectioned];
 
     [self.tableView reloadData];
 } /* reloadTableViewData */
 
 
+/*
+   addStudent
+   --------
+   Purpose:        Add Student Button
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) addStudent :(id)sender {
 
     int initwithkey = -1;
@@ -141,6 +213,15 @@
 } /* addStudent */
 
 
+/*
+   useCameraRoll
+   --------
+   Purpose:        Camera Roll Instance
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) useCamera :(id)sender {
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
         UIImagePickerController *imagePicker =
@@ -159,6 +240,15 @@
 } /* useCamera */
 
 
+/*
+   useCameraRoll
+   --------
+   Purpose:        Camera Roll Existing Images Selection Instance
+   Parameters:     UIImagePickerController, NSDictionary
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (IBAction) useCameraRoll :(id)sender {
     if ([UIImagePickerController isSourceTypeAvailable:
          UIImagePickerControllerSourceTypeSavedPhotosAlbum]) {
@@ -188,12 +278,17 @@
 } /* useCameraRoll */
 
 
-- (void) didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-} /* didReceiveMemoryWarning */
+#pragma mark - Table view data source
 
-
+/*
+   titleForHeaderInSection
+   --------
+   Purpose:        Section Title
+   Parameters:     UITableView, NSInteger
+   Returns:        NSString
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSString *) tableView :(UITableView *)tableView titleForHeaderInSection :(NSInteger)section {
 
     if ([[self.studentArraySectioned objectAtIndex:section] count] > 0)
@@ -203,35 +298,64 @@
 } /* tableView */
 
 
-#pragma mark - Table view data source
-
+/*
+   numberOfSectionsInTableView
+   --------
+   Purpose:        Section Count
+   Parameters:     UITableView
+   Returns:        NSInteger
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) numberOfSectionsInTableView :(UITableView *)tableView {
     // Return the number of sections.
     return [self.studentArraySectioned count];
 } /* numberOfSectionsInTableView */
 
 
+/*
+   numberOfRowsInSection
+   --------
+   Purpose:        Rows Count
+   Parameters:     UITableView
+   Returns:        NSInteger
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) tableView :(UITableView *)tableView numberOfRowsInSection :(NSInteger)section {
     // Return the number of rows in the section.
     return [[self.studentArraySectioned objectAtIndex:section] count];
 } /* tableView */
 
 
+/*
+   cellForRowAtIndexPath
+   --------
+   Purpose:        Delegate
+   Parameters:     UITableView, NSIndexPath
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITableViewCell *) tableView :(UITableView *)tableView cellForRowAtIndexPath :(NSIndexPath *)indexPath {
     /*   Instantiate the reversed array within the student class object */
     Student *student = (Student *)[[self.studentArraySectioned objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
 
     static NSString *CellIdentifier = @"Cell";
-    TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        cell.tableViewBackgroundColor = tableView.backgroundColor;
-        cell.gradientStartColor = start_color;
-        cell.gradientEndColor = end_color;
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+
+        MGBoxLine *line = [MGBoxLine lineWithWidth:cell.width];
+        UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, cell.height - line.height - 1, cell.width, line.height)];
+        [lineView addSubview:line];
+        [cell addSubview:lineView];
     }
 
     /*    Set Custom Background for favorites Employee Cell View */
     cell.textLabel.text = [student fullName];
+    cell.textLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:17.5f];
+    cell.textLabel.textColor = [UIColor colorWithWhite:0.2f alpha:1.0f];
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -253,12 +377,22 @@
     cell.imageView.backgroundColor = [UIColor clearColor];
 
     cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
+    cell.selectionStyle = UITableViewCellSelectionStyleGray;
 
     return cell;
 } /* tableView */
 
 
-- (void) deleteEmployee :(NSString *)uid {
+/*
+   deleteStudent
+   --------
+   Purpose:        Delete Student
+   Parameters:     NSString
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (void) deleteStudent :(NSString *)uid {
     sqlite3 *database;
 
     if (sqlite3_open([appDelegate.databasePath UTF8String], &database) == SQLITE_OK) {
@@ -278,17 +412,25 @@
     }
 
     sqlite3_close(database);
-} /* deleteEmployee */
+} /* deleteStudent */
 
 
-// Override to support editing the table view.
+/*
+   commitEditingStyle
+   --------
+   Purpose:        Override to support editing the table view
+   Parameters:     UITableView, UITableViewCellEditingStyle
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void)    tableView :(UITableView *)tableView commitEditingStyle :(UITableViewCellEditingStyle)editingStyle
     forRowAtIndexPath :(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         Student *student = (Student *)[[self.studentArraySectioned objectAtIndex:indexPath.section]
                                        objectAtIndex:indexPath.row];
 
-        [self deleteEmployee:[student lastName]];
+        [self deleteStudent:[student lastName]];
 
         [appDelegate reloadCoreData];
 
@@ -300,50 +442,30 @@
 } /* tableView */
 
 
-/* Set section index titles */
+/*
+   sectionIndexTitlesForTableView
+   --------
+   Purpose:        Set section index titles
+   Parameters:     UITableView
+   Returns:        NSArray
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSArray *) sectionIndexTitlesForTableView :(UITableView *)tableView {
     return [[UILocalizedIndexedCollation currentCollation] sectionIndexTitles];
 } /* sectionIndexTitlesForTableView */
 
 
-- (CAGradientLayer *) blueGradient {
-
-    UIColor *colorOne = [UIColor colorWithRed:(120 / 255.0) green:(135 / 255.0) blue:(150 / 255.0) alpha:1.0];
-    UIColor *colorTwo = [UIColor colorWithRed:(57 / 255.0)  green:(79 / 255.0)  blue:(96 / 255.0)  alpha:1.0];
-
-    NSArray *colors = [NSArray arrayWithObjects:(id)colorOne.CGColor, colorTwo.CGColor, nil];
-    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
-    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
-
-    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
-
-    CAGradientLayer *headerLayer = [CAGradientLayer layer];
-    headerLayer.colors = colors;
-    headerLayer.locations = locations;
-
-    return headerLayer;
-} /* blueGradient */
-
-
-- (CAGradientLayer *) customGradient :(UIColor *)first :(UIColor *)second {
-
-    NSArray *colors = [NSArray arrayWithObjects:(id)first.CGColor, second.CGColor, nil];
-    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
-    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
-
-    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
-
-    CAGradientLayer *headerLayer = [CAGradientLayer layer];
-    headerLayer.colors = colors;
-    headerLayer.locations = locations;
-
-    return headerLayer;
-} /* customGradient */
-
-
+/*
+   didSelectRowAtIndexPath
+   --------
+   Purpose:        Delegate
+   Parameters:     UITableView, NSIndexPath
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) tableView :(UITableView *)tableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:1];
     [userInfo setObject:indexPath forKey:@"indexPath"];
     [userInfo setObject:self.title forKey:@"view"];
@@ -353,37 +475,32 @@
 } /* tableView */
 
 
-#pragma mark -
-//
-//- (void) didRotateFromInterfaceOrientation :(UIInterfaceOrientation)fromInterfaceOrientation {
-//
-//    [self.tableView reloadData];
-//} /* didRotateFromInterfaceOrientation */
-//
-
-- (BOOL)shouldAutorotate {
+/*
+   shouldAutorotate
+   --------
+   Purpose:        Autorotate
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (BOOL) shouldAutorotate {
     return YES;
-}
+} /* shouldAutorotate */
 
+
+/*
+   shouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        Autorotate
+   Parameters:     --
+   Returns:        BOOL
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 } /* shouldAutorotateToInterfaceOrientation */
 
 
 @end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

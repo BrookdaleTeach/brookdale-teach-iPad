@@ -5,6 +5,8 @@
 //  Created by Burchfield, Neil on 1/27/13.
 //
 
+/* Imports */
+
 #import "MasterViewController.h"
 #import "DetailViewController.h"
 #import "AboutViewController.h"
@@ -14,15 +16,31 @@
 #import "ClassDefinitions.h"
 #import "MGBoxLine.h"
 
+/* Static Definitions */
+
 #define start_color         [UIColor colorWithHex:0xEEEEEE]
 #define end_color           [UIColor colorWithHex:0xDEDEDE]
 #define LANDSCAPE_PADDING   44
 #define FIRST_USE_ALERT_TAG 1
 
+/*
+ * Class Main Implementation
+ */
 @implementation MasterViewController
+
+/* Sythesizations */
 
 @synthesize detailViewController;
 
+/*
+   InitWithMasterViewController
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     nib
+   Returns:        self
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (id) initWithNibName :(NSString *)nibNameOrNil bundle :(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nil bundle:nil];
     self.title = NSLocalizedString(@"Home", nil);
@@ -30,6 +48,15 @@
 } /* initWithNibName */
 
 
+/*
+   viewDidLoad
+   --------
+   Purpose:        Delegate
+   Parameters:     --
+   Returns:        --
+   Notes:          Show Master on Portait
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
     self.tableView.backgroundColor = [UIColor colorWithPatternImage:[[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
@@ -38,7 +65,7 @@
     self.contentSizeForViewInPopover = CGSizeMake(400.0, 1024.0);
     self.tableView.rowHeight = 64.0;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
+
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     headers = [[NSArray alloc] initWithObjects:@"Math", @"Reading", @"Writing", @"Behavior", nil];
@@ -49,14 +76,29 @@
 } /* viewDidLoad */
 
 
+/*
+   shouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        AutoRotate
+   Parameters:     UIInterfaceOrientation
+   Returns:        BOOL
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    }
-    return UIInterfaceOrientationIsLandscape(interfaceOrientation) || (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return YES;
 } /* shouldAutorotateToInterfaceOrientation */
 
 
+/*
+   shouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        showInfo
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) showInfo :(id)sender {
     // TODO: Show info dialog with libxar license
     AboutViewController *vc = [[AboutViewController alloc] initWithNibName:nil bundle:nil];
@@ -68,6 +110,15 @@
 } /* showInfo */
 
 
+/*
+   titleForHeaderInSection
+   --------
+   Purpose:        Title based on section
+   Parameters:     string
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSString *) tableView :(UITableView *)tableView titleForHeaderInSection :(NSInteger)section {
     if (section == 0)
         return @"View All";
@@ -76,11 +127,29 @@
 } /* tableView */
 
 
+/*
+   numberOfSectionsInTableView
+   --------
+   Purpose:        Section count
+   Parameters:     UITableView, int
+   Returns:        int
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) numberOfSectionsInTableView :(UITableView *)aTableView {
     return 2;
 } /* numberOfSectionsInTableView */
 
 
+/*
+   numberOfRowsInSection
+   --------
+   Purpose:        Row count
+   Parameters:     UITableView, int
+   Returns:        int
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) tableView :(UITableView *)aTableView numberOfRowsInSection :(NSInteger)section {
     if (section == 0)
         return 1;
@@ -89,15 +158,24 @@
 } /* tableView */
 
 
+/*
+   cellForRowAtIndexPath
+   --------
+   Purpose:        Delegate Tableview Content
+   Parameters:     UITableView, NSIndexPath
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITableViewCell *) tableView :(UITableView *)tableView cellForRowAtIndexPath :(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"CellIdentifier";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
 
         if (indexPath.section == 0)
-            cell = [self getCellContentViewForPassword:CellIdentifier :indexPath.row:10 + indexPath.row:50 + indexPath.row];
+            cell = [self getCellContentView:CellIdentifier :indexPath.row:10 + indexPath.row:50 + indexPath.row];
         else if (indexPath.section == 1)
-            cell = [self getCellContentViewForPassword:CellIdentifier :100 + indexPath.row:105 + indexPath.row:150 + indexPath.row];
+            cell = [self getCellContentView:CellIdentifier :100 + indexPath.row:105 + indexPath.row:150 + indexPath.row];
     }
 
     if (indexPath.section == 0) {
@@ -124,12 +202,12 @@
         imageView.frame = CGRectMake(20, 10, 48, 48);
         imageView.image = im;
         [cell addSubview:imageView]; // 210	206	203
-        
+
         UIImageView *corner = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"GreyCorner"]];
         corner.frame = CGRectMake(-1, -2, 29, 32);
         [cell.contentView addSubview:corner];
-        
-        } else {
+
+    } else {
         UILabel *mainContentLabel = (UILabel *)[cell viewWithTag:100 + indexPath.row];
         mainContentLabel.text = [headers objectAtIndex:indexPath.row];
 
@@ -137,29 +215,29 @@
         UIImage *image = [UIImage imageNamed:[images objectAtIndex:indexPath.row]];
         mainContentValueImage.frame = CGRectMake(20, 10, 48, 48);
         mainContentValueImage.image = image;
-            
-            UIImageView *corner = [[UIImageView alloc] init];
-            corner.frame = CGRectMake(-1, -2, 29, 32);            
-            switch (indexPath.row) {
-                case 0:
-                    corner.image = [UIImage imageNamed:@"RedCorner"];
-                    break;
-                case 1:
-                    corner.image = [UIImage imageNamed:@"BlueCorner"];
-                    break;
-                case 2:
-                    corner.image = [UIImage imageNamed:@"GreenCorner"];
-                    break;
-                case 3:
-                    corner.image = [UIImage imageNamed:@"OrangeCorner"];
-                    break;
-                default:
-                    break;
-            }
-            [cell.contentView addSubview:corner];
+
+        UIImageView *corner = [[UIImageView alloc] init];
+        corner.frame = CGRectMake(-1, -2, 29, 32);
+        switch (indexPath.row) {
+            case 0 :
+                corner.image = [UIImage imageNamed:@"RedCorner"];
+                break;
+            case 1 :
+                corner.image = [UIImage imageNamed:@"BlueCorner"];
+                break;
+            case 2 :
+                corner.image = [UIImage imageNamed:@"GreenCorner"];
+                break;
+            case 3 :
+                corner.image = [UIImage imageNamed:@"OrangeCorner"];
+                break;
+            default :
+                break;
+        } /* switch */
+        [cell.contentView addSubview:corner];
 
     }
-    
+
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
@@ -171,17 +249,44 @@
 } /* tableView */
 
 
+/*
+   viewWillAppear
+   --------
+   Purpose:        Delegate On Class Appear
+   Parameters:     BOOL
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewWillAppear :(BOOL)animated {
     [super viewWillAppear:animated];
     [self reloadSectionSubtitles];
 } /* viewWillAppear */
 
 
+/*
+   realloc
+   --------
+   Purpose:        Re-allocate data
+   Parameters:     BOOL
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (int) realloc :(NSMutableArray *)array {
     return [[[NSMutableArray alloc] initWithArray:array] count];
 } /* realloc */
 
 
+/*
+   reloadSectionSubtitles
+   --------
+   Purpose:        Reload Section Subtitle data
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) reloadSectionSubtitles {
 
     int total = 0, math = 0, reading = 0, writing = 0, behavioral = 0;
@@ -217,7 +322,16 @@
 } /* reloadSectionSubtitles */
 
 
-- (UITableViewCell *) getCellContentViewForPassword :(NSString *)cellIdentifier :(int)headtag :(int)imageTag :(int)layerTag {
+/*
+   getCellContentView
+   --------
+   Purpose:        Custom Cell Usage
+   Parameters:     int, int, int, string
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (UITableViewCell *) getCellContentView :(NSString *)cellIdentifier :(int)headtag :(int)imageTag :(int)layerTag {
 
     CGRect CellFrame = CGRectMake(0, 0, 300, 60);
 
@@ -238,7 +352,7 @@
     formTitleField.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:21.0f];
     formTitleField.tag = headtag;
     [cell.contentView addSubview:formTitleField];
-    
+
     cell.textLabel.backgroundColor = [UIColor clearColor];
     cell.imageView.backgroundColor = [UIColor clearColor];
 
@@ -278,60 +392,41 @@
     imageView.layer.shadowRadius = 4.0f;
     imageView.layer.masksToBounds = NO;
     [cell addSubview:imageView];
-    
+
     MGBoxLine *line = [MGBoxLine lineWithWidth:cell.width];
     UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, cell.height + 2.5 - line.height, cell.width, line.height)];
     [lineView addSubview:line];
     [cell addSubview:lineView];
 
-    
     return cell;
-} /* getCellContentViewForPassword */
+} /* getCellContentView */
 
 
-- (CAGradientLayer *) blueGradient {
-
-    UIColor *colorOne = [UIColor colorWithRed:(120 / 255.0) green:(135 / 255.0) blue:(150 / 255.0) alpha:1.0];
-    UIColor *colorTwo = [UIColor colorWithRed:(57 / 255.0)  green:(79 / 255.0)  blue:(96 / 255.0)  alpha:1.0];
-
-    NSArray *colors = [NSArray arrayWithObjects:(id)colorOne.CGColor, colorTwo.CGColor, nil];
-    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
-    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
-
-    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
-
-    CAGradientLayer *headerLayer = [CAGradientLayer layer];
-    headerLayer.colors = colors;
-    headerLayer.locations = locations;
-
-    return headerLayer;
-} /* blueGradient */
-
-
-- (CAGradientLayer *) customGradient :(UIColor *)first :(UIColor *)second {
-
-    NSArray *colors = [NSArray arrayWithObjects:(id)first.CGColor, second.CGColor, nil];
-    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
-    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
-
-    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
-
-    CAGradientLayer *headerLayer = [CAGradientLayer layer];
-    headerLayer.colors = colors;
-    headerLayer.locations = locations;
-
-    return headerLayer;
-} /* customGradient */
-
-
+/*
+   shouldAutorotate
+   --------
+   Purpose:        Autorotate
+   Parameters:     UIInterfaceOrientation
+   Returns:        BOOL
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotate :(UIInterfaceOrientation)interfaceOrientation {
-
-    [self.tableView reloadData];
-    return(interfaceOrientation == UIInterfaceOrientationLandscapeRight);
+    return YES;
 } /* shouldAutorotate */
 
+
+/*
+   didSelectRowAtIndexPath
+   --------
+   Purpose:        TableView Cell
+   Parameters:     NSIndexPath, UITableView
+   Returns:        BOOL
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) tableView :(UITableView *)aTableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
-//    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+
     NSMutableArray *initwitharray = nil;
     NSString *initwithtitle = nil;
     if (indexPath.section == 1) {
@@ -368,6 +463,15 @@
 } /* tableView */
 
 
+/*
+   insertFooter
+   --------
+   Purpose:        Footer View
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) insertFooter {
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 64)];
     UIButton *aboutButton = [UIButton buttonWithType:UIButtonTypeCustom];

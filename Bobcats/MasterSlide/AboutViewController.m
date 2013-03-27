@@ -5,12 +5,28 @@
 //  Created by Burchfield, Neil on 1/27/13.
 //
 
+/* Imports */
+
 #import "AboutViewController.h"
 
+/*
+ * Class Main Implementation
+ */
 @implementation AboutViewController
+
+/* Sythesizations */
 
 @synthesize webView = _webView;
 
+/*
+   loadView
+   --------
+   Purpose:        Setup View
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) loadView {
     [super loadView];
     self.title = NSLocalizedString(@"About Bobcats", nil);
@@ -24,11 +40,29 @@
 } /* loadView */
 
 
+/*
+   done
+   --------
+   Purpose:        Dismiss Modal
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) done :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
 } /* done */
 
 
+/*
+   viewDidLoad
+   --------
+   Purpose:        Start Webview
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
     NSURL *aboutPageURL = [[NSBundle mainBundle] URLForResource:@"About" withExtension:@"html"];
@@ -36,6 +70,15 @@
 } /* viewDidLoad */
 
 
+/*
+   shouldStartLoadWithRequest
+   --------
+   Purpose:        Load Webview data
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) webView :(UIWebView *)webView shouldStartLoadWithRequest :(NSURLRequest *)request navigationType :(UIWebViewNavigationType)navigationType {
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [[UIApplication sharedApplication] openURL:request.URL];
@@ -45,11 +88,17 @@
 } /* webView */
 
 
+/*
+   shouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        Rotate Support
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    }
-    return UIInterfaceOrientationIsLandscape(interfaceOrientation) || (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return YES;
 } /* shouldAutorotateToInterfaceOrientation */
 
 

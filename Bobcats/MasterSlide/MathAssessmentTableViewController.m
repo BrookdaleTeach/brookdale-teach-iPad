@@ -174,13 +174,13 @@
     return view;
 } /* tableView */
 
+
 ///////////////////////////////////////////////////////////////////
 // Method: compareViewsByOrigin
 // Paramaters: 2 objects
 // Notes: Compares two views and returns Ordering
 ///////////////////////////////////////////////////////////////////
-NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
-{
+NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context){
     // UISegmentedControl segments use UISegment objects (private API).
     // But we can safely cast them to UIView objects.
     float v1 = ((UIView *)sp1).frame.origin.x;
@@ -191,7 +191,9 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
         return NSOrderedDescending;
     else
         return NSOrderedSame;
-}
+} /* compareViewsByOrigin */
+
+
 ///////////////////////////////////////////////////////////////////
 // Method: segmentChanged
 // Paramaters: --
@@ -202,32 +204,32 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
     UISegmentedControl *seg = (UISegmentedControl *)sender;
     // Get number of segments
     int numSegments = [seg.subviews count];
-    
+
     // Reset segment's color (non selected color)
-    for( int i = 0; i < numSegments; i++ ) {
+    for ( int i = 0; i < numSegments; i++ ) {
         // reset color
         [[seg.subviews objectAtIndex:i] setTintColor:nil];
         [[seg.subviews objectAtIndex:i] setTintColor:[UIColor colorWithRed:(120 / 255.0) green:(135 / 255.0) blue:(150 / 255.0) alpha:1.0]];
     }
-    
+
     // Sort segments from left to right
     NSArray *sortedViews = [seg.subviews sortedArrayUsingFunction:compareViewsByOrigin context:NULL];
-    
+
     UIColor *tint = [UIColor colorWithRed:(247.0f / 255.0f) green:(208.0f / 255.0f) blue:(44.0f / 255.0f) alpha:0.8f];
-    
+
     if (seg.selectedSegmentIndex == 1)
         tint = [UIColor colorWithRed:(1.0f / 255.0f) green:(194.0f / 255.0f) blue:(223.0f / 255.0f) alpha:0.8f];
     else if (seg.selectedSegmentIndex == 2)
         tint = [UIColor colorWithRed:(93.0f / 255.0f) green:(194.0f / 255.0f) blue:(93.0f / 255.0f) alpha:0.8f];
-        
+
     // Change color of selected segment
     [[sortedViews objectAtIndex:seg.selectedSegmentIndex] setTintColor:tint];
-    
+
     // Remove all original segments from the control
     for (id view in seg.subviews) {
         [view removeFromSuperview];
     }
-    
+
     // Append sorted and colored segments to the control
     for (id view in sortedViews) {
         [seg addSubview:view];

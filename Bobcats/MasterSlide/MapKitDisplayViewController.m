@@ -3,18 +3,33 @@
 //  Bobcats
 //
 
+/* Imports */
+
 #import "MapKitDisplayViewController.h"
 #import "MapSubtitle.h"
 
+/*
+ * Class Main Implementation
+ */
 @implementation MapKitDisplayViewController
+
+/* Sythesizations */
 
 @synthesize mapView;
 @synthesize typeSheet = _typeSheet;
 
+/*
+   InitWithNibName
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     nib, Student
+   Returns:        self
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (id) initWithNibName :(NSString *)nibNameOrNil bundle :(NSBundle *)nibBundleOrNil student :(Student *)s {
     if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
         // Custom initialization
-
         [mapView setDelegate:self];
         student = s;
     }
@@ -22,7 +37,15 @@
 } /* initWithNibName */
 
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
+/*
+   viewDidLoad
+   --------
+   Purpose:        Setup View
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
 
@@ -38,12 +61,23 @@
 
     self.navigationItem.rightBarButtonItem = typeButton;
 
-    self.typeSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Standard", @"Hybrid", @"Satellite", nil];
+    self.typeSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self
+                                        cancelButtonTitle:nil destructiveButtonTitle:nil
+                                        otherButtonTitles:@"Standard", @"Hybrid", @"Satellite", nil];
 
     [self forwardGeolocateAddress];
 } /* viewDidLoad */
 
 
+/*
+   didDismissWithButtonIndex
+   --------
+   Purpose:        Action Sheet Delegate
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) actionSheet :(UIActionSheet *)actionSheet didDismissWithButtonIndex :(NSInteger)buttonIndex {
 
     switch (buttonIndex) {
@@ -62,11 +96,29 @@
 } /* actionSheet */
 
 
+/*
+   typeActionSheetAction
+   --------
+   Purpose:        Show Actionsheet
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) typeActionSheetAction :(id)sender {
     [self.typeSheet showFromBarButtonItem:sender animated:YES];
 } /* typeActionSheetAction */
 
 
+/*
+   forwardGeolocateAddress
+   --------
+   Purpose:        Forward Geolocation
+   Parameters:     --
+   Returns:        BOOL
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) forwardGeolocateAddress {
     __block BOOL didGeolocate = NO;
 
@@ -82,8 +134,6 @@
              // Iterate through all of the placemarks returned
              // and output them to the console
              for (CLPlacemark * placemark in placemarks) {
-                 NSLog(@"%@", [placemark location]);
-
                  MKCoordinateRegion region = { { 0.0, 0.0 }, { 0.0, 0.0 } };
 
                  region.center.latitude = placemark.region.center.latitude;
@@ -119,38 +169,49 @@
 } /* forwardGeolocateAddress */
 
 
+/*
+   viewForAnnotation
+   --------
+   Purpose:        Annotation view
+   Parameters:     MKAnnotation, MKMapView
+   Returns:        MKAnnotationView
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (MKAnnotationView *) mapView :(MKMapView *)mV viewForAnnotation :(id <MKAnnotation>)annotation {
     MKPinAnnotationView *pinView = nil;
     return pinView;
 } /* mapView */
 
 
-// Override to allow orientations other than the default portrait orientation.
+/*
+   shouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        Portrait Orientation Support
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 } /* shouldAutorotateToInterfaceOrientation */
 
 
+/*
+   viewDidDisappear
+   --------
+   Purpose:        Remove from Parent
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidDisappear :(BOOL)animated {
     [super viewDidDisappear:animated];
-
     [self.navigationController removeFromParentViewController];
 } /* viewDidDisappear */
-
-
-- (void) didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-
-    // Release any cached data, images, etc that aren't in use.
-} /* didReceiveMemoryWarning */
-
-
-- (void) viewDidUnload {
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-} /* viewDidUnload */
 
 
 @end

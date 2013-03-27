@@ -6,15 +6,35 @@
 //
 //
 
+/* Imports */
+
 #import "CreateEventViewController.h"
+
+/*
+ * Class Main Implementation
+ */
 
 @implementation CreateEventViewController
 
-@synthesize eventsList, eventStore, defaultCalendar, detailViewController;
+/* Sythesizations */
+
+@synthesize eventsList;
+@synthesize eventStore;
+@synthesize defaultCalendar;
+@synthesize detailViewController;
 
 #pragma mark -
 #pragma mark View lifecycle
 
+/*
+   viewDidLoad
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     self.title = @"Events List";
 

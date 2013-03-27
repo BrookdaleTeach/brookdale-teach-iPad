@@ -5,19 +5,24 @@
 //  Created by Burchfield, Neil on 1/27/13.
 //
 
-// Import
+/* Imports */
+
 #import "DetailViewHeaderImports.h"
 
-// Main Implementation
+/*
+ * Class Main Implementation
+ */
 @implementation DetailViewController {
 
-    // MGBox Declarations
+    /* MGBox Declarations */
+
     MGBox *table1;
     MGBox *table2;
     MGBox *table3;
     MGLineStyled *header;
 
-    // UIBarButtonItems Declarations
+    /* UIBarButtonItem Declarations */
+
     UIBarButtonItem *composeBarButtonItem;
     UIBarButtonItem *addContactBarButtonItem;
     UIBarButtonItem *geolocateBarButtonItem;
@@ -27,26 +32,26 @@
 
 }
 
-// Synthesizations
+/* Sythesizations */
+
 @synthesize mapView = _mapView;
 @synthesize scroller = _scroller;
 @synthesize eventStore = _eventStore;
 @synthesize defaultCalendar = _defaultCalendar;
 @synthesize emailActionSheet = _emailActionSheet;
-@synthesize contactActionSheet = _contactActionSheet;
+@synthesize contactActionSheet = _cosettingsViewControllerntactActionSheet;
 @synthesize addEventActionSheet = _addEventActionSheet;
-@synthesize settingsViewController;
-@synthesize HUD;
-#pragma mark -
-#pragma mark Class Delegate's Constructor
+@synthesize settingsViewController = _settingsViewController;
+@synthesize HUD = _HUD;
 
 /*
-   //
-   Method: viewDidLoad
-   Args: none
-   Notes: Initially load data
-   Auth: Neil Burchfield
-   //
+   viewDidLoad
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) viewDidLoad {
     [super viewDidLoad];
@@ -125,6 +130,15 @@
 } /* viewDidLoad */
 
 
+/*
+   pushSettings
+   --------
+   Purpose:        Push Settings in view
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) pushSettings :(id)sender {
     CGRect final_portrait = CGRectMake(40, -400.0f, 700, 500);
     CGRect final_landscape = CGRectMake(10, -400.0f, 700, 500);
@@ -202,12 +216,13 @@
 #pragma mark Class Delegate's MGBox Data Handler (Allocing)
 
 /*
-   //
-   Method: setupMGBoxes
-   Args: none
-   Notes: Initilally sets up MGBoxes for further layout
-   Auth: Neil Burchfield
-   //
+   setupMGBoxes
+   --------
+   Purpose:        Initilally sets up MGBoxes for further layout
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) setupMGBoxes {
     // Init Scroller
@@ -260,13 +275,13 @@
 #pragma mark Class Delegate's MGBox Data Handler
 
 /*
-   //
-   Method: loopValuesIntoMGBox
-   Args: int: section
-       int: row
-   Notes: Handles UIActionSheet button press
-   Auth: Neil Burchfield
-   //
+   loopValuesIntoMGBox
+   --------
+   Purpose:        Handles UIActionSheet button press
+   Parameters:     int, int
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) loopValuesIntoMGBox :(int)section :(int)row {
 
@@ -412,12 +427,13 @@
 #pragma mark Class Delegate's Custom Notification Handler
 
 /*
-   //
-   Method: updateContent
-   Args: NSNotification
-   Notes: Handles update NSNotification call
-   Auth: Neil Burchfield
-   //
+   updateContent
+   --------
+   Purpose:        Handles update NSNotification call
+   Parameters:     NSNotification
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) updateContent :(NSNotification *)notification {
     if ([[notification name] isEqualToString:@"UpdateContent"]) {
@@ -440,12 +456,13 @@
 #pragma mark Class Delegate's View Allocing Content method
 
 /*
-   //
-   Method: allocContentDataView
-   Args: none
-   Notes: Alloc initial data
-   Auth: Neil Burchfield
-   //
+   allocContentDataView
+   --------
+   Purpose:        Alloc initial data
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) allocContentDataView {
 
@@ -458,10 +475,6 @@
 
     UIImage *gradientImage44 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.86f alpha:1.0f]]
                                 resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
-
-//    CAGradientLayer *bgLayer = [self customGradient:[UIColor whiteColor] :[UIColor lightGrayColor]];
-//    bgLayer.frame = shelfView.bounds;
-//    [shelfView.layer insertSublayer:bgLayer atIndex:0];
 
     [shelfView setBackgroundColor:[UIColor colorWithPatternImage:gradientImage44]];
     shelfView.hidden = YES;
@@ -569,13 +582,13 @@
 #pragma mark Class Delegate's View Loading Content method
 
 /*
-   //
-   Method: loadContentDataView
-   Args: int - section
-       int - row
-   Notes: Loads Detail View Content based on section/row pair
-   Auth: Neil Burchfield
-   //
+   loadContentDataView
+   --------
+   Purpose:        Loads Detail View Content based on section/row pair
+   Parameters:     int, int
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) loadContentDataView :(int)section :(int)row {
 
@@ -686,6 +699,15 @@
 #pragma mark -
 #pragma mark Class Delegate's Data Retrieval Method
 
+/*
+   retrieveClassAssessmentColumnContent
+   --------
+   Purpose:        Retrieves Assessment Data
+   Parameters:     --
+   Returns:        Array
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSArray *) retrieveClassAssessmentColumnContent {
     NSArray *classContentData = nil;
     NSArray *classStringsArray = nil;
@@ -726,6 +748,15 @@
 #pragma mark -
 #pragma mark Class Delegate's Data Retrieval Method
 
+/*
+   retrieveClassFormativeStandardizedColumnContent
+   --------
+   Purpose:        Retrieves Formative Data
+   Parameters:     --
+   Returns:        Array
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSArray *) retrieveClassFormativeStandardizedColumnContent {
     NSArray *formativeData = nil;
     NSArray *standardizedData = nil;
@@ -757,6 +788,15 @@
 #pragma mark -
 #pragma mark Class Delegate's MGBox Button Press Action Handler
 
+/*
+   buttonpress
+   --------
+   Purpose:        Handles MGBox Button Down
+   Parameters:     int
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) buttonpress :(int)row {
     switch (row) {
         case 9 :
@@ -859,6 +899,15 @@
 } /* buttonpress */
 
 
+/*
+   generateAssessmentPortableDocumentFormat
+   --------
+   Purpose:        Generates Assessment PDF
+   Parameters:     --
+   Returns:        --
+   Notes:          Throws PDF into WebView
+   Author:         Neil Burchfield
+ */
 - (void) generateAssessmentPortableDocumentFormat {
     // Fetch data and store in array
     NSArray *studentContent = [[NSArray alloc] initWithArray:[self retrieveClassAssessmentColumnContent]];
@@ -877,6 +926,15 @@
 } /* generateAssessmentPortableDocumentFormat */
 
 
+/*
+   generateStandardizedPortableDocumentFormat
+   --------
+   Purpose:        Generates Standardized PDF
+   Parameters:     --
+   Returns:        --
+   Notes:          Throws PDF into WebView
+   Author:         Neil Burchfield
+ */
 - (void) generateStandardizedPortableDocumentFormat {
     // Fetch data and store in array
     NSArray *studentContent = [[NSArray alloc] initWithArray:[self retrieveClassFormativeStandardizedColumnContent]];
@@ -895,6 +953,15 @@
 } /* generateStandardizedPortableDocumentFormat */
 
 
+/*
+   processRequest
+   --------
+   Purpose:        Executes with HUD
+   Parameters:     SEL
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) processRequest :(SEL)process {
     HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
     HUD.labelText = @"Generating Document";
@@ -904,6 +971,15 @@
 } /* processRequest */
 
 
+/*
+   returnValueOfSubstringDoesEqual
+   --------
+   Purpose:        Compare string
+   Parameters:     int, string
+   Returns:        int
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (int) returnValueOfSubstringDoesEqual :(int)i withStudentClassKey :(NSString *)string {
 
     // Range
@@ -924,12 +1000,13 @@
 #pragma mark Class Delegate's Bar Button Action Handler Methods
 
 /*
-   //
-   Method: editCurrentUser
-   Args: sender
-   Notes: Edit User Controller
-   Auth: Neil Burchfield
-   //
+   editCurrentUser
+   --------
+   Purpose:        Display Edit User View
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) editCurrentUser :(id)sender {
 
@@ -952,12 +1029,13 @@
 
 
 /*
-   //
-   Method: emailPopoverAction
-   Args: sender
-   Notes: Email Popover Action Handler
-   Auth: Neil Burchfield
-   //
+   emailPopoverAction
+   --------
+   Purpose:        Email Popover
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) emailPopoverAction :(id)sender {
     [self.emailActionSheet showFromBarButtonItem:composeBarButtonItem animated:YES];
@@ -965,12 +1043,13 @@
 
 
 /*
-   //
-   Method: contactAddPopoverAction
-   Args: sender
-   Notes: Add Contact Popover Action Handler
-   Auth: Neil Burchfield
-   //
+   contactAddPopoverAction
+   --------
+   Purpose:        Add Contact Popover
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) contactAddPopoverAction :(id)sender {
     [self.contactActionSheet showFromBarButtonItem:addContactBarButtonItem animated:YES];
@@ -978,12 +1057,13 @@
 
 
 /*
-   //
-   Method: geolocationAction
-   Args: sender
-   Notes: Push Maps Popover Action Handler
-   Auth: Neil Burchfield
-   //
+   geolocationAction
+   --------
+   Purpose:        Geolocate Popover
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) geolocationAction :(id)sender {
     MapKitDisplayViewController *mkdvc = [[MapKitDisplayViewController alloc] initWithNibName:@"MapKitDisplayViewController"
@@ -997,29 +1077,14 @@
 #pragma mark Custom UI Methods
 
 /*
-   //
-   Method: customGradient
-   Args: UIColor first, UIColor Second
-   Notes: Creates custom gradient based on two colors
-   Auth: Neil Burchfield
-   //
+   pushNotesModalView
+   --------
+   Purpose:        Notes Modal
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
-- (CAGradientLayer *) customGradient :(UIColor *)first :(UIColor *)second {
-
-    NSArray *colors = [NSArray arrayWithObjects:(id)first.CGColor, second.CGColor, nil];
-    NSNumber *stopOne = [NSNumber numberWithFloat:0.0];
-    NSNumber *stopTwo = [NSNumber numberWithFloat:1.0];
-
-    NSArray *locations = [NSArray arrayWithObjects:stopOne, stopTwo, nil];
-
-    CAGradientLayer *headerLayer = [CAGradientLayer layer];
-    headerLayer.colors = colors;
-    headerLayer.locations = locations;
-
-    return headerLayer;
-} /* customGradient */
-
-
 - (void) pushNotesModalView :(id)sender  {
     UIViewController *vc = [[UIViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
@@ -1040,12 +1105,30 @@
 } /* pushModalView */
 
 
+/*
+   insertNote
+   --------
+   Purpose:        Insert Notes into SQL
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) insertNote :(id)sender {
     [StudentsDataLayer insertStudentDataIntoClassDatabaseColumn:@"notes" withStudent:[student uid] withText:notesTextView.text];
     [self dismissModalViewControllerAnimated:YES];
 } /* insertNote */
 
 
+/*
+   cancel
+   --------
+   Purpose:        Dismiss Modal
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) cancel :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
 } /* cancel */
@@ -1055,12 +1138,13 @@
 #pragma mark Class Orientation Method Delegate
 
 /*
-   //
-   Method: willAnimateRotationToInterfaceOrientation
-   Args: UIInterfaceOrientation, NSTimeInterval
-   Notes: Resets/Relayouts scroller based on orientation
-   Auth: Neil Burchfield
-   //
+   willAnimateRotationToInterfaceOrientation
+   --------
+   Purpose:        Resets/Relayouts scroller based on orientation
+   Parameters:     UIInterfaceOrientation, NSTimeInterval
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) willAnimateRotationToInterfaceOrientation :(UIInterfaceOrientation)orient duration :(NSTimeInterval)duration {
 
@@ -1101,12 +1185,13 @@
 #pragma mark Address Book Delegate Methods
 
 /*
-   //
-   Method: checkIfContactsAreAccessible
-   Args: sender
-   Notes: Checks if Contacts address book are accessible
-   Auth: Neil Burchfield
-   //
+   checkIfContactsAreAccessible
+   --------
+   Purpose:        Checks if Contacts address book are accessible
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) checkIfContactsAreAccessible :(id)sender {
     // Request authorization to Address Book
@@ -1134,12 +1219,13 @@
 
 
 /*
-   //
-   Method: addContactToAddressBook
-   Args: sender
-   Notes: Adds contact if contacts address book are accessible
-   Auth: Neil Burchfield
-   //
+   addContactToAddressBook
+   --------
+   Purpose:        Adds contact if contacts address book are accessible
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) addContactToAddressBook :(id)sender {
     if ( selectedContactActionSheetButton != -1 ) {
@@ -1216,12 +1302,13 @@
 #pragma mark EKEventEditViewDelegate and other EKEvent methods
 
 /*
-   //
-   Method: checkIfEventsAreAccessible
-   Args: sender
-   Notes: Checks if User's Calendar events are accessible
-   Auth: Neil Burchfield
-   //
+   checkIfEventsAreAccessible
+   --------
+   Purpose:        Checks if User's Calendar events are accessible
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) checkIfEventsAreAccessible :(id)sender {
     if ([self.eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)]) {
@@ -1242,12 +1329,13 @@
 
 
 /*
-   //
-   Method: addEventToCalendar
-   Args: sender
-   Notes: Adds Event if User's Calendar events are accessible
-   Auth: Neil Burchfield
-   //
+   addEventToCalendar
+   --------
+   Purpose:        Adds Event if User's Calendar events are accessible
+   Parameters:     sender
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (BOOL) addEventToCalendar :(id)sender {
     EKEventEditViewController *addEKEventEditViewController = [[EKEventEditViewController alloc]
@@ -1272,12 +1360,13 @@
 
 
 /*
-   //
-   Method: didCompleteWithAction
-   Args: EKEventEditViewController, EKEventEditViewAction
-   Notes: Overriding EKEventEditViewDelegate method to update event store according to user actions.
-   Auth: Neil Burchfield
-   //
+   didCompleteWithAction
+   --------
+   Purpose:        Overriding EKEventEditViewDelegate method to update event store according to user actions.
+   Parameters:     EKEventEditViewController, EKEventEditViewAction
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) eventEditViewController :(EKEventEditViewController *)controller didCompleteWithAction :(EKEventEditViewAction)action {
 
@@ -1304,12 +1393,13 @@
 #pragma mark UIActionSheet didDismissWithButtonIndex delegate
 
 /*
-   //
-   Method: didDismissWithButtonIndex
-   Args: button index
-   Notes: Handles UIActionSheet button press
-   Auth: Neil Burchfield
-   //
+   didDismissWithButtonIndex
+   --------
+   Purpose:        Handles UIActionSheet button press.
+   Parameters:     button index
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) actionSheet :(UIActionSheet *)actionSheet didDismissWithButtonIndex :(NSInteger)buttonIndex {
 
@@ -1330,6 +1420,15 @@
 #pragma mark -
 #pragma mark MFMailComposeViewController didFinishWithResult delegate and other Mailing methods
 
+/*
+   pathToFollowingResource
+   --------
+   Purpose:        Path to Resource in Documents
+   Parameters:     button index
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSString *) pathToFollowingResource :(NSString *)resource {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                          NSUserDomainMask, YES);
@@ -1341,12 +1440,13 @@
 
 
 /*
-   //
-   Method: emailSpecifiedIndividual
-   Args: int - buttonIndex
-   Notes: Emails user based on button index
-   Auth: Neil Burchfield
-   //
+   emailSpecifiedIndividual
+   --------
+   Purpose:        Emails user based on button index
+   Parameters:     int
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) emailSpecifiedIndividual :(int)buttonIndex {
     if ( buttonIndex != -1 ) {
@@ -1381,39 +1481,50 @@
 
 
 /*
-   //
-   Method: didFinishWithResult
-   Args: MFMailComposeResult: result handler
-   NSError: error
-   Notes: Handles UIActionSheet button press
-   Auth: Neil Burchfield
-   //
+   didFinishWithResult
+   --------
+   Purpose:        Handles MFMailComposeViewController finished result
+   Parameters:     MFMailComposeResult, MFMailComposeViewController, NSError
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) mailComposeController :(MFMailComposeViewController *)controller didFinishWithResult :(MFMailComposeResult)result error :(NSError *)error {
     [self dismissModalViewControllerAnimated:YES];
 } /* mailComposeController */
 
 
+/*
+   emailWithAttachment
+   --------
+   Purpose:        Email w/ Attachment
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) emailWithAttachment :(id)sender {
-
     [self dismissModalViewControllerAnimated:YES];
     [self performSelector:@selector(loadMailComposer:) withObject:self afterDelay:0.7f];
-
 } /* emailWithAttachment */
 
 
+/*
+   loadMailComposer
+   --------
+   Purpose:        Load Composer
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) loadMailComposer :(id)sender {
-
     MFMailComposeViewController *mailComposeViewController = [MFMailComposeViewController new];
-
     [mailComposeViewController setSubject:@""];
-
     [mailComposeViewController setMessageBody:@"" isHTML:NO];
-
     mailComposeViewController.mailComposeDelegate = self;
-
-    [mailComposeViewController addAttachmentData:[NSData dataWithContentsOfFile:[self getFilePathForPrintingPDF]] mimeType:@"application/pdf" fileName:[NSString stringWithFormat:@"%@_assessment.pdf", [student uid]]];
-
+    [mailComposeViewController addAttachmentData:[NSData dataWithContentsOfFile:[self getFilePathForPrintingPDF]]
+                                        mimeType:@"application/pdf" fileName:[NSString stringWithFormat:@"%@_assessment.pdf", [student uid]]];
     [self presentModalViewController:mailComposeViewController animated:YES];
 } /* loadMailComposer */
 
@@ -1421,6 +1532,15 @@
 #pragma mark -
 #pragma mark Method Declarations for printing PDF files
 
+/*
+   getFilePathForPrintingPDF
+   --------
+   Purpose:        Find PDF in Documents
+   Parameters:     --
+   Returns:        String
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSString *) getFilePathForPrintingPDF {
     NSArray *arrayPaths =
         NSSearchPathForDirectoriesInDomains(
@@ -1434,6 +1554,15 @@
 } /* getFilePathForPrintingPDF */
 
 
+/*
+   previewPDFData
+   --------
+   Purpose:        Display PDF in WebView
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) previewPDFData {
     UIViewController *vc = [[UIViewController alloc] initWithNibName:nil bundle:nil];
 
@@ -1460,6 +1589,15 @@
 } /* previewPDFData */
 
 
+/*
+   webViewDidFinishLoad
+   --------
+   Purpose:        WebView Delegate
+   Parameters:     wEBvIEW
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) webViewDidFinishLoad :(UIWebView *)webView {
     webView.scrollView.minimumZoomScale = .68f;
     webView.scrollView.maximumZoomScale = .68f;

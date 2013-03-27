@@ -15,18 +15,14 @@
     NSMutableArray *titles_writing_mechanics;
     NSMutableArray *titles_writing_organization;
     NSMutableArray *titles_writing_process;
-
     Student *student;
     AppDelegate *appDelegate;
-
     UITextView *modalTextView;
     NSString *oldText;
-
-    int section;
-    int row;
-
     UISegmentedControl *cellSegmentedControl;
     NSString *currentText;
+    int section;
+    int row;
 }
 
 @property (nonatomic, retain) NSMutableArray *studentObjectData;

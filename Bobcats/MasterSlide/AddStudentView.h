@@ -6,12 +6,21 @@
 //
 //
 
+/* Imports */
+
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 #import "StudentTableViewController.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
-@interface AddStudentView : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate> {
+/*
+ * Class Main Interface
+ */
+
+@interface AddStudentView : UIViewController <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate,
+                                              UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate> {
+
+    /* Local Declarations */
 
     UITableView *headTableView;
     UITableView *restTableView;
@@ -22,39 +31,38 @@
     AppDelegate *appDelegate;
     NSString *databasePath;
     NSString *databaseName;
-
+    UIImageView *imageView;
+    UIDatePicker *datePicker;
     NSMutableArray *userInput;
-
     UIScrollView *scrollView;
-
-    StudentTableViewController *studentTableViewController;
 
     NSIndexPath *restIndexPath;
     BOOL newMedia;
     BOOL imageSavedAsDefaultTitle;
-    UIImageView *imageView;
 
     int classKey;
-
-    UIDatePicker *datePicker;
-
     int month;
     int day;
     int year;
-    
-    // Add Classes Buttons
+
     UIButton *mathCheckbutton;
     UIButton *readingCheckbutton;
     UIButton *writingCheckbutton;
     UIButton *behavioralCheckbutton;
+
+    StudentTableViewController *studentTableViewController;
 }
+
+/* Global Declarations */
+
 @property (nonatomic, retain) IBOutlet UIImageView *imageView;
 @property (nonatomic, retain) UIPopoverController *popoverController;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolbar;
 @property (nonatomic) int classKey;
 
-- (IBAction) useCameraRoll :(id)sender;
+/* Global Method Declarations */
 
+- (IBAction) useCameraRoll :(id)sender;
 - (id) init :(int)key;
 
 @end

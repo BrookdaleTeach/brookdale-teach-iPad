@@ -4,24 +4,45 @@
 //
 //
 
+/* Imports */
+
 #import "SwipeSplitViewController.h"
 #import "AppDelegate.h"
 #import "UIImage+UIColor.h"
 
+/* Static Definitions */
+
 #define MASTER_VIEW_WIDTH_PORTRAIT  384.0
 #define MASTER_VIEW_WIDTH_LANDSCAPE 320.0
 
+/* Private Declarations */
+
 @interface SwipeSplitViewController ()
-
 - (void) layoutViewControllers;
-
 @end
+
+/*
+ * Class Main Implementation
+ */
 
 @implementation SwipeSplitViewController
 
-@synthesize masterContainerView = _masterContainerView, masterViewController = _masterViewController, detailViewController = _detailViewController;
-@synthesize shieldView = _shieldView;
+/* Sythesizations */
 
+@synthesize shieldView = _shieldView;
+@synthesize masterContainerView = _masterContainerView;
+@synthesize masterViewController = _masterViewController;
+@synthesize detailViewController = _detailViewController;
+
+/*
+   InitWithMasterViewController
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     Two View Controllers
+   Returns:        self
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (id) initWithMasterViewController :(UIViewController *)masterVC detailViewController :(UIViewController *)detailVC {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
@@ -30,9 +51,8 @@
 
         [self addChildViewController:detailVC];
         [self addChildViewController:masterVC];
-        
-        if ([AppDelegate isDemo])
-        {
+
+        if ([AppDelegate isDemo]) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Demo View"
                                                             message:@"You are granted full functionality although all of your data \
                                                                       will be erased once the application terminates."
@@ -45,14 +65,23 @@
     return self;
 } /* initWithMasterViewController */
 
-- (void)customizeAppearance
-{
+
+/*
+   CustomizeAppearance
+   --------
+   Purpose:        Custom Layout
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (void) customizeAppearance {
     // Create resizable images
     UIImage *gradientImage44 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
                                 resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
     UIImage *gradientImage32 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
                                 resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
-    
+
     // Set the background image for *all* UINavigationBars
     [[UINavigationBar appearance] setBackgroundImage:gradientImage44
                                        forBarMetrics:UIBarMetricsDefault];
@@ -65,13 +94,23 @@
       UITextAttributeTextColor, [UIColor lightTextColor], UITextAttributeTextShadowColor,
       [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset, [UIFont fontWithName:@"Arial-Bold" size:0.0],
       UITextAttributeFont, nil]];
-}
+} /* customizeAppearance */
 
+
+/*
+   CustomizeAppearance
+   --------
+   Purpose:        Loads View Controllers
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) loadView {
     [super loadView];
-    
+
     [self customizeAppearance];
-    
+
     self.detailViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     self.masterViewController.view.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleHeight;
 
@@ -91,59 +130,71 @@
     [_masterContainerView addSubview:self.masterViewController.view];
     [self.view addSubview:_masterContainerView];
 
+    /*  Turn off Swipe Ability For Now */
     UISwipeGestureRecognizer *rightSwipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(rightSwipe:)];
     rightSwipeRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
     [self.detailViewController.view addGestureRecognizer:rightSwipeRecognizer];
-    
 } /* loadView */
 
+
 /*
- DisplayBlurViewMessage
- --------
- Purpose:        General Blur Modal Object
- Parameters:     -- title
- -- message
- Returns:        none
- Notes:          --
- Author:         Neil Burchfield
+   DisplayBlurViewMessage
+   --------
+   Purpose:        General Blur Modal Object
+   Parameters:     -- title
+   -- message
+   Returns:        none
+   Notes:          --
+   Author:         Neil Burchfield
  */
-- (void) displayBlurViewMessage:(NSString *)title message:(NSString *)mes {
+- (void) displayBlurViewMessage :(NSString *)title message :(NSString *)mes {
     blurModalView = [[RNBlurModalView alloc] initWithViewController:self title:title message:mes];
     [blurModalView show];
 } /* displayBlurViewMessage */
 
+
 /*
- DismissBlurViewMessage
- --------
- Purpose:        General Blur Modal Object
- Parameters:     --
- Returns:        none
- Notes:          --
- Author:         Neil Burchfield
+   ViewDidAppear
+   --------
+   Purpose:        Delegate
+   Parameters:     --
+   Returns:        --
+   Notes:          Show Master on Portait
+   Author:         Neil Burchfield
  */
-//- (BOOL) dismissBlurViewMessage {
-//    [blurModalView hide];
-//    
-//    return ![blurModalView isVisible];
-//} /* dismissBlurViewMessage */
-
-
 - (void) viewDidAppear :(BOOL)animated {
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [self showMasterViewControllerAnimated:YES];
     }
 } /* viewDidAppear */
 
-- (void) notifyUser
-{
-    if ([AppDelegate isDemo])
-    {
+
+/*
+   NotifyUser
+   --------
+   Purpose:        Notifies user that they're in demo mode
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (void) notifyUser {
+    if ([AppDelegate isDemo]) {
         [self displayBlurViewMessage:@"Demo View"
-                         message:@"You are granted full functionality although all of your data will be erased once the application terminates."];
+                             message:@"You are granted full functionality although all of your data will be erased once the application terminates."];
     }
-}
+} /* notifyUser */
 
 
+/*
+   WillRotateToInterfaceOrientation
+   --------
+   Purpose:        Handle Master View on orientation change
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) willRotateToInterfaceOrientation :(UIInterfaceOrientation)toInterfaceOrientation duration :(NSTimeInterval)duration {
     if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation) && UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
         [self.masterViewController viewWillDisappear:0];
@@ -154,11 +205,29 @@
 } /* willRotateToInterfaceOrientation */
 
 
+/*
+   WillRotateToInterfaceOrientation
+   --------
+   Purpose:        Handle Master View on orientation change
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) willAnimateRotationToInterfaceOrientation :(UIInterfaceOrientation)toInterfaceOrientation duration :(NSTimeInterval)duration {
     [self layoutViewControllers];
 } /* willAnimateRotationToInterfaceOrientation */
 
 
+/*
+   LayoutViewControllers
+   --------
+   Purpose:        Layout View Controllers
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) layoutViewControllers {
     CGSize boundsSize = self.view.bounds.size;
     CGRect masterFrame;
@@ -174,10 +243,19 @@
     self.masterViewController.view.frame = CGRectInset(self.masterContainerView.bounds, 3, 3);
 
     self.detailViewController.view.frame = detailFrame;
-    
+
 } /* layoutViewControllers */
 
 
+/*
+   DidRotateFromInterfaceOrientation
+   --------
+   Purpose:        Handle View after orientation change
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) didRotateFromInterfaceOrientation :(UIInterfaceOrientation)fromInterfaceOrientation {
     if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
         self.masterContainerView.image = nil;
@@ -189,6 +267,15 @@
 } /* didRotateFromInterfaceOrientation */
 
 
+/*
+   ShowMasterViewControllerAnimated
+   --------
+   Purpose:        Displays Master View
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) showMasterViewControllerAnimated :(BOOL)animated {
     if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
         return;
@@ -234,6 +321,15 @@
 } /* showMasterViewControllerAnimated */
 
 
+/*
+   HideMasterViewControllerAnimated
+   --------
+   Purpose:        Hides Master View
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) hideMasterViewControllerAnimated :(BOOL)animated {
     if (UIInterfaceOrientationIsLandscape(self.interfaceOrientation)) {
         return;
@@ -259,6 +355,15 @@
 } /* hideMasterViewControllerAnimated */
 
 
+/*
+   RightSwipe
+   --------
+   Purpose:        Hides/Shows Master View based on swipe Gesture
+   Parameters:     --
+   Returns:        --
+   Notes:          Currently Disabled
+   Author:         Neil Burchfield
+ */
 - (void) rightSwipe :(UISwipeGestureRecognizer *)recognizer {
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [self showMasterViewControllerAnimated:YES];
@@ -270,6 +375,15 @@
 } /* rightSwipe */
 
 
+/*
+   ShieldViewRightSwipe
+   --------
+   Purpose:        Swipe Gesture Right
+   Parameters:     --
+   Returns:        --
+   Notes:          Currently Disabled
+   Author:         Neil Burchfield
+ */
 - (void) shieldViewRightSwipe :(UISwipeGestureRecognizer *)recognizer {
     if ([self.masterViewController isKindOfClass:[UINavigationController class]]) {
         [(UINavigationController *)self.masterViewController popViewControllerAnimated : YES];
@@ -277,16 +391,43 @@
 } /* shieldViewRightSwipe */
 
 
+/*
+   ShieldViewTapped
+   --------
+   Purpose:        Swipe Gesture Tapped Handler
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) shieldViewTapped :(UITapGestureRecognizer *)recognizer {
     [self hideMasterViewControllerAnimated:YES];
 } /* shieldViewTapped */
 
 
+/*
+   ShieldViewLeftSwipe
+   --------
+   Purpose:        Swipe Gesture Left Handler
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) shieldViewLeftSwipe :(UISwipeGestureRecognizer *)recognizer {
     [self hideMasterViewControllerAnimated:YES];
 } /* shieldViewLeftSwipe */
 
 
+/*
+   ShouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        Allow Orientation Changes in all directions
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 } /* shouldAutorotateToInterfaceOrientation */

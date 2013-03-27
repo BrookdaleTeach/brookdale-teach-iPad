@@ -4,9 +4,15 @@
 //
 //
 
+/* Imports */
+
 #import <Foundation/Foundation.h>
 #import <CoreText/CoreText.h>
 #import "Student.h"
+
+/*
+ * Class Main Interface
+ */
 
 @interface PDFRenderer : NSObject
 

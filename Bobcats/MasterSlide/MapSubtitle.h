@@ -3,13 +3,20 @@
 //  Bobcats
 //
 
+/* Imports */
+
 #import <Foundation/Foundation.h>
 #import <MapKit/MKAnnotation.h>
 
+/*
+ * Class Main Interface
+ */
 
 @interface MapSubtitle : NSObject <MKAnnotation> {
 
-	CLLocationCoordinate2D coordinate; 
+    /* Local Declarations */
+
+	CLLocationCoordinate2D coordinate;
 	NSString *title; 
 	NSString *subtitle;
 }

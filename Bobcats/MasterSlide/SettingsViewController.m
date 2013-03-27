@@ -6,16 +6,35 @@
 //
 //
 
-#import "SettingsViewController.h"
+/* Imports */
 
+#import "SettingsViewController.h"
 #import "MGTableBoxStyled.h"
 #import "MGLineStyled.h"
 #import "AppDelegate.h"
 #import "TeacherSettings.h"
 
-@implementation SettingsViewController
-@synthesize scroller, popoverController, buttonImageView;
+/*
+ * Class Main Implementation
+ */
 
+@implementation SettingsViewController
+
+/* Synthesizations */
+
+@synthesize scroller;
+@synthesize popoverController;
+@synthesize buttonImageView;
+
+/*
+   viewDidLoad
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
 
@@ -32,6 +51,15 @@
 } /* viewDidLoad */
 
 
+/*
+   setButtonView
+   --------
+   Purpose:        Set Teacher Image Button
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) setButtonView {
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -57,6 +85,15 @@
 } /* setButtonView */
 
 
+/*
+   viewWillAppear
+   --------
+   Purpose:        Appear Inits
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewWillAppear :(BOOL)animated {
     [super viewWillAppear:animated];
     // Do any additional setup after loading the view from its nib.
@@ -67,17 +104,15 @@
 } /* viewWillAppear */
 
 
-- (void) viewWillDisappear :(BOOL)animated {
-    [super viewWillDisappear:animated];
-} /* viewWillDisappear */
-
-
-- (void) didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-} /* didReceiveMemoryWarning */
-
-
+/*
+   loadSettingsSection
+   --------
+   Purpose:        Loads Settings Data
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) loadSettingsSection {
 
     self.scroller = [MGScrollView scrollerWithSize:self.view.bounds.size];
@@ -129,6 +164,15 @@
 } /* loadSettingsSection */
 
 
+/*
+   texfieldWithTag
+   --------
+   Purpose:        Creates TextView
+   Parameters:     NSInteger, NSString, UIKeyboardType
+   Returns:        UITextField
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITextField *) texfieldWithTag :(NSInteger)tag andText :(NSString *)text andKeyboardType :(UIKeyboardType)keyboardType {
     UITextField *texfield = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 565, 30)];
     texfield.backgroundColor = [UIColor clearColor];
@@ -141,6 +185,15 @@
 } /* texfieldWithTag */
 
 
+/*
+   texfieldWithTag
+   --------
+   Purpose:        Creates Button
+   Parameters:     NSString, SEL
+   Returns:        UIButton
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UIButton *) button :(NSString *)title for :(SEL)selector {
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
@@ -164,6 +217,15 @@
 } /* button */
 
 
+/*
+   shouldWriteToPlist
+   --------
+   Purpose:        Writes Input to plist
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) shouldWriteToPlist {
 
     NSMutableDictionary *settingsDictionary = [[NSMutableDictionary alloc] init];
@@ -182,6 +244,15 @@
 } /* shouldWriteToPlist */
 
 
+/*
+   shouldRetainPlistData
+   --------
+   Purpose:        Reads Input from plist
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) shouldRetainPlistData {
 
     NSMutableDictionary *settingsDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:[self pathToFollowingResource:kTeacherSettingsPlist]];
@@ -194,6 +265,15 @@
 } /* shouldRetainPlistData */
 
 
+/*
+   pathToFollowingResource
+   --------
+   Purpose:        Retains plist path
+   Parameters:     NSString
+   Returns:        NSString
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSString *) pathToFollowingResource :(NSString *)resource {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                          NSUserDomainMask, YES);
@@ -204,17 +284,31 @@
 } /* plistPath */
 
 
+/*
+   ShouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        Allow Orientation Changes in all directions
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    }
-    return UIInterfaceOrientationIsLandscape(interfaceOrientation) || (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return YES;
 } /* shouldAutorotateToInterfaceOrientation */
 
 
-///////// //////// ///////// //////// ///////// //////// ///////// //////// ///////// //////// ///////// ////////
 # pragma Camera Delegates
 
+/*
+   useCameraRoll
+   --------
+   Purpose:        Camera Roll Instance
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) useCameraRoll :(id)sender {
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] &&
         [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -245,6 +339,15 @@
 } /* useCameraRoll */
 
 
+/*
+   imagePickerController
+   --------
+   Purpose:        Camera Roll Existing Images Selection Instance
+   Parameters:     UIImagePickerController, NSDictionary
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) imagePickerController :(UIImagePickerController *)picker didFinishPickingMediaWithInfo :(NSDictionary *)info {
     [self.popoverController dismissPopoverAnimated:true];
 
@@ -272,6 +375,15 @@
 } /* imagePickerController */
 
 
+/*
+   finishedSavingWithError
+   --------
+   Purpose:        Camera Roll Error Handler
+   Parameters:     NSError, UIImage
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) image :(UIImage *)image finishedSavingWithError :(NSError *)error contextInfo :(void *)contextInfo {
     if (error) {
         UIAlertView *alert = [[UIAlertView alloc]

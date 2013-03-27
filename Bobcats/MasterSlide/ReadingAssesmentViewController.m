@@ -159,33 +159,34 @@
     return cell;
 } /* tableView */
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)sect
-{
+
+- (UIView *) tableView :(UITableView *)tableView viewForHeaderInSection :(NSInteger)sect {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 10, 500, 30)];
     view.backgroundColor = [UIColor clearColor];
-    
+
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(50, 2, view.bounds.size.width, view.bounds.size.height)];
     label.text = [self tableView:tableView titleForHeaderInSection:sect];
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont boldSystemFontOfSize:18.0f];
     label.textColor = [UIColor colorWithWhite:.95f alpha:1.0f];
-    
+
     [view addSubview:label];
-    
+
     return view;
-}
+} /* tableView */
+
 
 - (BOOL) textFieldShouldReturn :(UITextField *)textField {
     return YES;
 } /* textFieldShouldReturn */
+
 
 ///////////////////////////////////////////////////////////////////
 // Method: compareViewsByOrigin
 // Paramaters: 2 objects
 // Notes: Compares two views and returns Ordering
 ///////////////////////////////////////////////////////////////////
-NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
-{
+NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context){
     // UISegmentedControl segments use UISegment objects (private API).
     // But we can safely cast them to UIView objects.
     float v1 = ((UIView *)sp1).frame.origin.x;
@@ -196,49 +197,52 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
         return NSOrderedDescending;
     else
         return NSOrderedSame;
-}
+} /* compareViewsByOrigin */
+
+
 ///////////////////////////////////////////////////////////////////
 // Method: segmentChanged
 // Paramaters: --
 // Notes: Changes Segment Color on Change
 ///////////////////////////////////////////////////////////////////
 - (void) segmentChanged :(id)sender {
-    
+
     UISegmentedControl *seg = (UISegmentedControl *)sender;
     // Get number of segments
     int numSegments = [seg.subviews count];
-    
+
     // Reset segment's color (non selected color)
-    for( int i = 0; i < numSegments; i++ ) {
+    for ( int i = 0; i < numSegments; i++ ) {
         // reset color
         [[seg.subviews objectAtIndex:i] setTintColor:nil];
         [[seg.subviews objectAtIndex:i] setTintColor:[UIColor colorWithRed:(120 / 255.0) green:(135 / 255.0) blue:(150 / 255.0) alpha:1.0]];
     }
-    
+
     // Sort segments from left to right
     NSArray *sortedViews = [seg.subviews sortedArrayUsingFunction:compareViewsByOrigin context:NULL];
-    
+
     UIColor *tint = [UIColor colorWithRed:(247.0f / 255.0f) green:(208.0f / 255.0f) blue:(44.0f / 255.0f) alpha:0.8f];
-    
+
     if (seg.selectedSegmentIndex == 1)
         tint = [UIColor colorWithRed:(1.0f / 255.0f) green:(194.0f / 255.0f) blue:(223.0f / 255.0f) alpha:0.8f];
     else if (seg.selectedSegmentIndex == 2)
         tint = [UIColor colorWithRed:(93.0f / 255.0f) green:(194.0f / 255.0f) blue:(93.0f / 255.0f) alpha:0.8f];
-    
+
     // Change color of selected segment
     [[sortedViews objectAtIndex:seg.selectedSegmentIndex] setTintColor:tint];
-    
+
     // Remove all original segments from the control
     for (id view in seg.subviews) {
         [view removeFromSuperview];
     }
-    
+
     // Append sorted and colored segments to the control
     for (id view in sortedViews) {
         [seg addSubview:view];
     }
-    
+
 } /* segmentChanged */
+
 
 - (UITableViewCell *) getCellContentView :(NSString *)cellIdentifier :(int)headtag :(NSIndexPath *)ip {
 
@@ -277,18 +281,18 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
     [cell.contentView addSubview:cellSegmentedControl];
 
     int selected = -1;
-    
+
     if ([currentSegment isEqualToString:@"D"])
         selected = 1;
     else if ([currentSegment isEqualToString:@"S"])
         selected = 2;
     else
         selected = 0;
-    
+
     [cellSegmentedControl setTag:kSegmentControlTagFirst
                forSegmentAtIndex:selected
                    forSegmentTag:cellSegmentedControl.tag];
-    
+
     switch (selected) {
         case 0 :
             [cellSegmentedControl setTintColor:[UIColor colorWithRed:(247.0f / 255.0f) green:(208.0f / 255.0f) blue:(44.0f / 255.0f) alpha:0.8f]
@@ -308,7 +312,7 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
         default :
             break;
     } /* switch */
-    
+
     cellSegmentedControl.selectedSegmentIndex = selected;
     currentText = [[[[[self.studentObjectData objectAtIndex:ip.section] objectAtIndex:ip.row]
                      componentsSeparatedByString:kContent_Delimiter] mutableCopy] objectAtIndex:1];
@@ -353,7 +357,7 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context)
 
     if (![oldText isEqualToString:modalTextView.text]) {
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:row inSection:section]];
-        
+
         UIImageView *contentStatus = [[UIImageView alloc] initWithFrame:CGRectMake(-30, 21, 18, 18)];
         contentStatus.image = [UIImage imageNamed:@"check"];
         [cell.contentView addSubview:contentStatus];

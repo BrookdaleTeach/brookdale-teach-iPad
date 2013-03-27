@@ -6,6 +6,8 @@
 //
 //
 
+/* Imports */
+
 #import "EditUser.h"
 #import <sqlite3.h>
 #import <QuartzCore/QuartzCore.h>
@@ -14,14 +16,35 @@
 #import "WritingAssessmentModel.h"
 #import "BehavioralAssessmentModel.h"
 
+/* Class Definitions */
+
 #define DATABASE_NAME      @"students.sql"
 #define NUM_OBJECTS        12
 #define DEFAULT_IMAGE_NAME @"default1.image"
 
-@implementation EditUser
-@synthesize imageView, popoverController, toolbar, classKey;
+/*
+ * Class Main Implementation
+ */
 
-- (id) init:(Student *)s key:(int)k index:(NSIndexPath *)indexPath title:(NSString *)t {
+@implementation EditUser
+
+/* Sythesizations */
+
+@synthesize imageView;
+@synthesize popoverController;
+@synthesize toolbar;
+@synthesize classKey;
+
+/*
+   init
+   --------
+   Purpose:        Initilizes Class with Vars
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (id) init :(Student *)s key :(int)k index :(NSIndexPath *)indexPath title :(NSString *)t {
     self = [super init];
     if (self) {
         self.title = NSLocalizedString(@"Edit Student", nil);
@@ -34,36 +57,45 @@
 } /* init */
 
 
+/*
+   viewDidLoad
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
+
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
     // Do any additional setup after loading the view from its nib.
-    
+
     imageSavedAsDefaultTitle = NO;
-    
+
     month = 9;
     day = 9;
     year = 9;
-    
+
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     userInput = [[NSMutableArray alloc] init];
-    
+
     scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
     [scrollView setContentSize:CGSizeMake(320, 1350)];
     [self.view addSubview:scrollView];
-    
+
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    
+
     placeHolders = [[NSArray alloc] initWithObjects:[student firstName],
                     [student lastName], [student uid],
                     [NSString stringWithFormat:@"%d/%d/%d", [student dob_month], [student dob_day], [student dob_year]], nil];
-    
+
     restTitles = [[NSArray alloc] initWithObjects:@"Email", @"Phone", @"Address", @"Parent First", @"Parent Last", @"Parent Email", @"Parent Phone", @"Relationship", nil];
-    
+
     restValues = [[NSArray alloc] initWithObjects:[student email], [student phone], [student address], [student parent_firstName], [student parent_lastName], [student parent_email], [student parent_phone], [student relationship], nil];
-        
+
     addImageButton = [[UIButton alloc] initWithFrame:CGRectMake(32, 25, 108, 108)];
     addImageButton.backgroundColor = [UIColor lightTextColor];
     addImageButton.layer.cornerRadius = 2.0f;
@@ -75,26 +107,26 @@
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    
+
     NSString *imagePath;
     if ([AppDelegate isDemo])
         imagePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
     else
         imagePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
-    
+
     NSFileManager *filemanager = [NSFileManager defaultManager];
-    
-    if ([filemanager fileExistsAtPath:imagePath]) {        
+
+    if ([filemanager fileExistsAtPath:imagePath]) {
         [addImageButton setBackgroundImage:[UIImage imageWithContentsOfFile:imagePath] forState:UIControlStateNormal];
         addImageButton.alpha = 1.0f;
     } else {
         [addImageButton setBackgroundImage:[UIImage imageNamed:@"person.png"] forState:UIControlStateNormal];
         addImageButton.alpha = .7f;
     }
-    
+
     [addImageButton addTarget:nil action:@selector(useCameraRoll:) forControlEvents:UIControlEventTouchDown];
     [scrollView addSubview:addImageButton];
-    
+
     //
     headTableView = [[UITableView alloc] initWithFrame:CGRectMake(178, 12, 340, 190) style:UITableViewStyleGrouped];
     [headTableView setDelegate:self];
@@ -106,7 +138,7 @@
     clearBackground.backgroundColor = [UIColor clearColor];
     [headTableView setBackgroundView:clearBackground];
     [scrollView addSubview:headTableView];
-    
+
     //
     restTableView = [[UITableView alloc] initWithFrame:CGRectMake(80, 215, 400, 100 * restTitles.count) style:UITableViewStyleGrouped];
     [restTableView setDelegate:self];
@@ -122,91 +154,121 @@
     [scrollView addSubview:[self addClassesCheckboxesView]];
 } /* viewDidLoad */
 
-- (UIView *)addClassesCheckboxesView {
+
+/*
+   addClassesCheckboxesView
+   --------
+   Purpose:        Adds Checkboxes to view
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (UIView *) addClassesCheckboxesView {
     UIView *addClassesView = [[UIView alloc] initWithFrame:CGRectMake(0, 577, 400, 200)];
-    
+
     mathCheckbutton = [self drawDemoButton:CGRectMake(114, 10, 145, 35) withTitle:@"Math"];
     readingCheckbutton = [self drawDemoButton:CGRectMake(294, 10, 145, 35) withTitle:@"Reading"];
     writingCheckbutton = [self drawDemoButton:CGRectMake(114, 50, 145, 35) withTitle:@"Writing"];
     behavioralCheckbutton = [self drawDemoButton:CGRectMake(294, 50, 145, 35) withTitle:@"Behavioral"];
-    
+
     switch (classKey) {
-        case kMath_Key:
+        case kMath_Key :
             [self studentToClass:mathCheckbutton];
             break;
-        case kWriting_Key:
+        case kWriting_Key :
             [self studentToClass:writingCheckbutton];
             break;
-        case kReading_Key:
+        case kReading_Key :
             [self studentToClass:readingCheckbutton];
             break;
-        case kBehavioral_Key:
+        case kBehavioral_Key :
             [self studentToClass:behavioralCheckbutton];
             break;
-        default:
+        default :
             break;
-    }
-    
+    } /* switch */
+
     [addClassesView addSubview:mathCheckbutton];
     [addClassesView addSubview:readingCheckbutton];
     [addClassesView addSubview:writingCheckbutton];
     [addClassesView addSubview:behavioralCheckbutton];
-    
-    return addClassesView;
-}
 
-- (void)studentToClass:(id)sender {
-    if ([sender isSelected]) {
-        [sender setSelected:NO];
-    }else {
-        [sender setSelected:YES];
-    }
-}
+    return addClassesView;
+} /* addClassesCheckboxesView */
+
 
 /*
- DrawDemoButton
- --------
- Purpose:        Draw Demo Button
- Parameters:     none
- Returns:        none
- Notes:          Alloc/Create/Add Login Button
- Author:         Neil Burchfield
+   studentToClass
+   --------
+   Purpose:        Class Checkbox Handler
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
-- (UIButton *) drawDemoButton:(CGRect)frame withTitle:(NSString *)t {
-    
+- (void) studentToClass :(id)sender {
+    if ([sender isSelected]) {
+        [sender setSelected:NO];
+    } else {
+        [sender setSelected:YES];
+    }
+} /* studentToClass */
+
+
+/*
+   DrawDemoButton
+   --------
+   Purpose:        Draw Demo Button
+   Parameters:     none
+   Returns:        none
+   Notes:          Alloc/Create/Add Login Button
+   Author:         Neil Burchfield
+ */
+- (UIButton *) drawDemoButton :(CGRect)frame withTitle :(NSString *)t {
+
     // Alloc Demo Button
     UIButton *demoButton = [[UIButton alloc] initWithFrame:frame];
-    
+
     // Setup Demo Button Background
     [demoButton setBackgroundImage:[UIImage imageNamed:@"gray-action-button-background.png"] forState:UIControlStateNormal];
-    
+
     // Setup Demo Button Background Highlighted
     [demoButton setBackgroundImage:[UIImage imageNamed:@"gray-action-button-background-pressed.png"] forState:UIControlStateSelected];
-    
+
     // Setup Demo Button Action
     [demoButton addTarget:self action:@selector(studentToClass:) forControlEvents:UIControlEventTouchUpInside];
-    
+
     // Setup Demo Button Title Color
     [demoButton setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
-    
+
     // Setup Demo Button Title Color Highlighted
     [demoButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
-    
+
     // Setup Demo Button Title text
     [demoButton setTitle:[t capitalizedString] forState:UIControlStateNormal];
-    
+
     // Setup Demo Button Font
     demoButton.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:17];
-    
+
     // Setup Demo Button to full alpha
     demoButton.alpha = 1.0f;
-    
+
     // Add Button To table view
     return demoButton;
-    
+
 } /* drawDemoButton */
 
 
+/*
+   useCameraRoll
+   --------
+   Purpose:        Camera Roll Instance
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) useCameraRoll :(id)sender {
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] &&
         [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
@@ -215,21 +277,21 @@
         cameraPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
         cameraPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, nil];
         cameraPicker.allowsEditing = NO;
-        
+
         UIImagePickerController *cameraRollPicker = [[UIImagePickerController alloc] init];
         cameraRollPicker.delegate = self;
         cameraRollPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         cameraRollPicker.mediaTypes = [NSArray arrayWithObjects:(NSString *)kUTTypeImage, nil];
         cameraRollPicker.allowsEditing = NO;
-        
+
         UITabBarController *tabBarController = [[UITabBarController alloc] init];
         tabBarController.viewControllers = @[cameraPicker, cameraRollPicker];
         [[tabBarController.tabBar.items objectAtIndex:0] setTitle:@"Camera"];
         [[tabBarController.tabBar.items objectAtIndex:1] setTitle:@"Camera Roll"];
-        
+
         self.popoverController = [[UIPopoverController alloc] initWithContentViewController:tabBarController];
         self.popoverController.delegate = self;
-        
+
         [self.popoverController presentPopoverFromRect:CGRectMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 2, 1, 1) inView:self.view permittedArrowDirections:0 animated:YES];
     } else {
         NSLog(@"Camera ROLL NOT availiable!!!");
@@ -237,24 +299,33 @@
 } /* useCameraRoll */
 
 
+/*
+   imagePickerController
+   --------
+   Purpose:        Camera Roll Existing Images Selection Instance
+   Parameters:     UIImagePickerController, NSDictionary
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) imagePickerController :(UIImagePickerController *)picker didFinishPickingMediaWithInfo :(NSDictionary *)info {
     [self.popoverController dismissPopoverAnimated:true];
-    
+
     NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(NSString *)kUTTypeImage]) {
         UIImage *image = [info
                           objectForKey:UIImagePickerControllerOriginalImage];
-        
+
         imageView.image = image;
         [addImageButton setBackgroundImage:image forState:UIControlStateNormal];
-        
+
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];
         NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:DEFAULT_IMAGE_NAME];
         NSFileManager *filemanager = [NSFileManager defaultManager];
         [filemanager removeItemAtPath:imagePath error:nil];
         [UIImageJPEGRepresentation(image, 1.0f) writeToFile:imagePath atomically:YES];
-        
+
         if ([filemanager fileExistsAtPath:imagePath])
             NSLog(@"successfully saved");
         else
@@ -265,12 +336,21 @@
 } /* imagePickerController */
 
 
+/*
+   finishedSavingWithError
+   --------
+   Purpose:        Camera Roll Error Handler
+   Parameters:     NSError, UIImage
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) image :(UIImage *)image finishedSavingWithError :(NSError *)error contextInfo :(void *)contextInfo {
     if (error) {
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"Save failed"
-                              message:@"Failed to save image" \
-                              delegate:nil
+                                        message:@"Failed to save image" \
+                                       delegate:nil
                               cancelButtonTitle:@"OK"
                               otherButtonTitles:nil];
         [alert show];
@@ -278,6 +358,15 @@
 } /* image */
 
 
+/*
+   viewDidUnload
+   --------
+   Purpose:        Detain Variables
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidUnload {
     self.imageView = nil;
     self.popoverController = nil;
@@ -285,24 +374,36 @@
 } /* viewDidUnload */
 
 
+/*
+   imagePickerControllerDidCancel
+   --------
+   Purpose:        UIImagePickerController Cancel Handler
+   Parameters:     UIImagePickerController
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) imagePickerControllerDidCancel :(UIImagePickerController *)picker {
     [self dismissModalViewControllerAnimated:YES];
 } /* imagePickerControllerDidCancel */
 
 
-- (void) didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-} /* didReceiveMemoryWarning */
-
-
+/*
+   updateEmployeeIntoDatabase
+   --------
+   Purpose:        Update Student Into Database
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) updateEmployeeIntoDatabase {
     sqlite3 *database;
-    
+
     BOOL success = YES;
-    
+
     NSMutableArray *selectedClasses = [[NSMutableArray alloc] init];
-    
+
     if ([mathCheckbutton isSelected])
         [selectedClasses addObject:[NSNumber numberWithInt:kMath_Key]];
     if ([readingCheckbutton isSelected])
@@ -311,13 +412,13 @@
         [selectedClasses addObject:[NSNumber numberWithInt:kWriting_Key]];
     if ([behavioralCheckbutton isSelected])
         [selectedClasses addObject:[NSNumber numberWithInt:kBehavioral_Key]];
-    
+
     NSLog(@"db path: %@", appDelegate.databasePath);
-    
+
     if (sqlite3_open([appDelegate.databasePath UTF8String], &database) == SQLITE_OK) {
         const char *sql = "UPDATE students SET firstName=?, lastName=?, fullName=?, gender=?, dob_month=?, dob_day=?, dob_year=?, image=?, uid=?, email=?, phone=?, address=?, parent_firstName=?, parent_lastName=?, parent_email=?, parent_phone=?, relationship=?, notes=?, classkey=? WHERE uid=?";
         sqlite3_stmt *compiledStatement;
-        
+
         if (sqlite3_prepare_v2(database, sql, -1, &compiledStatement, NULL) == SQLITE_OK) {
             sqlite3_bind_text(compiledStatement, 1, [[[userInput objectAtIndex:0] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 2, [[[userInput objectAtIndex:1] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
@@ -339,47 +440,57 @@
             sqlite3_bind_text(compiledStatement, 18, [[@"" capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 19, [[selectedClasses componentsJoinedByString:kContent_Delimiter] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 20, [[userInput objectAtIndex:2] UTF8String], -1, SQLITE_TRANSIENT);
-            
+
             sqlite3_reset(compiledStatement);
         } else {
             success = NO;
         }
-        
+
         if (sqlite3_step(compiledStatement) != SQLITE_DONE) {
             success = NO;
             NSLog(@"Save Error (Insert Recent): %s", sqlite3_errmsg(database) );
         }
-        
+
         sqlite3_finalize(compiledStatement);
     } else {
         success = NO;
     }
-    
+
     sqlite3_close(database);
-    
+
     //    [appDelegate reloadCoreData];
-    
+
     return success;
 } /* updateEmployeeIntoDatabase */
 
 
+/*
+   done
+   --------
+   Purpose:        Handles Finished User Data Handling
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) done :(id)sender {
     UIAlertView *resultMessage;
-    
+
     if ([self verifyUserIndex]) {
         if ([self updateEmployeeIntoDatabase]) {
-            
+
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *documentsDirectory = [paths objectAtIndex:0];
             NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:DEFAULT_IMAGE_NAME];
             NSFileManager *filemanager = [NSFileManager defaultManager];
             NSError *err;
             UILabel *uid = (UILabel *)[self.view viewWithTag:3];
-            
+
             if ([filemanager fileExistsAtPath:imagePath]) {
-                
+
                 BOOL result = [filemanager moveItemAtPath:imagePath toPath:[documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", uid.text]] error:&err];
-                if (!result) {}
+                if (!result) {
+                }
 //                    NSLog(@"Error moving: %@", err);
                 else {
 //                    NSLog(@"moved image to %@", imagePath);
@@ -387,13 +498,13 @@
             } else {
 //                NSLog(@"Couldn't find image to move!!!");
             }
-            
+
             resultMessage = [[UIAlertView alloc] initWithTitle:@"Success"
                                                        message:@"Student Updated"
                                                       delegate:nil
                                              cancelButtonTitle:@"OK"
                                              otherButtonTitles:nil];
-            
+
         } else {
             resultMessage = [[UIAlertView alloc] initWithTitle:@"Error"
                                                        message:@"Unable to Add Student"
@@ -401,17 +512,17 @@
                                              cancelButtonTitle:@"OK"
                                              otherButtonTitles:nil];
         }
-        
+
         [resultMessage show];
-        
+
         [appDelegate reloadCoreData];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadStudentTableView" object:nil];
         [self dismissModalViewControllerAnimated:YES];
-                
+
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:1];
         [userInfo setObject:ip forKey:@"indexPath"];
         [userInfo setObject:title forKey:@"view"];
-        
+
         NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
         [nc postNotificationName:@"UpdateContent" object:self userInfo:userInfo];
 
@@ -419,19 +530,43 @@
 } /* done */
 
 
+/*
+   cancel
+   --------
+   Purpose:        Dismiss Modal
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) cancel :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
 } /* cancel */
 
 
+/*
+   shouldAutorotateToInterfaceOrientation
+   --------
+   Purpose:        AutoRotate
+   Parameters:     UIInterfaceOrientation
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    }
-    return UIInterfaceOrientationIsLandscape(interfaceOrientation) || (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return YES;
 } /* shouldAutorotateToInterfaceOrientation */
 
 
+/*
+   numberOfSectionsInTableView
+   --------
+   Purpose:        TableView Section Count
+   Parameters:     UITableView
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) numberOfSectionsInTableView :(UITableView *)tableView {
     if (headTableView == tableView)
         return 1;
@@ -440,6 +575,15 @@
 } /* numberOfSectionsInTableView */
 
 
+/*
+   numberOfRowsInSection
+   --------
+   Purpose:        TableView Row Count
+   Parameters:     UITableView, Section
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) tableView :(UITableView *)tableView numberOfRowsInSection :(NSInteger)section {
     if (headTableView == tableView)
         return 4;
@@ -448,16 +592,24 @@
 } /* tableView */
 
 
-// RootViewController.m
+/*
+   getCellContentViewTopSection
+   --------
+   Purpose:        Cell Content View
+   Parameters:     NSString, NSString, int
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITableViewCell *) getCellContentViewTopSection :(NSString *)cellIdentifier :(NSString *)value :(int)tag {
-    
+
     CGRect CellFrame = CGRectMake(0, 0, 300, 60);
-    
+
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     [cell setFrame:CellFrame];
-    
+
     cell.accessoryType = UITableViewCellAccessoryNone;
-    
+
     UITextField *formTitleEntryField = [[UITextField alloc] initWithFrame:CGRectMake(20, 10, 275, 30)];
     formTitleEntryField.adjustsFontSizeToFitWidth = YES;
     formTitleEntryField.text = value;
@@ -474,10 +626,10 @@
     formTitleEntryField.clearButtonMode = UITextFieldViewModeNever; // no clear 'x' button to the right
     [formTitleEntryField setEnabled:YES];
     [cell addSubview:formTitleEntryField];
-    
+
     if (tag == 3)
         [formTitleEntryField setEnabled:NO];
-        
+
     if (tag == 4) {
         datePicker = [[UIDatePicker alloc] init];
         datePicker.datePickerMode = UIDatePickerModeDate;
@@ -485,24 +637,33 @@
         datePicker.tag = 123;
         formTitleEntryField.inputView = datePicker;
     }
-    
+
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
+
     if (tag == 1)
         [formTitleEntryField becomeFirstResponder];
-    
+
     return cell;
 } /* getCellContentViewForLogin */
 
 
+/*
+   datePickerValueChanged
+   --------
+   Purpose:        Date Picker Listener
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) datePickerValueChanged :(id)sender {
     // Use NSDateFormatter to write out the date in a friendly format
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateStyle = NSDateFormatterMediumStyle;
-    
+
     UITextField *textField = (UITextField *)[self.view viewWithTag:4];
     textField.text = [df stringFromDate:datePicker.date];
-    
+
     NSDateComponents *components = [[NSCalendar currentCalendar] components:
                                     NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit fromDate:datePicker.date];
     month = [components month];
@@ -511,16 +672,24 @@
 } /* datePickerValueChanged */
 
 
-// RootViewController.m
+/*
+   getCellContentViewForBottomSection
+   --------
+   Purpose:        Cell Content View
+   Parameters:     NSString, NSString, int
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITableViewCell *) getCellContentViewForBottomSection :(NSString *)cellIdentifier :(NSString *)text :(NSString *)value :(int)tag {
-    
+
     CGRect CellFrame = CGRectMake(0, 0, 300, 60);
-    
+
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     [cell setFrame:CellFrame];
-    
+
     cell.accessoryType = UITableViewCellAccessoryNone;
-    
+
     UITextField *formEntryField = [[UITextField alloc] initWithFrame:CGRectMake(155, 14, 230, 30)];
     formEntryField.adjustsFontSizeToFitWidth = YES;
     formEntryField.textColor = [UIColor blackColor];
@@ -536,7 +705,7 @@
     formEntryField.delegate = self;
     formEntryField.clearButtonMode = UITextFieldViewModeNever; // no clear 'x' button to the right
     [formEntryField setEnabled:YES];
-    
+
     UILabel *formTitleField = [[UILabel alloc] initWithFrame:CGRectMake(6, 12, 116, 20)];
     formTitleField.textColor = [UIColor darkGrayColor];
     formTitleField.backgroundColor = [UIColor clearColor];
@@ -544,81 +713,113 @@
     formTitleField.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:16];
     formTitleField.text = text;
     [cell.contentView addSubview:formTitleField];
-    
+
     [cell addSubview:formEntryField];
-    
+
     UILabel *vLine = [[UILabel alloc] initWithFrame:CGRectMake(132, 1, 1, cell.frame.size.height - 18)];
     vLine.backgroundColor = [UIColor colorWithRed:173.0f / 255.0f green:175.0f / 255.0f blue:179.0f / 255.0f alpha:.7f];
     [cell.contentView addSubview:vLine];
-    
+
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    
+
     return cell;
 } /* getCellContentViewForPassword */
 
 
+/*
+   cellForRowAtIndexPath
+   --------
+   Purpose:        Cell Content View
+   Parameters:     UITableView, NSIndexPath
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITableViewCell *) tableView :(UITableView *)tableView cellForRowAtIndexPath :(NSIndexPath *)indexPath {
     UITableViewCell *cell;
     if (tableView == headTableView) {
         NSString *CellIdentifier1 = [NSString stringWithFormat:@"Cell_%d", indexPath.row];
         cell = [headTableView dequeueReusableCellWithIdentifier:CellIdentifier1];
-        
+
         if (cell == nil) {
             cell = [self getCellContentViewTopSection:CellIdentifier1 :[placeHolders objectAtIndex:indexPath.row] :1 + indexPath.row];
         }
     } else {
         NSString *CellIdentifier2 = [NSString stringWithFormat:@"Cell_%d_%d", indexPath.section, indexPath.row];
         cell = [restTableView dequeueReusableCellWithIdentifier:CellIdentifier2];
-        
+
         restIndexPath = indexPath;
-        
+
         if (cell == nil) {
             cell = [self getCellContentViewForBottomSection:CellIdentifier2 :[restTitles objectAtIndex:indexPath.row] :[restValues objectAtIndex:indexPath.row] :5 + indexPath.row];
         }
     }
-    
+
     return cell;
 } /* tableView */
 
 
+/*
+   verifyUserIndex
+   --------
+   Purpose:        Verifies User Input
+   Parameters:     --
+   Returns:        BOOL
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (BOOL) verifyUserIndex {
     for (int x = 0; x < NUM_OBJECTS; x++) {
         UILabel *label = (UILabel *)[self.view viewWithTag:x + 1];
-        
-        if ((label.text == NULL) || [label.text isEqualToString:@""])
-        {
+
+        if ((label.text == NULL) || [label.text isEqualToString:@""]) {
             if (x < 4)
                 break;
             else
                 [userInput addObject:@" "];
-        }
-        else
-        {
+        } else {
             [userInput addObject:label.text];
         }
-        
-        if (x == NUM_OBJECTS - 1)
-        {
+
+        if (x == NUM_OBJECTS - 1) {
             return YES;
         }
     }
-    
+
     UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Form Incomplete"
                                                       message:@"Required field missing"
                                                      delegate:nil
                                             cancelButtonTitle:@"OK"
                                             otherButtonTitles:nil];
     [message show];
-    
+
     return NO;
 } /* verifyUserIndex */
 
 
+/*
+   titleForFooterInSection
+   --------
+   Purpose:        Footer Title
+   Parameters:     UITableView, NSIndexPath
+   Returns:        NSString
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSString *) tableView :(UITableView *)tableView titleForFooterInSection :(NSInteger)section {
     return @"";
 } /* tableView */
 
 
+/*
+   didSelectRowAtIndexPath
+   --------
+   Purpose:        Delegate TableView Selection
+   Parameters:     UITableView, NSIndexPath
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) tableView :(UITableView *)tableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
     if (tableView == headTableView)
         [headTableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -626,7 +827,7 @@
         [restTableView deselectRowAtIndexPath:indexPath animated:YES];
     else
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+
     [restTableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
 } /* tableView */
 

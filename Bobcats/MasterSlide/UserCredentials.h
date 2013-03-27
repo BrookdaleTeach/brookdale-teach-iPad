@@ -6,11 +6,19 @@
 //  Copyright (c) 2013 Burchfield, Neil. All rights reserved.
 //
 
+/* Imports */
+
 #import <Foundation/Foundation.h>
 #import "Lockbox.h"
 
+/*
+ * Class Main Interface
+ */
+
 @interface UserCredentials : NSObject {
     
+    /* Local Declarations */
+
     NSString *login_username_plist;
     NSString *login_username_keychain;
     NSString *login_password_keychain;

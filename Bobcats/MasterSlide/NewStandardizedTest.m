@@ -6,26 +6,34 @@
 //
 //
 
+/* Imports */
+
 #import "NewStandardizedTest.h"
 #import "MathAssessmentModel.h"
-
 #import "MathAssessmentModel.h"
 #import "ReadingAssessmentModel.h"
 #import "WritingAssessmentModel.h"
 #import "BehavioralAssessmentModel.h"
-
 #import "MathTestTableViewController.h"
 #import "ReadingTestTableViewController.h"
 #import "WritingTestTableViewController.h"
 #import "BehavioralTestTableViewController.h"
 
-@interface NewStandardizedTest ()
-
-@end
+/*
+ * Class Main Implementation
+ */
 
 @implementation NewStandardizedTest
 
-
+/*
+   initWithStyle
+   --------
+   Purpose:        Initilizes Tableview
+   Parameters:     UITableViewStyle, Student, int, int, NSIndexPath
+   Returns:        self
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (id) initWithStyle :(UITableViewStyle)style :(Student *)st :(int)ck :(int)mode :(NSIndexPath *)index {
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
@@ -41,6 +49,15 @@
 } /* initWithStyle */
 
 
+/*
+   viewDidLoad
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
 
@@ -49,40 +66,69 @@
 
     titles = [[NSMutableArray alloc] initWithObjects:@"Name", @"Test Score", @"Date", nil];
     titleKeys = [[NSMutableArray alloc] initWithObjects:@"name", @"score", @"date", nil];
-    
+
     if (editingMode == kEditingMode_EntityExists) {
         existingColumnData = [[NSArray alloc] initWithArray:[self existingDataForColumn]];
         preExistingDict = [[NSMutableDictionary alloc] init];
     }
 } /* viewDidLoad */
 
-- (NSArray *) existingDataForColumn
-{
+
+/*
+   existingDataForColumn
+   --------
+   Purpose:        Retrieves Existing Content
+   Parameters:     --
+   Returns:        NSArray
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (NSArray *) existingDataForColumn {
     NSArray *contentData = nil;
     switch (classKey) {
-        case kMath_Key:
+        case kMath_Key :
             contentData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
             break;
-        case kReading_Key:
+        case kReading_Key :
             contentData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
             break;
-        case kWriting_Key:
+        case kWriting_Key :
             contentData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
             break;
-        case kBehavioral_Key:
+        case kBehavioral_Key :
             contentData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
-            break;   
-        default:
             break;
-    }
-    
-    return contentData;
-}
+        default :
+            break;
+    } /* switch */
 
+    return contentData;
+} /* existingDataForColumn */
+
+
+/*
+   cancel
+   --------
+   Purpose:        Dismiss Modal
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) cancel :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
 } /* cancel */
 
+
+/*
+   done
+   --------
+   Purpose:        Save Data
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) done :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
 
@@ -145,51 +191,90 @@
     }
 } /* done */
 
+
 #pragma mark - Table view data source
 
+/*
+   numberOfSectionsInTableView
+   --------
+   Purpose:        Section Count
+   Parameters:     UITableView
+   Returns:        NSInteger
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) numberOfSectionsInTableView :(UITableView *)tableView {
-    // Return the number of sections.
     return titles.count;
 } /* numberOfSectionsInTableView */
 
 
+/*
+   numberOfRowsInSection
+   --------
+   Purpose:        Rows Count
+   Parameters:     UITableView
+   Returns:        NSInteger
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSInteger) tableView :(UITableView *)tableView numberOfRowsInSection :(NSInteger)section {
-    // Return the number of rows in the section.
     return 1;
 } /* tableView */
 
 
+/*
+   titleForHeaderInSection
+   --------
+   Purpose:        Section Title
+   Parameters:     UITableView, NSInteger
+   Returns:        NSString
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (NSString *) tableView :(UITableView *)tableView titleForHeaderInSection :(NSInteger)section {
     return @"";
 } /* tableView */
 
 
+/*
+   cellForRowAtIndexPath
+   --------
+   Purpose:        Cell Content View
+   Parameters:     UITableView, NSIndexPath
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITableViewCell *) tableView :(UITableView *)tableView cellForRowAtIndexPath :(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         NSString *value = @"";
-        if (editingMode == kEditingMode_EntityExists)
-        {
+        if (editingMode == kEditingMode_EntityExists) {
             NSMutableArray *parsedData = [[NSMutableArray alloc] initWithArray:[[[existingColumnData objectAtIndex:ip.row] componentsSeparatedByString:@"/"] mutableCopy] copyItems:YES];
             value = [parsedData objectAtIndex:indexPath.section];
             [preExistingDict setObject:value forKey:[titleKeys objectAtIndex:indexPath.section]];
             NSLog(@"value: %@ key: %@", value, [titleKeys objectAtIndex:indexPath.section]);
         }
-            
+
         cell = [self getCellContentViewWithTextfield:CellIdentifier
                                                     :[titles objectAtIndex:indexPath.section]
                                                     :100 + indexPath.section
                                                     :value];
     }
-
-    // Configure the cell...
-
     return cell;
 } /* tableView */
 
 
-// RootViewController.m
+/*
+   getCellContentViewWithTextfield
+   --------
+   Purpose:        Cell Content View
+   Parameters:     NSString, NSString, NSString
+   Returns:        UITableViewCell
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (UITableViewCell *) getCellContentViewWithTextfield :(NSString *)cellIdentifier :(NSString *)text :(int)tag :(NSString *)value {
 
     CGRect CellFrame = CGRectMake(0, 0, 300, 60);
@@ -243,6 +328,15 @@
 } /* getCellContentViewWithTextfield */
 
 
+/*
+   datePickerValueChanged
+   --------
+   Purpose:        Date Picker Listener
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) datePickerValueChanged :(id)sender {
     // Use NSDateFormatter to write out the date in a friendly format
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
@@ -252,59 +346,6 @@
     UITextField *textField = (UITextField *)[self.view viewWithTag:102];
     textField.text = datePickerValue;
 } /* datePickerValueChanged */
-
-
-/*
-   // Override to support conditional editing of the table view.
-   - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-   {
-   // Return NO if you do not want the specified item to be editable.
-   return YES;
-   }
- */
-
-/*
-   // Override to support editing the table view.
-   - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-   {
-   if (editingStyle == UITableViewCellEditingStyleDelete) {
-   // Delete the row from the data source
-   [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-   }
-   else if (editingStyle == UITableViewCellEditingStyleInsert) {
-   // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-   }
-   }
- */
-
-/*
-   // Override to support rearranging the table view.
-   - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-   {
-   }
- */
-
-/*
-   // Override to support conditional rearranging of the table view.
-   - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-   {
-   // Return NO if you do not want the item to be re-orderable.
-   return YES;
-   }
- */
-
-#pragma mark - Table view delegate
-
-- (void) tableView :(UITableView *)tableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-       <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-       // ...
-       // Pass the selected object to the new view controller.
-       [self.navigationController pushViewController:detailViewController animated:YES];
-       [detailViewController release];
-     */
-} /* tableView */
 
 
 @end

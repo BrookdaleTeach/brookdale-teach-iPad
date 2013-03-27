@@ -90,6 +90,7 @@
     }
 } /* insertStudentDataIntoClassDatabase */
 
+
 + (void) insertDataIntoClassDatabase :(NSString *)uid section :(int)s row :(int)r text :(NSString *)text {
     sqlite3 *database;
     NSString *table;
@@ -99,17 +100,14 @@
     if (s == 0) {
         table = kTable_math_behaviors;
         parsedArray = [[kObjects_math_behaviors componentsSeparatedByString:@","] mutableCopy];
-        NSLog(@"parsed array: %d, row: %d", parsedArray.count, r);
         object = [[parsedArray objectAtIndex:r] stringByReplacingOccurrencesOfString:@" " withString:@""];
     } else {
         table = kTable_math_skills;
         parsedArray = [[kObjects_math_skills componentsSeparatedByString:@","] mutableCopy];
-        NSLog(@"parsed array: %d, row: %d", parsedArray.count, r);
         object = [[parsedArray objectAtIndex:r] stringByReplacingOccurrencesOfString:@" " withString:@""];
     }
 
     NSString *updateStatement = [NSString stringWithFormat:@"UPDATE %@ SET %@='%@' WHERE uid='%@'", table, object, text, uid];
-    NSLog(@"insert: %@", updateStatement);
 
     if (sqlite3_open([[self checkAndCreateDatabase] UTF8String], &database) == SQLITE_OK) {
 
@@ -130,6 +128,7 @@
     }
     sqlite3_close(database);
 } /* insertStudentDataIntoClassDatabase */
+
 
 /*    Check and Create Employee database if not availiable */
 + (NSString *) checkAndCreateDatabase {
@@ -264,6 +263,7 @@
     sqlite3_close(database);
 } /* insertStandardizedDataIntoClassDatabase */
 
+
 + (NSMutableArray *) selectFormativeDataIntoClassDatabase :(NSString *)uid {
     sqlite3 *database;
     NSMutableArray *formativeArray = [[NSMutableArray alloc] init];
@@ -315,68 +315,70 @@
     return standardizedArray;
 } /* selectStandardizedDataIntoClassDatabase */
 
+
 + (void) updateDataIntoClassDatabase :(NSString *)uid :(NSMutableDictionary *)dictionary :(NSMutableDictionary *)oldDictionary :(int)key {
     sqlite3 *database;
-        
+
     NSString *oldData = [NSString stringWithFormat:@"%@/%@/%@", [oldDictionary valueForKey:@"name"],
                          [oldDictionary valueForKey:@"score"],
                          [oldDictionary valueForKey:@"date"]];
-    
+
     NSString *data = [NSString stringWithFormat:@"%@/%@/%@", [dictionary valueForKey:@"name"],
                       [dictionary valueForKey:@"score"],
                       [dictionary valueForKey:@"date"]];
-    
+
     NSString *updateData = nil;
     if (key == kFormative_Key)
         updateData = [NSString stringWithFormat:@"UPDATE %@ set %@='%@' WHERE uid='%@' and %@='%@'", kTable_math_formative, kColumn_formative, data, uid, kColumn_formative, oldData];
     else if (key == kStandardized_Key)
         updateData = [NSString stringWithFormat:@"UPDATE %@ set %@='%@' WHERE uid='%@' and %@='%@'", kTable_math_standard, kColumn_standard, data, uid, kColumn_standard, oldData];
-    
-    NSLog(@"updateData: %@",updateData);
+
     if (sqlite3_open([[self checkAndCreateDatabase] UTF8String], &database) == SQLITE_OK) {
         const char *sqlChar = [updateData UTF8String];
         sqlite3_stmt *compiledStatement;
-        
+
         if (sqlite3_prepare_v2(database, sqlChar, -1, &compiledStatement, NULL) == SQLITE_OK) {
-            
+
             sqlite3_reset(compiledStatement);
         }
-        
+
         if (sqlite3_step(compiledStatement) != SQLITE_DONE) {
             NSLog(@"[%s] Update Error (Update Student): %s", __PRETTY_FUNCTION__, sqlite3_errmsg(database) );
         }
-        
+
         sqlite3_finalize(compiledStatement);
     }
     sqlite3_close(database);
 } /* updateDataIntoClassDatabase */
 
-+ (void) deleteFromTestAssesments :(NSString *)uid :(NSString *)string :(int)key{
+
++ (void) deleteFromTestAssesments :(NSString *)uid :(NSString *)string :(int)key {
     sqlite3 *database;
-    
+
     NSString *deleteRecord = nil;
-    
+
     if (key == kFormative_Key)
         deleteRecord = [NSString stringWithFormat:@"DELETE FROM %@ WHERE uid='%@' and %@='%@'", kTable_math_formative, uid, kColumn_formative, string];
     else if (key == kStandardized_Key)
         deleteRecord = [NSString stringWithFormat:@"DELETE FROM %@ WHERE uid='%@' and %@='%@'", kTable_math_standard, uid, kColumn_standard, string];
-    
+
     if (sqlite3_open([[self checkAndCreateDatabase] UTF8String], &database) == SQLITE_OK) {
         const char *sqlChar = [deleteRecord UTF8String];
         sqlite3_stmt *compiledStatement;
-        
+
         if (sqlite3_prepare_v2(database, sqlChar, -1, &compiledStatement, NULL) == SQLITE_OK) {
-            
+
             sqlite3_reset(compiledStatement);
         }
-        
+
         if (sqlite3_step(compiledStatement) != SQLITE_DONE) {
             NSLog(@"Delete Error (Delete Student): %s", sqlite3_errmsg(database) );
         }
-        
+
         sqlite3_finalize(compiledStatement);
     }
     sqlite3_close(database);
 } /* insertStandardizedDataIntoClassDatabase */
+
 
 @end

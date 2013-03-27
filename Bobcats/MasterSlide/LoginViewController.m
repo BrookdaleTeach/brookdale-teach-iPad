@@ -6,21 +6,36 @@
 //
 //
 
+/* Imports */
+
 #import "LoginViewController.h"
 #import <QuartzCore/QuartzCore.h>
 #import "CustomUI.h"
 #import "UserCredentials.h"
 
-#define kLoginPassword @"brookdale"
+/* Definitions */
+
+#define kLoginPassword  @"brookdale"
 #define kSETTINGS_PLIST @"settings.plist"
 
-@interface LoginViewController ()
-
-@end
-
+/*
+ * Class Main Implementation
+ */
 @implementation LoginViewController
+
+/* Synthesizations */
+
 @synthesize appDelegate, splitViewController, rootViewController, detailViewController, settingsViewController;
 
+/*
+   InitWithNibName
+   --------
+   Purpose:        Initilizes Class with Views
+   Parameters:     nib
+   Returns:        self
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (id) initWithNibName :(NSString *)nibNameOrNil bundle :(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -29,52 +44,21 @@
     return self;
 } /* initWithNibName */
 
-#pragma mark -
-#pragma mark Orientation (Landscape) Methods.
-- (BOOL)shouldAutorotate
-{
-    return NO;
-}
 
--(NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskLandscape;
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-{
-    return UIInterfaceOrientationLandscapeLeft;
-}
-
-
-- (void) willRotateToInterfaceOrientation :(UIInterfaceOrientation)toInterfaceOrientation duration :(NSTimeInterval)duration {
-   
-    // Begin Animations
-    [UIView beginAnimations:@"transformLandscape" context:nil];
-    // Set Animation duration
-    [UIView setAnimationDuration:1.0];
-    
-    // Set Animation Content based on orientation
-    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        // Set Login Container Frame
-        [loginContainer setFrame:CGRectMake(245, 275, 320, 387)];
-    }
-    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-        // Set Login Container Frame
-        [loginContainer setFrame:CGRectMake(675, 100, 320, 387)];
-    }
-
-    
-    // Commit the Animations
-    [UIView commitAnimations];
-
-} /* willRotateToInterfaceOrientation */
-
+/*
+   viewDidLoad
+   --------
+   Purpose:        Register Notifications
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
 
-    // Hide nav bar 
+    // Hide nav bar
     self.navigationController.navigationBarHidden = YES;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -94,6 +78,15 @@
 } /* viewDidLoad */
 
 
+/*
+   setUpLogin
+   --------
+   Purpose:        Grab Credentials
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) setUpLogin {
     // Alloc UserCredentials model
     UserCredentials *uc = [[UserCredentials alloc] init];
@@ -108,11 +101,18 @@
 } /* setUpLogin */
 
 
-//////////// //////////// //////////// //////////// //////////// //////////// //////////// //////////// //////////// ////////////
 #pragma mark -
 #pragma mark Layout Methods.
-//////////// //////////// //////////// //////////// //////////// //////////// //////////// //////////// //////////// ////////////
-// Lays out subviews
+
+/*
+   layoutSubviews
+   --------
+   Purpose:        Lays out subviews
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) layoutSubviews {
 
     // Set imageView's alpha to zero
@@ -126,12 +126,11 @@
 
     // Initilize Login Container
     loginContainer = [[UIView alloc] init];
-    
-    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft ||
-        [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) {
+
+    if (([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft) ||
+        ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) ) {
         [loginContainer setFrame:CGRectMake(675, -140, 320, 387)];
-    }
-    else {
+    } else {
         [loginContainer setFrame:CGRectMake(245, -140, 320, 387)];
     }
 
@@ -257,12 +256,11 @@
                                         loginTableView.bounds.size.width,
                                         loginTableView.bounds.size.height)];
 
-    // Set Login Container Frame    
-    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft ||
-        [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) {
+    // Set Login Container Frame
+    if (([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft) ||
+        ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) ) {
         [loginContainer setFrame:CGRectMake(675, 100, 320, 387)];
-    }
-    else {
+    } else {
         [loginContainer setFrame:CGRectMake(245, 275, 320, 387)];
     }
 
@@ -293,6 +291,7 @@
     // Commit the Animations
     [UIView commitAnimations];
 } /* layoutSubviews */
+
 
 /*
    cacheCredentialsInPlist
@@ -354,15 +353,15 @@
    Author:         Neil Burchfield
  */
 - (void) keyboardInView :(id)sender {
-    
-    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft ||
-        [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) {
-        
+
+    if (([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft) ||
+        ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) ) {
+
         [UIView beginAnimations:@"scrollup" context:nil];
         [UIView setAnimationDuration:0.5f];
-            [loginContainer setFrame:CGRectMake(675, 20, 320, 387)];
+        [loginContainer setFrame:CGRectMake(675, 20, 320, 387)];
         [UIView commitAnimations];
-        
+
     }
 } /* keyboardInView */
 
@@ -408,13 +407,13 @@
    Author:         Neil Burchfield
  */
 - (void) keyboardHidden :(id)sender {
-    
-    if ([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft ||
-        [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) {
+
+    if (([UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft) ||
+        ( [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeRight) ) {
 
         [UIView beginAnimations:@"scrolldown" context:nil];
         [UIView setAnimationDuration:0.8f];
-            [loginContainer setFrame:CGRectMake(675, 100, 320, 387)];
+        [loginContainer setFrame:CGRectMake(675, 100, 320, 387)];
         [UIView commitAnimations];
     }
 } /* keyboardHidden */
@@ -506,6 +505,15 @@
 } /* drawDemoButton */
 
 
+/*
+   createMBProgressHUD
+   --------
+   Purpose:        Creates Generalized HUD
+   Parameters:     SEL
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) createMBProgressHUD :(SEL)selector {
 
     MBProgressHUD *HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
@@ -521,15 +529,24 @@
 } /* createMBProgressHUDViewForLogin */
 
 
+/*
+   loadRootView
+   --------
+   Purpose:        Determines How to load app
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) loadRootView :(id)sender {
 
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     if (sender == loginButton) {
         if ([password.text isEqualToString:kLoginPassword]) {
-                [self cacheCredentialsInPlist];
-                [appDelegate loadApplicationFromLogin:NO];
-                [self createMBProgressHUD:@selector(loadApplicationRoot:)];
+            [self cacheCredentialsInPlist];
+            [appDelegate loadApplicationFromLogin:NO];
+            [self createMBProgressHUD:@selector(loadApplicationRoot:)];
         } else
             return;
     } else if (sender == demoButton) {
@@ -545,6 +562,15 @@
 } /* loadRootView */
 
 
+/*
+   willDismissWithButtonIndex
+   --------
+   Purpose:        Alert View Dismiss Delegate
+   Parameters:     int
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) alertView :(UIAlertView *)alertView willDismissWithButtonIndex :(NSInteger)buttonIndex {
 
     if ((alertView.tag == 912) && (buttonIndex == 1)) {
@@ -557,11 +583,29 @@
 } /* alertView */
 
 
+/*
+   loadApplicationRoot
+   --------
+   Purpose:        Begin Application on Main Thread
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) loadApplicationRoot :(id)sender {
     [self performSelectorOnMainThread:@selector(pushRootControllerAnimated:) withObject:self waitUntilDone:YES];
 } /* loadApplicationRoot */
 
 
+/*
+   pushRootControllerAnimated
+   --------
+   Purpose:        Begin Application
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
 - (void) pushRootControllerAnimated :(id)sender {
 
     self.rootViewController = [[MasterViewController alloc] initWithNibName:nil bundle:nil];
@@ -585,6 +629,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 } /* didReceiveMemoryWarning */
+
 
 /*
    NumberOfRowsInSection
@@ -663,6 +708,7 @@
     return 1;
 } /* numberOfSectionsInTableView */
 
+
 /*
    textFieldShouldReturn
    --------
@@ -682,6 +728,56 @@
 
     return YES;
 } /* textFieldShouldReturn */
+
+
+#pragma mark -
+#pragma mark Orientation (Landscape) Methods.
+
+/*
+   shouldAutorotate
+   --------
+   Purpose:        Should Autorotate
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (BOOL) shouldAutorotate {
+    return NO;
+} /* shouldAutorotate */
+
+
+/*
+   willRotateToInterfaceOrientation
+   --------
+   Purpose:        Animate Orientation Change
+   Parameters:     UIInterfaceOrientation, Duration
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (void) willRotateToInterfaceOrientation :(UIInterfaceOrientation)toInterfaceOrientation duration :(NSTimeInterval)duration {
+
+    // Begin Animations
+    [UIView beginAnimations:@"transformLandscape" context:nil];
+    // Set Animation duration
+    [UIView setAnimationDuration:1.0];
+
+    // Set Animation Content based on orientation
+    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
+        // Set Login Container Frame
+        [loginContainer setFrame:CGRectMake(245, 275, 320, 387)];
+    }
+    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+        // Set Login Container Frame
+        [loginContainer setFrame:CGRectMake(675, 100, 320, 387)];
+    }
+
+
+    // Commit the Animations
+    [UIView commitAnimations];
+
+} /* willRotateToInterfaceOrientation */
 
 
 @end
