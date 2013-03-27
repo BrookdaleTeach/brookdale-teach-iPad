@@ -5,6 +5,7 @@
 //
 
 #import "PDFRenderer.h"
+#import "TeacherSettings.h"
 
 #define kColumnsKey        3211
 #define kColumnsContentKey 3212
@@ -90,30 +91,25 @@
 
 + (void) drawStudentInformation :(CGRect)frame student :(Student *)student {
     NSString *studentName = [NSString stringWithFormat:@"Student Name: %@", [student fullName]];
-    NSString *studentDOB = [NSString stringWithFormat:@"Born: %d/%d/%d", [student dob_month], [student dob_day], [student dob_year]];
-    
+
     NSDateFormatter *inFormat = [[NSDateFormatter alloc] init];
     [inFormat setDateFormat:@"MM/dd/yyyy"];
-    
+
     NSString *currentDate = [NSString stringWithFormat:@"Date: %@", [inFormat stringFromDate:[NSDate date]]];
 
     CFStringRef nameStringRef = (__bridge CFStringRef)studentName;
-    CFStringRef dobStringRef = (__bridge CFStringRef)studentDOB;
     CFStringRef currentDateStringRef = (__bridge CFStringRef)currentDate;
 
     // Prepare font
-    CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPS-BOLDMT"), 17, NULL);
+    CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPS-BoldMT"), 17, NULL);
 
     CTTextAlignment leftAlignment = kCTLeftTextAlignment;
     CTTextAlignment rightAlignment = kCTRightTextAlignment;
-    CTTextAlignment centerAlignment = kCTCenterTextAlignment;
 
     CTParagraphStyleSetting settingsLeftAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(leftAlignment), &leftAlignment } };
-    CTParagraphStyleSetting settingsCenterAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(centerAlignment), &centerAlignment } };
     CTParagraphStyleSetting settingsRightAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(rightAlignment), &rightAlignment } };
 
     CTParagraphStyleRef paragraphStyleForLeftAlignment = CTParagraphStyleCreate(settingsLeftAlignment, sizeof(settingsLeftAlignment) / sizeof(settingsLeftAlignment[0]));
-    CTParagraphStyleRef paragraphStyleForCenterAlignment = CTParagraphStyleCreate(settingsCenterAlignment, sizeof(settingsCenterAlignment) / sizeof(settingsCenterAlignment[0]));
     CTParagraphStyleRef paragraphStyleForRightAlignment = CTParagraphStyleCreate(settingsRightAlignment, sizeof(settingsRightAlignment) / sizeof(settingsRightAlignment[0]));
 
     // Create an attributed string for Left
@@ -127,25 +123,15 @@
     CFTypeRef valuesRight[] = { font, paragraphStyleForRightAlignment };
     CFDictionaryRef attrForRightAlignment = CFDictionaryCreate(NULL, (const void **)&keysRight, (const void **)&valuesRight,
                                                                sizeof(keysRight) / sizeof(keysRight[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-    
-    // Create an attributed string for Center
-    CFStringRef keysCenter[] = { kCTFontAttributeName, kCTParagraphStyleAttributeName };
-    CFTypeRef valuesCenter[] = { font, paragraphStyleForCenterAlignment };
-    CFDictionaryRef attrForCenterAlignment = CFDictionaryCreate(NULL, (const void **)&keysCenter, (const void **)&valuesCenter,
-                                                               sizeof(keysCenter) / sizeof(keysCenter[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 
 
     // Prepare the text using a Core Text Framesetter
-    CFAttributedStringRef currentDateCurrentText = CFAttributedStringCreate(NULL, currentDateStringRef, attrForCenterAlignment);
+    CFAttributedStringRef currentDateCurrentText = CFAttributedStringCreate(NULL, currentDateStringRef, attrForRightAlignment);
     CTFramesetterRef currentDateFramesetter = CTFramesetterCreateWithAttributedString(currentDateCurrentText);
 
     // Prepare the text using a Core Text Framesetter
     CFAttributedStringRef nameCurrentText = CFAttributedStringCreate(NULL, nameStringRef, attrForLeftAlignment);
     CTFramesetterRef nameFramesetter = CTFramesetterCreateWithAttributedString(nameCurrentText);
-
-    // Prepare the text using a Core Text Framesetter
-    CFAttributedStringRef dobCurrentText = CFAttributedStringCreate(NULL, dobStringRef, attrForRightAlignment);
-    CTFramesetterRef dobFramesetter = CTFramesetterCreateWithAttributedString(dobCurrentText);
 
     CGRect frameRect = CGRectMake(40, 14, frame.size.width - 80, 20);
     CGMutablePathRef framePath = CGPathCreateMutable();
@@ -155,7 +141,6 @@
     CFRange currentRange = CFRangeMake(0, 0);
 
     CTFrameRef nameFrameRef = CTFramesetterCreateFrame(nameFramesetter, currentRange, framePath, NULL);
-    CTFrameRef dobFrameRef = CTFramesetterCreateFrame(dobFramesetter, currentRange, framePath, NULL);
     CTFrameRef currentDateFrameRef = CTFramesetterCreateFrame(currentDateFramesetter, currentRange, framePath, NULL);
     CGPathRelease(framePath);
 
@@ -164,7 +149,6 @@
 
     // Draw the frame.
     CTFrameDraw(nameFrameRef, currentContext);
-    CTFrameDraw(dobFrameRef, currentContext);
     CTFrameDraw(currentDateFrameRef, currentContext);
 
     CFRelease(nameFrameRef);
@@ -236,6 +220,51 @@
     CFRelease(nameFramesetter);
 } /* drawTableHeaders */
 
++ (void) drawTableHeadersForAssessments :(CGRect)frame {
+    
+    NSString *studentName = @"Type     Name                                                   Score                                                            Date";
+    
+    CFStringRef nameStringRef = (__bridge CFStringRef)studentName;
+    
+    // Prepare font
+    CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPS-BoldItalicMT"), 18, NULL);
+    
+    CTTextAlignment leftAlignment = kCTLeftTextAlignment;
+    
+    CTParagraphStyleSetting settingsLeftAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(leftAlignment), &leftAlignment } };
+    
+    CTParagraphStyleRef paragraphStyleForLeftAlignment = CTParagraphStyleCreate(settingsLeftAlignment, sizeof(settingsLeftAlignment) / sizeof(settingsLeftAlignment[0]));
+    
+    // Create an attributed string
+    CFStringRef keysLeft[] = { kCTFontAttributeName, kCTParagraphStyleAttributeName };
+    CFTypeRef valuesLeft[] = { font, paragraphStyleForLeftAlignment };
+    CFDictionaryRef attrForLeftAlignment = CFDictionaryCreate(NULL, (const void **)&keysLeft, (const void **)&valuesLeft,
+                                                              sizeof(keysLeft) / sizeof(keysLeft[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+        
+    // Prepare the text using a Core Text Framesetter
+    CFAttributedStringRef nameCurrentText = CFAttributedStringCreate(NULL, nameStringRef, attrForLeftAlignment);
+    CTFramesetterRef nameFramesetter = CTFramesetterCreateWithAttributedString(nameCurrentText);
+    
+    CGRect frameRect = CGRectMake(47, -40, 700, 30);
+    CGMutablePathRef framePath = CGPathCreateMutable();
+    CGPathAddRect(framePath, NULL, frameRect);
+    
+    // Get the frame that will do the rendering.
+    CFRange currentRange = CFRangeMake(0, 0);
+    
+    CTFrameRef nameFrameRef = CTFramesetterCreateFrame(nameFramesetter, currentRange, framePath, NULL);
+    CGPathRelease(framePath);
+    
+    // Get the graphics context.
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+    
+    // Draw the frame.
+    CTFrameDraw(nameFrameRef, currentContext);
+    
+    CFRelease(nameFrameRef);
+    CFRelease(nameStringRef);
+    CFRelease(nameFramesetter);
+} /* drawTableHeaders */
 
 + (void) drawColumns :(CGRect)frame array :(NSMutableArray *)array floatValues :(NSMutableArray *)floats {
     CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPSMT"), 12, NULL);
@@ -308,15 +337,15 @@
             counter++;
         }
     }
-    
+
     CTTextAlignment alignment = kCTCenterTextAlignment;
-    
+
     CTParagraphStyleSetting settings[] = {
         { kCTParagraphStyleSpecifierAlignment, sizeof(alignment), &alignment }
     };
-    
+
     CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(settings, sizeof(settings) / sizeof(settings[0]));
-    
+
     // Create an attributed string
     CFStringRef keys[] = { kCTFontAttributeName, kCTParagraphStyleAttributeName };
     CFTypeRef values[] = { font, paragraphStyle };
@@ -351,35 +380,93 @@
     CFRelease(framesetter);
 } /* drawColumnContent */
 
-+ (void) drawEntireLineWithContent :(CGRect)frame columns :(NSMutableArray *)columnArray content:(NSMutableArray *)contentArray {
+
++ (void) drawEntireLineWithContent :(CGRect)frame columns :(NSMutableArray *)columnArray content :(NSMutableArray *)contentArray {
     CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPSMT"), 19, NULL);
-    
+
     NSArray *contentSeparated;
-    
+
+    NSMutableArray *assessments = [NSMutableArray new];
+    NSMutableArray *scores = [NSMutableArray new];
+    NSMutableArray *dates = [NSMutableArray new];
+
+    NSMutableString *parsedAssessmentsString = [NSMutableString stringWithCapacity:30];
+    NSMutableString *parsedScoresString = [NSMutableString stringWithCapacity:30];
+    NSMutableString *parsedDatesString = [NSMutableString stringWithCapacity:30];
+
     int counter = 0;
-    NSMutableString *parsedString = [NSMutableString stringWithCapacity:30];
     for (NSArray *s in contentArray) {
         for (NSString *d in s) {
             contentSeparated = [[NSMutableArray alloc] initWithArray:[d componentsSeparatedByString:@"/"] copyItems:YES];
-            [parsedString appendFormat:@"%@ Name: %@            Score: %@           Date: %@\n", [columnArray objectAtIndex:counter],
-             [contentSeparated objectAtIndex:0], [contentSeparated objectAtIndex:1], [contentSeparated objectAtIndex:2]];
+            
+            [assessments addObject:[contentSeparated objectAtIndex:0]];
+            [scores addObject:[contentSeparated objectAtIndex:1]];
+            [dates addObject:[contentSeparated objectAtIndex:2]];
+            
+            NSString *assessmentType = [columnArray objectAtIndex:counter];
+            
+            if ([assessmentType isEqualToString:@"Formative"]) {
+                assessmentType = @"(F)";
+            }
+            else if ([assessmentType isEqualToString:@"Standardized"]) {
+                assessmentType = @"(S)";
+            }
+            
+            
+            [parsedAssessmentsString appendFormat:@"%@ %@\n\n", assessmentType, [assessments lastObject]];
+            [parsedScoresString appendFormat:@"%@%@\n\n", [scores lastObject], @"%"];
+            [parsedDatesString appendFormat:@"%@\n\n", [dates lastObject]];
+
         }
         counter++;
     }
+
+    CFStringRef assessmentStringRef = (__bridge CFStringRef)parsedAssessmentsString;
+    CFStringRef scoresStringRef = (__bridge CFStringRef)parsedScoresString;
+    CFStringRef dateStringRef = (__bridge CFStringRef)parsedDatesString;
+
+    CTTextAlignment leftAlignment = kCTLeftTextAlignment;
+    CTTextAlignment centerAlignment = kCTCenterTextAlignment;
+    CTTextAlignment rightAlignment = kCTRightTextAlignment;
     
-    // Create an attributed string
-    CFStringRef keys[] = { kCTFontAttributeName };
-    CFTypeRef values[] = { font };
-    CFDictionaryRef attr = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values,
-                                              sizeof(keys) / sizeof(keys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CTParagraphStyleSetting settingsLeftAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(leftAlignment), &leftAlignment } };
+    CTParagraphStyleSetting settingsCenterAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(centerAlignment), &centerAlignment } };
+    CTParagraphStyleSetting settingsRightAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(rightAlignment), &rightAlignment } };
+
+    CTParagraphStyleRef paragraphStyleForLeftAlignment = CTParagraphStyleCreate(settingsLeftAlignment, sizeof(settingsLeftAlignment) / sizeof(settingsLeftAlignment[0]));
+    CTParagraphStyleRef paragraphStyleForCenterAlignment = CTParagraphStyleCreate(settingsCenterAlignment, sizeof(settingsCenterAlignment) / sizeof(settingsCenterAlignment[0]));
+    CTParagraphStyleRef paragraphStyleForRightAlignment = CTParagraphStyleCreate(settingsRightAlignment, sizeof(settingsRightAlignment) / sizeof(settingsRightAlignment[0]));
     
+    // Create an attributed string for Left
+    CFStringRef keysLeft[] = { kCTFontAttributeName, kCTParagraphStyleAttributeName };
+    CFTypeRef valuesLeft[] = { font, paragraphStyleForLeftAlignment };
+    CFDictionaryRef attrForLeftAlignment = CFDictionaryCreate(NULL, (const void **)&keysLeft, (const void **)&valuesLeft,
+                                                              sizeof(keysLeft) / sizeof(keysLeft[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     
-    NSString *textToDraw = [NSString stringWithFormat:@"%@", parsedString];
-    CFStringRef stringRef = (__bridge CFStringRef)textToDraw;
+    // Create an attributed string for Right
+    CFStringRef keysCenter[] = { kCTFontAttributeName, kCTParagraphStyleAttributeName };
+    CFTypeRef valuesCenter[] = { font, paragraphStyleForCenterAlignment };
+    CFDictionaryRef attrForCenterAlignment = CFDictionaryCreate(NULL, (const void **)&keysCenter, (const void **)&valuesCenter,
+                                                               sizeof(keysCenter) / sizeof(keysCenter[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     
-    // Prepare the text using a Core Text Framesetter
-    CFAttributedStringRef currentText = CFAttributedStringCreate(NULL, stringRef, attr);
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString(currentText);
+    // Create an attributed string for Right
+    CFStringRef keysRight[] = { kCTFontAttributeName, kCTParagraphStyleAttributeName };
+    CFTypeRef valuesRight[] = { font, paragraphStyleForRightAlignment };
+    CFDictionaryRef attrForRightAlignment = CFDictionaryCreate(NULL, (const void **)&keysRight, (const void **)&valuesRight,
+                                                               sizeof(keysRight) / sizeof(keysRight[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+    
+    // Prepare the text using a Core Text Framesetter LEFT
+    CFAttributedStringRef assessmentCurrentText = CFAttributedStringCreate(NULL, assessmentStringRef, attrForLeftAlignment);
+    CTFramesetterRef assessmentFramesetter = CTFramesetterCreateWithAttributedString(assessmentCurrentText);
+    
+    // Prepare the text using a Core Text Framesetter LEFT
+    CFAttributedStringRef scoreCurrentText = CFAttributedStringCreate(NULL, scoresStringRef, attrForCenterAlignment);
+    CTFramesetterRef scoreFramesetter = CTFramesetterCreateWithAttributedString(scoreCurrentText);
+
+    // Prepare the text using a Core Text Framesetter RIGHT
+    CFAttributedStringRef dateCurrentText = CFAttributedStringCreate(NULL, dateStringRef, attrForRightAlignment);
+    CTFramesetterRef dateFramesetter = CTFramesetterCreateWithAttributedString(dateCurrentText);
     
     CGRect frameRect = CGRectMake(50, -690, 700, 650);
     CGMutablePathRef framePath = CGPathCreateMutable();
@@ -387,46 +474,123 @@
     
     // Get the frame that will do the rendering.
     CFRange currentRange = CFRangeMake(0, 0);
-    CTFrameRef frameRef = CTFramesetterCreateFrame(framesetter, currentRange, framePath, NULL);
+    
+    CTFrameRef assessmentFrameRef = CTFramesetterCreateFrame(assessmentFramesetter, currentRange, framePath, NULL);
+    CTFrameRef scoreFrameRef = CTFramesetterCreateFrame(scoreFramesetter, currentRange, framePath, NULL);
+    CTFrameRef dateFrameRef = CTFramesetterCreateFrame(dateFramesetter, currentRange, framePath, NULL);
     CGPathRelease(framePath);
     
     // Get the graphics context.
     CGContextRef currentContext = UIGraphicsGetCurrentContext();
     
     // Draw the frame.
-    CTFrameDraw(frameRef, currentContext);
-    
-    CFRelease(frameRef);
-    CFRelease(stringRef);
-    CFRelease(framesetter);
+    CTFrameDraw(assessmentFrameRef, currentContext);
+    CTFrameDraw(scoreFrameRef, currentContext);
+    CTFrameDraw(dateFrameRef, currentContext);
+
+    CFRelease(assessmentFrameRef);
+    CFRelease(scoreFrameRef);
+    CFRelease(dateFrameRef);
 } /* drawColumnContent */
+
+
++ (void) drawPDFLedgend :(CGRect)frame columnArray :(NSMutableArray *)columns contentArray :(NSMutableArray *)content withString:(NSString *)str {
+
+//    float height = [self calculateFinalHeight:frame columnArray:columns contentArray:content];
+    NSString *studentName = str;
+
+    CFStringRef nameStringRef = (__bridge CFStringRef)studentName;
+
+    // Prepare font
+    CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPS-BoldItalicMT"), 14, NULL);
+
+    CTTextAlignment centerAlignment = kCTCenterTextAlignment;
+
+    CTParagraphStyleSetting settingsLeftAlignment[] = { { kCTParagraphStyleSpecifierAlignment, sizeof(centerAlignment), &centerAlignment } };
+
+    CTParagraphStyleRef paragraphStyleForLeftAlignment = CTParagraphStyleCreate(settingsLeftAlignment, sizeof(centerAlignment) / sizeof(settingsLeftAlignment[0]));
+
+    // Create an attributed string
+    CFStringRef keysLeft[] = { kCTFontAttributeName, kCTParagraphStyleAttributeName };
+    CFTypeRef valuesLeft[] = { font, paragraphStyleForLeftAlignment };
+    CFDictionaryRef attrForLeftAlignment = CFDictionaryCreate(NULL, (const void **)&keysLeft, (const void **)&valuesLeft,
+                                                              sizeof(keysLeft) / sizeof(keysLeft[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+    // Prepare the text using a Core Text Framesetter
+    CFAttributedStringRef nameCurrentText = CFAttributedStringCreate(NULL, nameStringRef, attrForLeftAlignment);
+    CTFramesetterRef nameFramesetter = CTFramesetterCreateWithAttributedString(nameCurrentText);
+
+    CGRect frameRect = CGRectMake(50, -1000, frame.size.width, 100);
+    CGMutablePathRef framePath = CGPathCreateMutable();
+    CGPathAddRect(framePath, NULL, frameRect);
+
+    // Get the frame that will do the rendering.
+    CFRange currentRange = CFRangeMake(0, 0);
+
+    CTFrameRef nameFrameRef = CTFramesetterCreateFrame(nameFramesetter, currentRange, framePath, NULL);
+    CGPathRelease(framePath);
+
+    // Get the graphics context.
+    CGContextRef currentContext = UIGraphicsGetCurrentContext();
+
+    // Draw the frame.
+    CTFrameDraw(nameFrameRef, currentContext);
+
+    CFRelease(nameFrameRef);
+    CFRelease(nameStringRef);
+    CFRelease(nameFramesetter);
+} /* drawTableHeaders */
 
 
 + (NSArray *) calculateLineValues :(CGRect)frame columnArray :(NSMutableArray *)columns contentArray :(NSMutableArray *)content {
     // Prepare font
     CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPSMT"), 12, NULL);
-
+    
     NSMutableArray *columnWidths = [[NSMutableArray alloc] init];
     NSMutableArray *contentWidths = [[NSMutableArray alloc] init];
-
+    
     for (NSArray *arr in columns) {
         for (NSString *d in arr) {
             [columnWidths addObject:[NSNumber numberWithFloat:[self sizeofLineWidth:frame string:d font:font]]];
         }
     }
-
+    
     CGRect frameRect = CGRectMake(frame.size.width / 2 + 10, -650, 375, 650);
     for (NSArray *arr in content) {
         for (NSString *ds in arr) {
             [contentWidths addObject:[NSNumber numberWithFloat:[self sizeofLineWidth:frameRect string:ds font:font]]];
         }
     }
-
+    
     return [[NSArray alloc] initWithObjects:columnWidths, contentWidths, nil];
 } /* calculateLineValues */
 
 
-+ (void) drawPDF :(NSString *)fileName frame :(CGRect)frame columnArray :(NSMutableArray *)columns contentArray :(NSMutableArray *)content titleString :(NSString *)title student :(Student *)student testType:(int)type {
++ (float) calculateFinalHeight :(CGRect)frame columnArray :(NSMutableArray *)columns contentArray :(NSMutableArray *)content {
+    // Prepare font
+    CTFontRef font = CTFontCreateWithName(CFSTR("TimesNewRomanPSMT"), 12, NULL);
+
+    float finalColumnHeight = 0.0f;
+    float finalContentHeight = 0.0f;
+
+    for (NSArray *arr in columns) {
+        for (NSString *d in arr) {
+            finalColumnHeight += [self sizeofLineHeight:frame string:d font:font];
+        }
+    }
+
+    CGRect frameRect = CGRectMake(frame.size.width / 2 + 10, -650, 375, 650);
+    for (NSArray *arr in content) {
+        for (NSString *ds in arr) {
+            finalContentHeight += [self sizeofLineHeight:frameRect string:ds font:font];
+        }
+    }
+
+    return (finalColumnHeight > finalContentHeight) ? finalColumnHeight : finalContentHeight;
+} /* calculateLineValues */
+
+
++ (void) drawPDF :(NSString *)fileName frame :(CGRect)frame columnArray :(NSMutableArray *)columns contentArray :(NSMutableArray *)content titleString :(NSString *)title student :(Student *)student testType :(int)type {
     // Create the PDF context using the default page size of 612 x 792.
     UIGraphicsBeginPDFContextToFile(fileName, CGRectZero, nil);
     // Mark the beginning of a new page.
@@ -434,22 +598,55 @@
 
     [self drawTitleText:frame title:title];
     [self drawStudentInformation:frame student:student];
-    
-    if (type == 1)
-    {
+
+    if (type == 1) {
+        // Format columns array
+        NSMutableArray *tempColumns = [[NSMutableArray alloc] initWithArray:[self concatenateArray:columns withSecondArray:content toIndex:1]];
+
         [self drawTableHeaders:frame];
-        NSMutableArray *array = [[NSMutableArray alloc] initWithArray:[self calculateLineValues:frame columnArray:columns contentArray:content]];
-        [self drawColumns:frame array:columns floatValues:array];
+        NSMutableArray *array = [[NSMutableArray alloc] initWithArray:[self calculateLineValues:frame columnArray:tempColumns contentArray:content]];
+        [self drawColumns:frame array:tempColumns floatValues:array];
         [self drawColumnContent:frame array:content floatValues:array];
-    }
-    else
-    {
+        [self drawPDFLedgend:frame columnArray:columns contentArray:content withString:@"B = Beginning, D = Developing, S = Secure"];
+    } else {
         [self drawEntireLineWithContent:frame columns:columns content:content];
+        [self drawTableHeadersForAssessments:frame];
+        [self drawPDFLedgend:frame columnArray:columns contentArray:content withString:@"S = Standardized Assessment, F = Formative Assessment"];
     }
 
     // Close the PDF context and write the contents out.
     UIGraphicsEndPDFContext();
 } /* drawPDF */
+
+
++ (NSArray *) concatenateArray :(NSMutableArray *)first withSecondArray :(NSMutableArray *)second toIndex :(int)startingindex {
+
+    NSMutableArray *concatenated = [NSMutableArray new];
+    NSMutableArray *looping = [NSMutableArray new];
+
+    for (int x = 0; x < first.count; x++) {
+
+        looping = [[NSMutableArray alloc] init];
+
+        for (int y = 0; y < [[first objectAtIndex:x] count]; y++) {
+
+            NSString *firstString = (NSString *)[[first objectAtIndex:x] objectAtIndex:y];
+            NSString *secondString = (NSString *)[[[second objectAtIndex:x] objectAtIndex:y] substringToIndex:startingindex];
+
+            if ([[secondString lowercaseString] isEqualToString:@"z"])
+                secondString = @"B";
+
+            NSString *formatted = [NSString stringWithFormat:@"(%@) %@", [secondString uppercaseString], firstString];
+
+            [looping addObject:formatted];
+        }
+
+        [concatenated addObject:looping];
+
+    }
+
+    return concatenated;
+} /* concatenateArray */
 
 
 + (NSString *) newstring :(CGRect)frame string :(NSString *)inputString floatValues :(NSMutableArray *)floats position :(int)pos arrayNumber :(int)arrayNum {
@@ -488,5 +685,26 @@
     return [input sizeWithFont:[UIFont fontWithName:@"TimesNewRomanPSMT" size:12]].width;
 } /* sizeofLineWidth */
 
+
++ (CGFloat) sizeofLineHeight :(CGRect)frame string :(NSString *)input font :(CTFontRef)font {
+    return [input sizeWithFont:[UIFont fontWithName:@"TimesNewRomanPSMT" size:12]].height;
+} /* sizeofLineWidth */
+
+
+// Incase teacher wants name on pdf
+// + (NSString *) nameOfTeacher {
+//    NSMutableDictionary *settingsDictionary = [[NSMutableDictionary alloc]
+//                                               initWithContentsOfFile:[self pathToFollowingResource:kTeacherSettingsPlist]];
+//    return [settingsDictionary objectForKey:kTeacherName];
+// }
+//
+// + (NSString *) pathToFollowingResource:(NSString *)resource {
+//    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+//                                                         NSUserDomainMask, YES);
+//    NSString *plistFile = [[paths objectAtIndex:0]
+//                           stringByAppendingPathComponent:resource];
+//
+//    return plistFile;
+// } /* plistPath */
 
 @end

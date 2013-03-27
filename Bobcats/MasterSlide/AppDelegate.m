@@ -30,52 +30,55 @@ static BOOL remember_me;
 @synthesize writingStudentsArray = _writingStudentsArray;
 @synthesize behavioralStudentsArray = _behavioralStudentsArray;
 
--(NSUInteger)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
-{
+- (NSUInteger) application :(UIApplication *)application supportedInterfaceOrientationsForWindow :(UIWindow *)window {
     /* iPad */
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         return UIInterfaceOrientationMaskAll;
     /* iPhone */
-    else  
+    else
         return UIInterfaceOrientationMaskAllButUpsideDown;
-}
+} /* application */
+
 
 - (BOOL) application :(UIApplication *)application didFinishLaunchingWithOptions :(NSDictionary *)launchOptions {
-    
+
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
     LoginViewController *lvc = [[LoginViewController alloc] initWithNibName:@"LoginViewController" bundle:[NSBundle mainBundle]];
     rootNavigationController = [[UINavigationController alloc] initWithRootViewController:lvc];
     self.window.rootViewController = rootNavigationController;
-    
+
     [self.window makeKeyAndVisible];
 
     return YES;
 } /* application */
 
-- (void)loadApplicationFromLogin:(BOOL)flag {
-    
+
+- (void) loadApplicationFromLogin :(BOOL)flag {
+
     UserCredentials *uc = [[UserCredentials alloc] init];
-    
-    if ([uc fetchDemoStateFromPlist]) { [self deleteAllSQL]; }
-    
+
+    if ([uc fetchDemoStateFromPlist]) {
+        [self deleteAllSQL];
+    }
+
     /*  Get the path to the documents directory and append the databaseName */
     NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                                  NSUserDomainMask, YES);
     NSString *documentsDir = [documentPaths objectAtIndex:0];
     self.databasePath = [documentsDir stringByAppendingPathComponent:DATABASE_NAME];
-    
+
     /*    Check and create employee database */
     [self checkAndCreateDatabase];
-    
+
     /*    Read employees from DB and insert into main employeeArray */
     [self readEmployeesFromDatabase];
-    
-    [uc writeDemoStateIntoPlist:NO];
-}
 
-- (void)deleteAllSQL
-{
+    [uc writeDemoStateIntoPlist:NO];
+} /* loadApplicationFromLogin */
+
+
+- (void) deleteAllSQL {
     /*  Get the path to the documents directory and append the databaseName */
     NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                                  NSUserDomainMask, YES);
@@ -85,20 +88,21 @@ static BOOL remember_me;
     [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kReading_Database] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kWriting_Database] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[[documentPaths objectAtIndex:0] stringByAppendingPathComponent:kBehavioral_Database] error:nil];
-}
+} /* deleteAllSQL */
 
-- (void)loadApplicationFromDemo {
-    
+
+- (void) loadApplicationFromDemo {
+
     NSError *err = nil;
 
     isDemo = YES;
-    
+
     /*  Get the path to the documents directory and append the databaseName */
     NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                                  NSUserDomainMask, YES);
     NSString *documentsDir = [documentPaths objectAtIndex:0];
     self.databasePath = [documentsDir stringByAppendingPathComponent:DATABASE_NAME];
-    
+
     [self deleteAllSQL];
 
     NSString *studentSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLStudents_Database];
@@ -106,20 +110,24 @@ static BOOL remember_me;
     NSString *readingSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLReading_Database];
     NSString *writingSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLWriting_Database];
     NSString *behavioralSQLDemo = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:kDemoSQLBehavioral_Database];
-    
+
     [[NSFileManager defaultManager] copyItemAtPath:studentSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kStudents_Database] error:&err];
     [[NSFileManager defaultManager] copyItemAtPath:mathSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kMath_Database] error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:readingSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kReading_Database] error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:writingSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kWriting_Database] error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:behavioralSQLDemo toPath:[documentsDir stringByAppendingPathComponent:kBehavioral_Database] error:nil];
-    
+
     if (err != nil)
         NSLog(@"ERROR_COPYING: %@", err);
     /*    Read employees from DB and insert into main employeeArray */
     [self readEmployeesFromDatabase];
-}
+} /* loadApplicationFromDemo */
 
-+ (BOOL) isDemo { return isDemo; }
+
++ (BOOL) isDemo {
+    return isDemo;
+} /* isDemo */
+
 
 - (void) allocStudentArraysByClass {
     self.mathStudentsArray = [[NSMutableArray alloc] init];
@@ -128,13 +136,27 @@ static BOOL remember_me;
     self.behavioralStudentsArray = [[NSMutableArray alloc] init];
 } /* allocStudentArraysByClass */
 
+- (int)returnValueOfSubstringDoesEqual:(int)i withStudentClassKey:(NSString *)string {
+    
+    // Range
+    NSRange textRange;
+    
+    // Range of int
+    textRange = [string rangeOfString:[NSString stringWithFormat:@"%d", i]];
+    
+    // Return yes if found
+    if(textRange.location != NSNotFound)
+        return i;
+
+    return -1;
+}
 
 - (void) setMathStudentsArray {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
         for (int y = 0; y < [[self.studentArraySectioned objectAtIndex:x] count]; y++) {
             Student *student = [[self.studentArraySectioned objectAtIndex:x] objectAtIndex:y];
-            if ([student classkey] == kMath_Key) {
+            if ([self returnValueOfSubstringDoesEqual:kMath_Key withStudentClassKey:[student classkey]] == kMath_Key) {
                 [tempArray addObject:student];
             }
         }
@@ -150,7 +172,7 @@ static BOOL remember_me;
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
         for (int y = 0; y < [[self.studentArraySectioned objectAtIndex:x] count]; y++) {
             Student *student = [[self.studentArraySectioned objectAtIndex:x] objectAtIndex:y];
-            if ([student classkey] == kReading_Key) {
+            if ([self returnValueOfSubstringDoesEqual:kReading_Key withStudentClassKey:[student classkey]] == kReading_Key) {
                 [tempArray addObject:student];
             }
         }
@@ -166,7 +188,7 @@ static BOOL remember_me;
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
         for (int y = 0; y < [[self.studentArraySectioned objectAtIndex:x] count]; y++) {
             Student *student = [[self.studentArraySectioned objectAtIndex:x] objectAtIndex:y];
-            if ([student classkey] == kWriting_Key) {
+            if ([self returnValueOfSubstringDoesEqual:kWriting_Key withStudentClassKey:[student classkey]] == kWriting_Key) {
                 [tempArray addObject:student];
             }
         }
@@ -182,7 +204,7 @@ static BOOL remember_me;
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
         for (int y = 0; y < [[self.studentArraySectioned objectAtIndex:x] count]; y++) {
             Student *student = [[self.studentArraySectioned objectAtIndex:x] objectAtIndex:y];
-            if ([student classkey] == kBehavioral_Key) {
+            if ([self returnValueOfSubstringDoesEqual:kBehavioral_Key withStudentClassKey:[student classkey]] == kBehavioral_Key) {
                 [tempArray addObject:student];
             }
         }
@@ -311,7 +333,7 @@ static BOOL remember_me;
                 NSString *aParentPhone = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 15)];
                 NSString *aParentRelationship = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 16)];
                 NSString *aNotes = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 17)];
-                int aClassKey = (int)sqlite3_column_int(compiledStatement, 18);
+                NSString *aClassKey = [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, 18)];
                 int aKey = (int)sqlite3_column_int(compiledStatement, 19);
                 int aAutoKey = (int)sqlite3_column_int(compiledStatement, 20);
 
@@ -376,30 +398,35 @@ static BOOL remember_me;
     return remember_me;
 } /* getRememberMeState */
 
-+ (void) setRememberMeState:(BOOL)flag {
+
++ (void) setRememberMeState :(BOOL)flag {
     remember_me = flag;
 } /* setRememberMeState */
+
 
 + (NSString *) getEmail {
     return merchantEmail;
 } /* getMerchantEmail */
 
-+ (void) setEmail:(NSString *)email {
+
++ (void) setEmail :(NSString *)email {
     if (merchantEmail != email) {
         merchantEmail = [email copy];
     }
 } /* setMerchantEmail */
+
 
 + (NSString *) getPassword {
     return merchantPassword;
 } /* getMerchantPassword */
 
 
-+ (void) setPassword:(NSString *)pass {
++ (void) setPassword :(NSString *)pass {
     if (merchantPassword != pass) {
         merchantPassword = [pass copy];
     }
 } /* setMerchantPassword */
+
 
 - (void) applicationDidEnterBackground :(UIApplication *)application {
 } /* applicationDidEnterBackground */

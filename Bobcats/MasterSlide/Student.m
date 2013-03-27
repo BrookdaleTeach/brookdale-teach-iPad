@@ -4,7 +4,7 @@
 @synthesize firstName, lastName, fullName, gender, dob_month, dob_day, dob_year, image, uid, email, phone, classkey;
 @synthesize address, parent_firstName, parent_lastName, parent_email, parent_phone, relationship, notes, key, primaryKey;
 
-- (id) initWithName :(NSString *)n firstName :(NSString *)first lastName :(NSString *)last gender :(NSString *)gen dob_month :(int)month dob_day :(int)day dob_year :(int)year image :(NSString *)im uid :(NSString *)d email :(NSString *)em phone :(NSString *)ph address :(NSString *)addr parent_firstName :(NSString *)pf parent_lastName :(NSString *)pl parent_email :(NSString *)pe parent_phone :(NSString *)pp relationship :(NSString *)rel notes :(NSString *)note classkey :(int)ck key :(int)k primaryKey :(int)pk {
+- (id) initWithName :(NSString *)n firstName :(NSString *)first lastName :(NSString *)last gender :(NSString *)gen dob_month :(int)month dob_day :(int)day dob_year :(int)year image :(NSString *)im uid :(NSString *)d email :(NSString *)em phone :(NSString *)ph address :(NSString *)addr parent_firstName :(NSString *)pf parent_lastName :(NSString *)pl parent_email :(NSString *)pe parent_phone :(NSString *)pp relationship :(NSString *)rel notes :(NSString *)note classkey :(NSString *)ck key :(int)k primaryKey :(int)pk {
 
     self.fullName = n;
     self.firstName = first;

@@ -23,6 +23,7 @@
     UIBarButtonItem *geolocateBarButtonItem;
     UIBarButtonItem *addToCalendarBarButtonItem;
     UIBarButtonItem *editUser;
+    UIBarButtonItem *addNote;
 
 }
 
@@ -34,7 +35,8 @@
 @synthesize emailActionSheet = _emailActionSheet;
 @synthesize contactActionSheet = _contactActionSheet;
 @synthesize addEventActionSheet = _addEventActionSheet;
-
+@synthesize settingsViewController;
+@synthesize HUD;
 #pragma mark -
 #pragma mark Class Delegate's Constructor
 
@@ -69,20 +71,131 @@
     [self setupMGBoxes];
 
     [self allocContentDataView];
-    
-    CGRect tbarFrame;
+
     toolbar = [[UIToolbar alloc] init];
 
     // Layout scroller based on interface orientation
     if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
-        tbarFrame = CGRectMake(0, BOX_PORTRAIT.size.height - 300, BOX_PORTRAIT.size.width, 44);
+        [toolbar setFrame:CGRectMake(0, BOX_PORTRAIT.size.height - 44, BOX_PORTRAIT.size.width + 75, 44)];
     else
-        tbarFrame = CGRectMake(0, BOX_LANDSCAPE.size.height - 300, BOX_LANDSCAPE.size.width, 44);
+        [toolbar setFrame:CGRectMake(0, BOX_LANDSCAPE.size.height - 300, BOX_LANDSCAPE.size.width, 44)];
 
-    [toolbar setFrame:tbarFrame];
-    [toolbar setTintColor:self.navigationController.navigationBar.tintColor];
+    [toolbar setTintColor:[UIColor clearColor]];
+
+    UIImage *gradientImage44 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
+                                resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+
+    [toolbar setBackgroundImage:gradientImage44 forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
+
+    toolBarImage = [[UIImageView alloc] init];
+
+    // Layout scroller based on interface orientation
+    if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
+        [toolBarImage setFrame:CGRectMake(710, 4, 35, 35)];
+    else
+        [toolBarImage setFrame:CGRectMake(650, 4, 35, 35)];
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:kTeacherImageDefault];
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
+        [toolBarImage setImage:[UIImage imageWithContentsOfFile:imagePath]];
+    } else {
+        [toolBarImage setImage:[UIImage imageNamed:kTeacherNoCustomImage]];
+    }
+
+    toolBarImage.layer.cornerRadius = 4.0f;
+    toolBarImage.layer.borderWidth = .8f;
+    toolBarImage.layer.borderColor = [[UIColor scrollViewTexturedBackgroundColor] CGColor];
+
+    [toolbar addSubview:toolBarImage];
+
+    UIButton *settingsButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [settingsButton setBackgroundImage:[UIImage imageNamed:@"gear.png"] forState:UIControlStateNormal];
+    [settingsButton addTarget:self action:@selector(pushSettings:) forControlEvents:UIControlEventTouchDown];
+    [settingsButton setFrame:CGRectMake(10, 9.5, 25, 25)];
+    [toolbar addSubview:settingsButton];
+
     [self.view addSubview:toolbar];
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[self pathToFollowingResource:kTeacherSettingsPlist]]) {
+        [settingsButton sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }
 } /* viewDidLoad */
+
+
+- (void) pushSettings :(id)sender {
+    CGRect final_portrait = CGRectMake(40, -400.0f, 700, 500);
+    CGRect final_landscape = CGRectMake(10, -400.0f, 700, 500);
+
+    CGRect initial_portrait = CGRectMake(40, -10.0f, 700, 500);
+    CGRect initial_landscape = CGRectMake(10, -10.0f, 700, 500);
+
+    if (!self.settingsViewController) {
+        self.settingsViewController = [[SettingsViewController alloc] init];
+
+        if ( UIInterfaceOrientationIsPortrait([[UIDevice currentDevice] orientation]) ) {
+            [self.settingsViewController.view setFrame:initial_portrait];
+        } else {
+            [self.settingsViewController.view setFrame:initial_landscape];
+        }
+
+        [self.view addSubview:self.settingsViewController.view];
+
+        isSettingsHidden = YES;
+    }
+
+    if (isSettingsHidden) {
+
+        // Begin Animations
+        [UIView beginAnimations:@"scrollboxdown" context:nil];
+
+        // Set Animation duration
+        [UIView setAnimationDuration:0.7f];
+
+        // Set Animation Content
+        if ( UIInterfaceOrientationIsPortrait([[UIDevice currentDevice] orientation]) ) {
+            [self.settingsViewController.view setFrame:initial_portrait];
+        } else {
+            [self.settingsViewController.view setFrame:initial_landscape];
+        }
+
+        // Commit the Animations
+        [UIView commitAnimations];
+    } else {
+
+        // Save the data
+        [[NSNotificationCenter defaultCenter] postNotificationName:kSettingsShouldSaveNotification object:self];
+
+        // Begin Animations
+        [UIView beginAnimations:@"scrollboxup" context:nil];
+
+        // Set Animation duration
+        [UIView setAnimationDuration:0.7f];
+
+        // Set Animation Content
+        if ( UIInterfaceOrientationIsPortrait([[UIDevice currentDevice] orientation]) ) {
+            [self.settingsViewController.view setFrame:final_portrait];
+        } else {
+            [self.settingsViewController.view setFrame:final_landscape];
+        }
+        // Commit the Animations
+        [UIView commitAnimations];
+    }
+
+    isSettingsHidden = !isSettingsHidden;
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *imagePath = [documentsDirectory stringByAppendingPathComponent:kTeacherImageDefault];
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
+        [toolBarImage setImage:[UIImage imageWithContentsOfFile:imagePath]];
+    } else {
+        [toolBarImage setImage:[UIImage imageNamed:kTeacherNoCustomImage]];
+    }
+} /* pushSettings */
 
 
 #pragma mark -
@@ -106,7 +219,7 @@
     if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
         [self.scroller setFrame:BOX_PORTRAIT];
     else if ( UIInterfaceOrientationIsLandscape(self.interfaceOrientation) )
-        [self.scroller setFrame:CGRectMake(12, 135, 768, 525)];
+        [self.scroller setFrame:CGRectMake(0, 130, 782, 525)];
 
     // MGBox Scroller layout mode
     self.scroller.contentLayoutMode = MGLayoutGridStyle;
@@ -128,19 +241,18 @@
     table1.sizingMode = MGResizingShrinkWrap;
 
     // Only add if not "All Students" section
-    if (![nextView isEqualToString:@"All Students"])
-    {
+    if (![nextView isEqualToString:@"All Students"]) {
         // Alloc/Init Second Table
         table2 = MGBox.box;
         [tablesGrid.boxes addObject:table2];
         table2.sizingMode = MGResizingShrinkWrap;
     }
-    
+
     // Alloc/Init Third Table
     table3 = MGBox.box;
     [tablesGrid.boxes addObject:table3];
     table3.sizingMode = MGResizingShrinkWrap;
-    
+
 } /* setupMGBoxes */
 
 
@@ -214,16 +326,15 @@
     [table1 layoutWithSpeed:0.3 completion:nil];
 
     // Only add if not "All Students" section
-    if (![nextView isEqualToString:@"All Students"])
-    {
+    if (![nextView isEqualToString:@"All Students"]) {
         // Setup second menu
         MGTableBoxStyled *menu2 = MGTableBoxStyled.box;
         [table2.boxes addObject:menu2];
 
-        
+
         // Add Static content to array
-        NSArray *testsContent = [[NSArray alloc] initWithObjects:[NSString stringWithFormat:@"Modify %@ Test Scores", [nextView capitalizedString]],
-                                 [NSString stringWithFormat:@"Modify %@ Assessment Scores", [nextView capitalizedString]], nil];
+        NSArray *testsContent = [[NSArray alloc] initWithObjects:[NSString stringWithFormat:@"Modify %@ Assessment Scores", [nextView capitalizedString]],
+                                 [NSString stringWithFormat:@"Modify %@ Checklist", [nextView capitalizedString]], nil];
 
         // Loop through data and add to menu
         for (int y = 0; y < testsContent.count; y++) {
@@ -247,33 +358,32 @@
     MGLineStyled *print1, *print2;
     // Setup second menu
     MGTableBoxStyled *menu3 = MGTableBoxStyled.box;
-    
+
     if ([[nextView capitalizedString] isEqualToString:@"All Students"]) {
-        
+
         header = [MGLineStyled lineWithLeft:[NSString stringWithFormat:@"Go to %@'s class page", [student firstName]]
                                       right:[UIImage imageNamed:@"arrow"]
                                        size:ROW_SIZE];
         header.font = HEADER_FONT;
-        
+
         header.tag = 12311;
-        
+
         header.onTap = ^{
             [dtv buttonpress:12311];
         };
-        
+
         [menu3.topLines addObject:header];
-    }
-    else {
-        print1 = [MGLineStyled lineWithLeft:@"Print Assessments"
+    } else {
+        print1 = [MGLineStyled lineWithLeft:@"Print Checklists"
                                       right:[UIImage imageNamed:@"arrow"]
                                        size:ROW_SIZE];
-        print2 = [MGLineStyled lineWithLeft:@"Print Standardized Tests"
+        print2 = [MGLineStyled lineWithLeft:@"Print Test Scores"
                                       right:[UIImage imageNamed:@"arrow"]
                                        size:ROW_SIZE];
 
         print1.font = HEADER_FONT;
         print2.font = HEADER_FONT;
-        
+
         print1.tag = kPrintAssessmentTag;
         print2.tag = kPrintStandardizedTag;
 
@@ -287,7 +397,7 @@
         [menu3.topLines addObject:print1];
         [menu3.topLines addObject:print2];
     }
-    
+
     [table3.boxes addObject:menu3];
 
     // Layout table
@@ -340,16 +450,20 @@
 - (void) allocContentDataView {
 
     // Set Student Shelf
-    shelfView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width + 55, self.view.bounds.size.height / 8)];
+    shelfView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width + 55, self.view.bounds.size.height / 8 + 3)];
     shelfView.backgroundColor = [UIColor colorWithRed:0.94 green:0.94 blue:0.95 alpha:1];
     shelfView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     shelfView.layer.masksToBounds = YES;
     shelfView.alpha = .9;
 
-    CAGradientLayer *bgLayer = [self customGradient:[UIColor whiteColor] :[UIColor lightGrayColor]];
-    bgLayer.frame = shelfView.bounds;
+    UIImage *gradientImage44 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.86f alpha:1.0f]]
+                                resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
 
-    [shelfView.layer insertSublayer:bgLayer atIndex:0];
+//    CAGradientLayer *bgLayer = [self customGradient:[UIColor whiteColor] :[UIColor lightGrayColor]];
+//    bgLayer.frame = shelfView.bounds;
+//    [shelfView.layer insertSublayer:bgLayer atIndex:0];
+
+    [shelfView setBackgroundColor:[UIColor colorWithPatternImage:gradientImage44]];
     shelfView.hidden = YES;
     [self.view addSubview:shelfView];
 
@@ -363,29 +477,38 @@
     [self.view insertSubview:shelfViewShadow belowSubview:shelfView];
 
     // Set Student Image
-    studentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10,
-                                                                     88, 88)];
-    [self.view addSubview:studentImageView];
+    studentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 10,
+                                                                     101, 101)];
+
+    // Get the Layer of any view
+    CALayer *sivl = [studentImageView layer];
+    [sivl setMasksToBounds:YES];
+    [sivl setCornerRadius:6.5];
+    // Add a border
+    [sivl setBorderWidth:2.0];
+    [sivl setBorderColor:[[UIColor darkGrayColor] CGColor]];
+    studentImageView.hidden = YES;
+    [self.view insertSubview:studentImageView aboveSubview:shelfView];
 
     // Set Student Name Label
-    nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 15, 300, 23)];
-    [nameLabel setFont:[UIFont fontWithName:@"ArialRoundedMTBold" size:22.0f]];
+    nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(142, 18, 300, 26)];
+    [nameLabel setFont:[UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:24.0f]];
     [nameLabel setBackgroundColor:[UIColor clearColor]];
     [nameLabel setTextColor:[UIColor darkGrayColor]];
     [self.view addSubview:nameLabel];
 
     // Set Student Email Label
-    emailLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 40, 300, 19)];
-    [emailLabel setFont:[UIFont fontWithName:@"ArialRoundedMTBold" size:17.0f]];
+    emailLabel = [[UILabel alloc] initWithFrame:CGRectMake(143, 45, 300, 19)];
+    [emailLabel setFont:[UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:16.0f]];
     [emailLabel setBackgroundColor:[UIColor clearColor]];
-    [emailLabel setTextColor:[UIColor grayColor]];
+    [emailLabel setTextColor:[UIColor darkGrayColor]];
     [self.view addSubview:emailLabel];
 
     // Set Student UID Label
-    uidLabel = [[UILabel alloc] initWithFrame:CGRectMake(120, 62, 300, 19)];
-    [uidLabel setFont:[UIFont fontWithName:@"ArialRoundedMTBold" size:17.0f]];
+    uidLabel = [[UILabel alloc] initWithFrame:CGRectMake(143, 68, 300, 19)];
+    [uidLabel setFont:[UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:16.0f]];
     [uidLabel setBackgroundColor:[UIColor clearColor]];
-    [uidLabel setTextColor:[UIColor grayColor]];
+    [uidLabel setTextColor:[UIColor darkGrayColor]];
     [self.view addSubview:uidLabel];
 
     // Calendar Button and Actiom
@@ -418,7 +541,7 @@
     composeBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:customBarButtonEmail];
     composeBarButtonItem.enabled = NO;
 
-    self.emailActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Email Student", @"Email Parent", nil];
+    self.emailActionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"Email Myself", @"Email Parent", nil];
     self.emailActionSheet.tag = kEmailActionSheet;
 
     // Geolocation Button and Actiom
@@ -431,10 +554,13 @@
 
     self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:addContactBarButtonItem, composeBarButtonItem, geolocateBarButtonItem, addToCalendarBarButtonItem, nil];
 
-    editUser = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStyleBordered target:self action:@selector(editCurrentUser:)];
+    editUser = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit target:self action:@selector(editCurrentUser:)];
     editUser.enabled = NO;
 
-    self.navigationItem.leftBarButtonItem = editUser;
+    addNote = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(pushNotesModalView:)];
+    addNote.enabled = NO;
+
+    self.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:editUser, addNote, nil];
 
 } /* allocContentDataView */
 
@@ -472,8 +598,14 @@
     if (!editUser.enabled) {
         editUser.enabled = !editUser.enabled;
     }
+    if (!addNote.enabled) {
+        addNote.enabled = !addNote.enabled;
+    }
     if (shelfViewShadow.hidden) {
         shelfViewShadow.hidden = !shelfViewShadow.hidden;
+    }
+    if (studentImageView.hidden) {
+        studentImageView.hidden = !studentImageView.hidden;
     }
     if (!composeBarButtonItem.enabled) {
         composeBarButtonItem.enabled = !composeBarButtonItem.enabled;
@@ -499,6 +631,7 @@
 
     shelfView.alpha = 0.09f;
     shelfViewShadow.alpha = 0.09f;
+    studentImageView.alpha = 0.09f;
 
     CATransition *animation = [CATransition animation];
     animation.type = kCATransitionFade;
@@ -507,16 +640,18 @@
     shelfView.alpha = 1.0f;
     [shelfViewShadow.layer addAnimation:animation forKey:nil];
     shelfViewShadow.alpha = 1.0f;
+    [studentImageView.layer addAnimation:animation forKey:nil];
+    studentImageView.alpha = 1.0f;
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
-    
+
     NSString *imagePath;
     if ([AppDelegate isDemo])
         imagePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
     else
         imagePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
-    
+
     NSFileManager *filemanager = [NSFileManager defaultManager];
 
     if ([filemanager fileExistsAtPath:imagePath]) {
@@ -529,7 +664,7 @@
     [nameLabel setText:[student fullName]];
 
     // Set Student Email Label
-    [emailLabel setText:[student email]];
+    [emailLabel setText:[[student email] lowercaseString]];
 
     // Set Student UID Label
     [uidLabel setText:[student uid]];
@@ -556,40 +691,37 @@
     NSArray *classStringsArray = nil;
     NSString *title = nil;
 
-    switch ([student classkey]) {
-        case kMath_Key :
-            title = @"Math Observation/Anecdotal Record Checklist";
-            classStringsArray = [[NSMutableArray alloc] initWithObjects:[kMathBehaviorsStrings componentsSeparatedByString:@",, "],
-                                 [kMathSkillsStrings componentsSeparatedByString:@",, "], nil];
-            classContentData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
-            break;
-        case kReading_Key :
-            title = @"Reading Observation/Anecdotal Record Checklist";
-            classStringsArray = [[NSMutableArray alloc] initWithObjects:[kReadingStrategiesStrings componentsSeparatedByString:kStringsDelimiter],
-                                 [kReadingDecodingStrings componentsSeparatedByString:kStringsDelimiter],
-                                 [kReadingFluencyStrings componentsSeparatedByString:kStringsDelimiter], nil];
-            classContentData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
-            break;
-        case kWriting_Key :
-            title = @"Writing Observation/Anecdotal Record Checklist";
-            classStringsArray = [[NSMutableArray alloc] initWithObjects:[kWritingMechanicStrings componentsSeparatedByString:kStringsDelimiter],
-                                 [kWritingOrganizationStrings componentsSeparatedByString:kStringsDelimiter],
-                                 [kWritingProcessesStrings componentsSeparatedByString:kStringsDelimiter], nil];
-            classContentData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
-            break;
-        case kBehavioral_Key :
-            title = @"Writing Observation/Anecdotal Record Checklist";
-            classStringsArray = [[NSMutableArray alloc] initWithObjects:[kBehavioralAttendanceStrings componentsSeparatedByString:kStringsDelimiter],
-                                 [kBehavioralRespectStrings componentsSeparatedByString:kStringsDelimiter],
-                                 [kBehavioralResponsibilityStrings componentsSeparatedByString:kStringsDelimiter],
-                                 [kBehavioralFeelingsStrings componentsSeparatedByString:kStringsDelimiter], nil];
-            classContentData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
-            break;
-        default :
-            break;
-    } /* switch */
+    if ([[nextView lowercaseString] isEqualToString:@"math"]) {
+        title = @"Math Observation/Anecdotal Record Checklist";
+        classStringsArray = [[NSMutableArray alloc] initWithObjects:[kMathBehaviorsStrings componentsSeparatedByString:@",, "],
+                             [kMathSkillsStrings componentsSeparatedByString:@",, "], nil];
+        classContentData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
+    } else if ([[nextView lowercaseString] isEqualToString:@"reading"]) {
+        title = @"Reading Observation/Anecdotal Record Checklist";
+        classStringsArray = [[NSMutableArray alloc] initWithObjects:[kReadingStrategiesStrings componentsSeparatedByString:kStringsDelimiter],
+                             [kReadingDecodingStrings componentsSeparatedByString:kStringsDelimiter],
+                             [kReadingFluencyStrings componentsSeparatedByString:kStringsDelimiter], nil];
+        classContentData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
+
+    } else if ([[nextView lowercaseString] isEqualToString:@"writing"]) {
+        title = @"Writing Observation/Anecdotal Record Checklist";
+        classStringsArray = [[NSMutableArray alloc] initWithObjects:[kWritingMechanicStrings componentsSeparatedByString:kStringsDelimiter],
+                             [kWritingOrganizationStrings componentsSeparatedByString:kStringsDelimiter],
+                             [kWritingProcessesStrings componentsSeparatedByString:kStringsDelimiter], nil];
+        classContentData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
+    } else if ([[nextView lowercaseString] isEqualToString:@"behavioral"]) {
+        title = @"Writing Observation/Anecdotal Record Checklist";
+        classStringsArray = [[NSMutableArray alloc] initWithObjects:[kBehavioralAttendanceStrings componentsSeparatedByString:kStringsDelimiter],
+                             [kBehavioralRespectStrings componentsSeparatedByString:kStringsDelimiter],
+                             [kBehavioralResponsibilityStrings componentsSeparatedByString:kStringsDelimiter],
+                             [kBehavioralFeelingsStrings componentsSeparatedByString:kStringsDelimiter], nil];
+        classContentData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
+
+    } /* if else */
+
     return [[NSArray alloc] initWithObjects:classStringsArray, classContentData, title, nil];
 } /* retrieveClassAssessmentColumnContent */
+
 
 #pragma mark -
 #pragma mark Class Delegate's Data Retrieval Method
@@ -598,31 +730,26 @@
     NSArray *formativeData = nil;
     NSArray *standardizedData = nil;
     NSString *title = nil;
-    
-    switch ([student classkey]) {
-        case kMath_Key :
-            title = @"Student Math Formative/Standardized Tests";
-            formativeData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
-            standardizedData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
-            break;
-        case kReading_Key :
-            title = @"Student Reading Formative/Standardized Tests";
-            formativeData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
-            standardizedData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
-            break;
-        case kWriting_Key :
-            title = @"Student Writing Formative/Standardized Tests";
-            formativeData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
-            standardizedData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
-            break;
-        case kBehavioral_Key :
-            title = @"Student Behavioral Formative/Standardized Tests";
-            formativeData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
-            standardizedData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
-            break;
-        default :
-            break;
-    } /* switch */
+
+    if ([[nextView lowercaseString] isEqualToString:@"math"]) {
+        title = @"Student Math Formative/Standardized Tests";
+        formativeData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
+        standardizedData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+    } else if ([[nextView lowercaseString] isEqualToString:@"reading"]) {
+        title = @"Student Reading Formative/Standardized Tests";
+        formativeData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
+        standardizedData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+    } else if ([[nextView lowercaseString] isEqualToString:@"writing"]) {
+        title = @"Student Writing Formative/Standardized Tests";
+        formativeData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
+        standardizedData = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+    } else if ([[nextView lowercaseString] isEqualToString:@"behavioral"]) {
+        title = @"Student Behavioral Formative/Standardized Tests";
+        formativeData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
+        standardizedData = [[NSMutableArray alloc] initWithArray:[BehavioralAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
+
+    } /* if else */
+
     return [[NSArray alloc] initWithObjects:formativeData, standardizedData, title, nil];
 } /* retrieveClassAssessmentColumnContent */
 
@@ -668,97 +795,129 @@
         break;
         case kPrintAssessmentTag :
         {
-            // Fetch data and store in array
-            NSArray *studentContent = [[NSArray alloc] initWithArray:[self retrieveClassAssessmentColumnContent]];
-
-            // Render the PDF data
-            [PDFRenderer drawPDF:[self getFilePathForPrintingPDF]
-                           frame:LEGAL_PAPER_SIZE
-                     columnArray:[studentContent objectAtIndex:0]
-                    contentArray:[studentContent objectAtIndex:1]
-                     titleString:[studentContent objectAtIndex:2]
-                         student:student
-                        testType:1];
-
-            // Preview The PDF Data
-            [self previewPDFData];
+            [self processRequest:@selector(generateAssessmentPortableDocumentFormat)];
         }
         break;
         case kPrintStandardizedTag :
         {
-            // Fetch data and store in array
-            NSArray *studentContent = [[NSArray alloc] initWithArray:[self retrieveClassFormativeStandardizedColumnContent]];
-            
-            // Render the PDF data
-            [PDFRenderer drawPDF:[self getFilePathForPrintingPDF]
-                           frame:LEGAL_PAPER_SIZE
-                     columnArray:[[NSMutableArray alloc] initWithObjects:@"Formative", @"Standardized", nil]
-                    contentArray:[[NSMutableArray alloc] initWithObjects:[studentContent objectAtIndex:0], [studentContent objectAtIndex:1], nil]
-                     titleString:[studentContent objectAtIndex:2]
-                         student:student
-                        testType:2];
-            
-            // Preview The PDF Data
-            [self previewPDFData];
+            [self processRequest:@selector(generateStandardizedPortableDocumentFormat)];
         }
-            break;
+        break;
         case 12311 :
         {
             NSMutableArray *array = [[NSMutableArray alloc] init];
             NSString *next = nil;
-            
-            switch ([student classkey]) {
-                case kMath_Key:
-                    array = appDelegate.mathStudentsArray;
-                    next = @"Math";
-                    break;
-                case kReading_Key:
-                    array = appDelegate.readingStudentsArray;
-                    next = @"Reading";
-                    break;
-                case kWriting_Key:
-                    array = appDelegate.writingStudentsArray;
-                    next = @"Writing";
-                    break;
-                case kBehavioral_Key:
-                    array = appDelegate.behavioralStudentsArray;
-                    next = @"Behavioral";
-                    break;
-                default:
-                    break;
+
+            if ([self returnValueOfSubstringDoesEqual:kMath_Key withStudentClassKey:[student classkey]] == kMath_Key) {
+                array = appDelegate.mathStudentsArray;
+                next = @"Math";
             }
-            
+            if ([self returnValueOfSubstringDoesEqual:kReading_Key withStudentClassKey:[student classkey]] == kReading_Key) {
+                array = appDelegate.readingStudentsArray;
+                next = @"Reading";
+            }
+            if ([self returnValueOfSubstringDoesEqual:kWriting_Key withStudentClassKey:[student classkey]] == kWriting_Key) {
+                array = appDelegate.writingStudentsArray;
+                next = @"Writing";
+            }
+            if ([self returnValueOfSubstringDoesEqual:kBehavioral_Key withStudentClassKey:[student classkey]] == kBehavioral_Key) {
+                array = appDelegate.behavioralStudentsArray;
+                next = @"Behavioral";
+
+            }
+
             int sect = 0, row = 0;
             BOOL found = NO;
-            for (NSArray *sarray in array)
-            {
+            for (NSArray *sarray in array) {
                 row = 0;
-                for (Student *s in sarray)
-                {
+                for (Student *s in sarray) {
                     if ([[s uid] isEqualToString:[student uid]]) {
                         found = YES;
                         break;
                     }
                     row++;
                 }
-                
-                if (found) { break; }
-                
+
+                if (found) {
+                    break;
+                }
+
                 sect++;
             }
 
             NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithCapacity:1];
             [userInfo setObject:[NSIndexPath indexPathForRow:row inSection:sect] forKey:@"indexPath"];
             [userInfo setObject:next forKey:@"view"];
-            
+
             NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
             [nc postNotificationName:@"UpdateContent" object:self userInfo:userInfo];
         }
-            break;
+        break;
         default :
             break;
     } /* switch */
 } /* buttonpress */
+
+
+- (void) generateAssessmentPortableDocumentFormat {
+    // Fetch data and store in array
+    NSArray *studentContent = [[NSArray alloc] initWithArray:[self retrieveClassAssessmentColumnContent]];
+
+    // Render the PDF data
+    [PDFRenderer drawPDF:[self getFilePathForPrintingPDF]
+                   frame:LEGAL_PAPER_SIZE
+             columnArray:[studentContent objectAtIndex:0]
+            contentArray:[studentContent objectAtIndex:1]
+             titleString:[studentContent objectAtIndex:2]
+                 student:student
+                testType:1];
+
+    // Preview The PDF Data
+    [self performSelectorOnMainThread:@selector(previewPDFData) withObject:nil waitUntilDone:NO];
+} /* generateAssessmentPortableDocumentFormat */
+
+
+- (void) generateStandardizedPortableDocumentFormat {
+    // Fetch data and store in array
+    NSArray *studentContent = [[NSArray alloc] initWithArray:[self retrieveClassFormativeStandardizedColumnContent]];
+
+    // Render the PDF data
+    [PDFRenderer drawPDF:[self getFilePathForPrintingPDF]
+                   frame:LEGAL_PAPER_SIZE
+             columnArray:[[NSMutableArray alloc] initWithObjects:@"Formative", @"Standardized", nil]
+            contentArray:[[NSMutableArray alloc] initWithObjects:[studentContent objectAtIndex:0], [studentContent objectAtIndex:1], nil]
+             titleString:[studentContent objectAtIndex:2]
+                 student:student
+                testType:2];
+
+    // Preview The PDF Data
+    [self performSelectorOnMainThread:@selector(previewPDFData) withObject:nil waitUntilDone:NO];
+} /* generateStandardizedPortableDocumentFormat */
+
+
+- (void) processRequest :(SEL)process {
+    HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+    HUD.labelText = @"Generating Document";
+    HUD.mode = MBProgressHUDModeIndeterminate;
+    [self.navigationController.view addSubview:HUD];
+    [HUD showWhileExecuting:process onTarget:self withObject:nil animated:YES];
+} /* processRequest */
+
+
+- (int) returnValueOfSubstringDoesEqual :(int)i withStudentClassKey :(NSString *)string {
+
+    // Range
+    NSRange textRange;
+
+    // Range of int
+    textRange = [string rangeOfString:[NSString stringWithFormat:@"%d", i]];
+
+    // Return yes if found
+    if (textRange.location != NSNotFound)
+        return i;
+
+    return -1;
+} /* returnValueOfSubstringDoesEqual */
 
 
 #pragma mark -
@@ -773,7 +932,19 @@
    //
  */
 - (void) editCurrentUser :(id)sender {
-    EditUser *edv = [[EditUser alloc] init:student key:[student classkey] index:indexPath title:nextView];
+
+    int next = -1;
+    if ([[nextView lowercaseString] isEqualToString:@"math"]) {
+        next = kMath_Key;
+    } else if ([[nextView lowercaseString] isEqualToString:@"reading"]) {
+        next = kReading_Key;
+    } else if ([[nextView lowercaseString] isEqualToString:@"writing"]) {
+        next = kWriting_Key;
+    } else if ([[nextView lowercaseString] isEqualToString:@"behavioral"]) {
+        next = kBehavioral_Key;
+    }
+
+    EditUser *edv = [[EditUser alloc] init:student key:next index:indexPath title:nextView];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:edv];
     navController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self presentModalViewController:navController animated:YES];
@@ -849,6 +1020,37 @@
 } /* customGradient */
 
 
+- (void) pushNotesModalView :(id)sender  {
+    UIViewController *vc = [[UIViewController alloc] init];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
+    vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(insertNote:)];
+    vc.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
+    vc.title = [NSString stringWithFormat:@"%@ Notes", [student fullName]];
+
+    notesTextView = [[UITextView alloc] initWithFrame:CGRectMake(20, 20, 495, 535)];
+    notesTextView.contentInset = UIEdgeInsetsMake(12, 10, 0, 0);
+    notesTextView.font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:15.0f];
+    notesTextView.textColor = [UIColor darkGrayColor];
+    notesTextView.text = [StudentsDataLayer retrieveStudentDataFromClassDatabaseColumn:@"notes" withStudent:[student uid]];
+    notesTextView.layer.cornerRadius = 4.0f;
+    [vc.view addSubview:notesTextView];
+
+    navController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [self presentModalViewController:navController animated:YES];
+} /* pushModalView */
+
+
+- (void) insertNote :(id)sender {
+    [StudentsDataLayer insertStudentDataIntoClassDatabaseColumn:@"notes" withStudent:[student uid] withText:notesTextView.text];
+    [self dismissModalViewControllerAnimated:YES];
+} /* insertNote */
+
+
+- (void) cancel :(id)sender {
+    [self dismissModalViewControllerAnimated:YES];
+} /* cancel */
+
+
 #pragma mark -
 #pragma mark Class Orientation Method Delegate
 
@@ -862,11 +1064,33 @@
  */
 - (void) willAnimateRotationToInterfaceOrientation :(UIInterfaceOrientation)orient duration :(NSTimeInterval)duration {
 
+    // Layout scroller based on interface orientation
+    if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
+        [toolBarImage setFrame:CGRectMake(710, 4, 35, 35)];
+    else
+        [toolBarImage setFrame:CGRectMake(650, 4, 35, 35)];
+
+    CGRect initial_portrait = CGRectMake(40, -10.0f, 700, 500);
+    CGRect initial_landscape = CGRectMake(10, -10.0f, 700, 500);
+
+    // Layout scroller based on interface orientation
+    if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ) {
+        [toolbar setFrame:CGRectMake(0, BOX_PORTRAIT.size.height - 44, BOX_PORTRAIT.size.width + 75, 44)];
+        if (!isSettingsHidden) {
+            [self.settingsViewController.view setFrame:initial_portrait];
+        }
+    } else {
+        [toolbar setFrame:CGRectMake(0, BOX_LANDSCAPE.size.height - 300, BOX_LANDSCAPE.size.width, 44)];
+        if (!isSettingsHidden) {
+            [self.settingsViewController.view setFrame:initial_landscape];
+        }
+    }
+
     // Reset Scroller based on orientation
-    if ( UIInterfaceOrientationIsPortrait(orient) )
+    if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) )
         [self.scroller setFrame:BOX_PORTRAIT];
-    else if ( UIInterfaceOrientationIsLandscape(orient) )
-        [self.scroller setFrame:BOX_LANDSCAPE];
+    else if ( UIInterfaceOrientationIsLandscape(self.interfaceOrientation) )
+        [self.scroller setFrame:CGRectMake(0, 130, 782, 525)];
 
     // relayout the sections
     [self.scroller layoutWithSpeed:0.0f completion:nil];
@@ -1106,6 +1330,16 @@
 #pragma mark -
 #pragma mark MFMailComposeViewController didFinishWithResult delegate and other Mailing methods
 
+- (NSString *) pathToFollowingResource :(NSString *)resource {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                         NSUserDomainMask, YES);
+    NSString *plistFile = [[paths objectAtIndex:0]
+                           stringByAppendingPathComponent:resource];
+
+    return plistFile;
+} /* plistPath */
+
+
 /*
    //
    Method: emailSpecifiedIndividual
@@ -1120,8 +1354,16 @@
 
         switch (buttonIndex) {
             case 0 :
-                [mailComposeViewController setToRecipients:[NSArray arrayWithObject:[student email]]];
-                break;
+            {
+                NSMutableDictionary *settingsDictionary = [[NSMutableDictionary alloc]
+                                                           initWithContentsOfFile:[self pathToFollowingResource:kTeacherSettingsPlist]];
+
+                if ([settingsDictionary objectForKey:kTeacherEmail])
+                    [mailComposeViewController setToRecipients:[NSArray arrayWithObject:[settingsDictionary objectForKey:kTeacherEmail]]];
+                else
+                    [mailComposeViewController setToRecipients:[NSArray arrayWithObject:@""]];
+            }
+            break;
             case 1 :
                 [mailComposeViewController setToRecipients:[NSArray arrayWithObject:[student parent_email]]];
                 break;
@@ -1159,21 +1401,23 @@
 
 } /* emailWithAttachment */
 
-- (void)loadMailComposer:(id)sender
-{
-    
+
+- (void) loadMailComposer :(id)sender {
+
     MFMailComposeViewController *mailComposeViewController = [MFMailComposeViewController new];
-    
+
     [mailComposeViewController setSubject:@""];
-    
+
     [mailComposeViewController setMessageBody:@"" isHTML:NO];
-    
+
     mailComposeViewController.mailComposeDelegate = self;
-    
+
     [mailComposeViewController addAttachmentData:[NSData dataWithContentsOfFile:[self getFilePathForPrintingPDF]] mimeType:@"application/pdf" fileName:[NSString stringWithFormat:@"%@_assessment.pdf", [student uid]]];
-    
+
     [self presentModalViewController:mailComposeViewController animated:YES];
-}
+} /* loadMailComposer */
+
+
 #pragma mark -
 #pragma mark Method Declarations for printing PDF files
 
@@ -1221,11 +1465,6 @@
     webView.scrollView.maximumZoomScale = .68f;
     webView.scrollView.zoomScale = .68f;
 } /* webViewDidFinishLoad */
-
-
-- (void) cancel :(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
-} /* cancel */
 
 
 @end

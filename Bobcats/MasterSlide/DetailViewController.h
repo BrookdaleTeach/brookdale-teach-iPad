@@ -18,6 +18,10 @@
 #import <EventKit/EventKit.h>
 #import <EventKitUI/EventKitUI.h>
 
+#import "SettingsViewController.h"
+
+#import "MBProgressHUD.h"
+
 @class AppDelegate;
 
 @interface DetailViewController : UIViewController <UIActionSheetDelegate, MFMailComposeViewControllerDelegate, MKMapViewDelegate, EKEventEditViewDelegate, UIScrollViewDelegate, UIWebViewDelegate> {
@@ -43,8 +47,18 @@
     UIToolbar *toolbar;
 
     int selectedContactActionSheetButton;
+    
+    BOOL isSettingsHidden;
+    
+    UIImageView *toolBarImage;
+    
+    MBProgressHUD *HUD;
+    
+    UITextView *notesTextView;
 }
 
+@property (nonatomic, strong) SettingsViewController *settingsViewController;
+@property (nonatomic, strong) MBProgressHUD *HUD;
 @property (nonatomic, strong) MGScrollView *scroller;
 @property (nonatomic, strong) UIActionSheet *emailActionSheet;
 @property (nonatomic, strong) UIActionSheet *contactActionSheet;

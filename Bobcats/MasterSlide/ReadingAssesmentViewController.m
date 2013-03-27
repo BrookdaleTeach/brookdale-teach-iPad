@@ -33,7 +33,7 @@
     self.studentObjectData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
 
     titles_reading_strategies = [[NSMutableArray alloc] initWithObjects:
-                                 @"Student is able to identify the narrative elements (character, setting, problem, solution)",
+                                 @"Student is able to identify the narrative elements (character, setting, problem, solution).",
                                  @"Student makes inferences based on evidence in the text.",
                                  @"Student makes predictions based on evidence in the text.",
                                  @"Student is able to sequence events in a text.",
@@ -58,7 +58,7 @@
     titles_reading_fluency = [[NSMutableArray alloc] initWithObjects:
                               @"Student reads fluently at an appropriate pace.",
                               @"Student self-monitors reading fluency.",
-                              @"Student uses strategies to read fluently (skips over, context clues, look for patterns, picture clues)",
+                              @"Student uses strategies to read fluently (skips over, context clues, look for patterns, picture clues).",
                               @"Student reads with inflection.",
                               @"Student reads punctuation.",
                               @"Student demonstrates knowledge of vocabulary while reading.", nil];

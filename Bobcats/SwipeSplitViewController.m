@@ -6,6 +6,7 @@
 
 #import "SwipeSplitViewController.h"
 #import "AppDelegate.h"
+#import "UIImage+UIColor.h"
 
 #define MASTER_VIEW_WIDTH_PORTRAIT  384.0
 #define MASTER_VIEW_WIDTH_LANDSCAPE 320.0
@@ -44,9 +45,32 @@
     return self;
 } /* initWithMasterViewController */
 
+- (void)customizeAppearance
+{
+    // Create resizable images
+    UIImage *gradientImage44 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
+                                resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+    UIImage *gradientImage32 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
+                                resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+    
+    // Set the background image for *all* UINavigationBars
+    [[UINavigationBar appearance] setBackgroundImage:gradientImage44
+                                       forBarMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setBackgroundImage:gradientImage32
+                                       forBarMetrics:UIBarMetricsLandscapePhone];
+
+    // Customize the title text for *all* UINavigationBars
+    [[UINavigationBar appearance] setTitleTextAttributes:
+     [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor],
+      UITextAttributeTextColor, [UIColor lightTextColor], UITextAttributeTextShadowColor,
+      [NSValue valueWithUIOffset:UIOffsetMake(0, -1)], UITextAttributeTextShadowOffset, [UIFont fontWithName:@"Arial-Bold" size:0.0],
+      UITextAttributeFont, nil]];
+}
 
 - (void) loadView {
     [super loadView];
+    
+    [self customizeAppearance];
     
     self.detailViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     self.masterViewController.view.autoresizingMask = UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleHeight;

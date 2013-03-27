@@ -197,7 +197,6 @@
 
                     int x = 1;
                     while ( x < sqlite3_column_count(compiledStatement) - 1) {
-                        NSLog(@"[Writing]RETRIEVE: %@", [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, x)]);
                         [temporaryArray addObject:[NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, x)]];
                         x++;
                     }

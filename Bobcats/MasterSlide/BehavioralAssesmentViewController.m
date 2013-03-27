@@ -33,7 +33,7 @@
 
     titles_behavioral_attendance = [[NSMutableArray alloc] initWithObjects:
                                     @"Student displays a consistent attendance record.",
-                                    @"Student displays a consistent tardy record.", nil];
+                                    @"Student arrives at school on time each day.", nil];
 
     titles_behavioral_respect = [[NSMutableArray alloc] initWithObjects:
                                  @"Student uses kind words and actions.",

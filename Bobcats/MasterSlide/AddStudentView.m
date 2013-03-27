@@ -94,8 +94,93 @@
     clearBackground.backgroundColor = [UIColor clearColor];
     [restTableView setBackgroundView:clearBackground];
     [scrollView addSubview:restTableView];
+    
+    [scrollView addSubview:[self addClassesCheckboxesView]];
 } /* viewDidLoad */
 
+- (UIView *)addClassesCheckboxesView {
+    UIView *addClassesView = [[UIView alloc] initWithFrame:CGRectMake(0, 577, 400, 200)];
+    
+    mathCheckbutton = [self drawDemoButton:CGRectMake(114, 10, 145, 35) withTitle:@"Math"];
+    readingCheckbutton = [self drawDemoButton:CGRectMake(294, 10, 145, 35) withTitle:@"Reading"];
+    writingCheckbutton = [self drawDemoButton:CGRectMake(114, 50, 145, 35) withTitle:@"Writing"];
+    behavioralCheckbutton = [self drawDemoButton:CGRectMake(294, 50, 145, 35) withTitle:@"Behavioral"];
+
+    switch (classKey) {
+        case kMath_Key:
+            [self studentToClass:mathCheckbutton];
+            break;
+        case kWriting_Key:
+            [self studentToClass:writingCheckbutton];
+            break;
+        case kReading_Key:
+            [self studentToClass:readingCheckbutton];
+            break;
+        case kBehavioral_Key:
+            [self studentToClass:behavioralCheckbutton];
+            break;
+        default:
+            break;
+    }
+    
+    [addClassesView addSubview:mathCheckbutton];
+    [addClassesView addSubview:readingCheckbutton];
+    [addClassesView addSubview:writingCheckbutton];
+    [addClassesView addSubview:behavioralCheckbutton];
+    
+    return addClassesView;
+}
+
+- (void)studentToClass:(id)sender {
+    if ([sender isSelected]) {
+        [sender setSelected:NO];
+    }else {
+        [sender setSelected:YES];
+    }
+}
+
+/*
+ DrawDemoButton
+ --------
+ Purpose:        Draw Demo Button
+ Parameters:     none
+ Returns:        none
+ Notes:          Alloc/Create/Add Login Button
+ Author:         Neil Burchfield
+ */
+- (UIButton *) drawDemoButton:(CGRect)frame withTitle:(NSString *)title {
+    
+    // Alloc Demo Button
+    UIButton *demoButton = [[UIButton alloc] initWithFrame:frame];
+    
+    // Setup Demo Button Background
+    [demoButton setBackgroundImage:[UIImage imageNamed:@"gray-action-button-background.png"] forState:UIControlStateNormal];
+    
+    // Setup Demo Button Background Highlighted
+    [demoButton setBackgroundImage:[UIImage imageNamed:@"gray-action-button-background-pressed.png"] forState:UIControlStateSelected];
+    
+    // Setup Demo Button Action
+    [demoButton addTarget:self action:@selector(studentToClass:) forControlEvents:UIControlEventTouchUpInside];
+    
+    // Setup Demo Button Title Color
+    [demoButton setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
+    
+    // Setup Demo Button Title Color Highlighted
+    [demoButton setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    
+    // Setup Demo Button Title text
+    [demoButton setTitle:[title capitalizedString] forState:UIControlStateNormal];
+    
+    // Setup Demo Button Font
+    demoButton.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:17];
+    
+    // Setup Demo Button to full alpha
+    demoButton.alpha = 1.0f;
+    
+    // Add Button To table view
+    return demoButton;
+    
+} /* drawDemoButton */
 
 - (void) useCameraRoll :(id)sender {
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] &&
@@ -190,7 +275,34 @@
     sqlite3 *database;
 
     BOOL success = YES;
+    
+    NSMutableArray *selectedClasses = [[NSMutableArray alloc] init];
 
+    int numOfBoxesChecked = 0;
+    if ([mathCheckbutton isSelected]) {
+        [selectedClasses addObject:[NSNumber numberWithInt:kMath_Key]];
+        numOfBoxesChecked++;
+    }
+    if ([readingCheckbutton isSelected]) {
+        [selectedClasses addObject:[NSNumber numberWithInt:kReading_Key]];
+        numOfBoxesChecked++;
+    }
+    if ([writingCheckbutton isSelected]) {
+        [selectedClasses addObject:[NSNumber numberWithInt:kWriting_Key]];
+        numOfBoxesChecked++;
+    }
+    if ([behavioralCheckbutton isSelected]) {
+        [selectedClasses addObject:[NSNumber numberWithInt:kBehavioral_Key]];
+        numOfBoxesChecked++;
+    }
+    
+    if (numOfBoxesChecked == 0) {
+        [selectedClasses addObject:[NSNumber numberWithInt:kMath_Key]];
+        [selectedClasses addObject:[NSNumber numberWithInt:kReading_Key]];
+        [selectedClasses addObject:[NSNumber numberWithInt:kWriting_Key]];
+        [selectedClasses addObject:[NSNumber numberWithInt:kBehavioral_Key]];
+
+    }
     NSLog(@"db path: %@", appDelegate.databasePath);
 
     if (sqlite3_open([appDelegate.databasePath UTF8String], &database) == SQLITE_OK) {
@@ -216,7 +328,7 @@
             sqlite3_bind_text(compiledStatement, 16, [[[userInput objectAtIndex:10] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 17, [[[userInput objectAtIndex:11] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 18, [[@"" capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int(compiledStatement, 19, self.classKey);
+            sqlite3_bind_text(compiledStatement, 19, [[selectedClasses componentsJoinedByString:kContent_Delimiter] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_int(compiledStatement, 20, 0);
 
             sqlite3_reset(compiledStatement);

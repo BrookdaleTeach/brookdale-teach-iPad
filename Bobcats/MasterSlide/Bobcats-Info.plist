@@ -8,8 +8,17 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIconFile</key>
+	<string>Icon57.png</string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>Icon57.png</string>
+		<string>Icon72.png</string>
+		<string>Icon114.png</string>
+		<string>Icon144.png</string>
+	</array>
 	<key>CFBundleIdentifier</key>
-	<string>edu.niu.cs.${PRODUCT_NAME}</string>
+	<string>4HJMS2DUPN.edu.niu.cs.${PRODUCT_NAME}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -26,6 +35,8 @@
 	<true/>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
+	<key>UIInterfaceOrientation</key>
+	<string>UIInterfaceOrientationLandscapeLeft</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -38,21 +49,10 @@
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CFBundleIconFile</key>
-	<string>Icon57.png</string>
-	<key>CFBundleIconFiles</key>
-	<array>
-		<string>Icon57.png</string>
-		<string>Icon72.png</string>
-		<string>Icon114.png</string>
-		<string>Icon144.png</string>
-	</array>
-	<key>UIInterfaceOrientation</key>
-	<string>UIInterfaceOrientationLandscapeLeft</string>
 </dict>
 </plist>

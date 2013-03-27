@@ -14,9 +14,12 @@
 #import "AboutViewController.h"
 #import "ClassDefinitions.h"
 #import "MathAssessmentModel.h"
+#import "UIImage+UIColor.h"
 
 #define start_color [UIColor colorWithHex:0xEEEEEE]
 #define end_color   [UIColor colorWithHex:0xDEDEDE]
+
+#define kLandscapeHeight 748.0
 
 @implementation StudentTableViewController
 @synthesize studentArraySectioned = _studentArraySectioned;
@@ -47,18 +50,10 @@
                                                  name:@"ReloadStudentTableView"
                                                object:nil];
 
-    self.tableView.frame = CGRectMake(self.tableView.bounds.origin.x,
-                                      self.tableView.bounds.origin.y,
-                                      self.tableView.bounds.size.width,
-                                      self.tableView.bounds.size.height);
+    self.tableView.backgroundColor = [UIColor colorWithPatternImage:[[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
+                                                                     resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)]];
 
-    self.tableView.contentSize = CGSizeMake(self.tableView.bounds.size.width, self.tableView.bounds.size.height + 200);
-    self.tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"whitey.png"]];
-    self.clearsSelectionOnViewWillAppear = YES;
-    self.contentSizeForViewInPopover = CGSizeMake(400.0, 1024.0);
-
-    if (![self.title isEqualToString:@"All Students"])
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                                                target:self action:@selector(addStudent:)];
 
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 64)];
@@ -72,8 +67,16 @@
     [aboutButton addTarget:self action:@selector(showInfo:) forControlEvents:UIControlEventTouchUpInside];
     [footerView addSubview:aboutButton];
     self.tableView.tableFooterView = footerView;
+    
+    // Fixes Navigation Height On Landscape
+    if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        [self performSelectorInBackground:@selector(correctNavigationHeightOnLandscape) withObject:nil];
+    }
 } /* viewDidLoad */
 
+- (void)correctNavigationHeightOnLandscape {
+    [self.navigationController.view setHeight:kLandscapeHeight];
+}
 
 - (void) showInfo :(id)sender {
     // Show info dialog with libxar license
@@ -99,14 +102,18 @@
 
 - (void) reloadTableViewData :(NSNotification *)notif {
 
-    if (self.classkey == 1)
-        [self realloc:appDelegate.mathStudentsArray];
-    else if (self.classkey == 2)
-        [self realloc:appDelegate.readingStudentsArray];
-    else if (self.classkey == 3)
-        [self realloc:appDelegate.writingStudentsArray];
-    else if (self.classkey == 4)
-        [self realloc:appDelegate.behavioralStudentsArray];
+    if (![self.title isEqualToString:@"All Students"]) {
+        if (self.classkey == 1)
+            [self realloc:appDelegate.mathStudentsArray];
+        else if (self.classkey == 2)
+            [self realloc:appDelegate.readingStudentsArray];
+        else if (self.classkey == 3)
+            [self realloc:appDelegate.writingStudentsArray];
+        else if (self.classkey == 4)
+            [self realloc:appDelegate.behavioralStudentsArray];
+        }
+    else
+        [self realloc:appDelegate.studentArraySectioned];
 
     [self.tableView reloadData];
 } /* reloadTableViewData */
@@ -125,7 +132,7 @@
     else if ([self.title isEqualToString:@"Behavioral"])
         initwithkey = kBehavioral_Key;
     else
-        initwithkey = -9999;
+        initwithkey = kAll_key;
 
     AddStudentView *vc = [[AddStudentView alloc] init:initwithkey];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
@@ -234,7 +241,7 @@
         imagePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
     else
         imagePath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [student uid]]];
-    
+
     NSFileManager *filemanager = [NSFileManager defaultManager];
 
     if ([filemanager fileExistsAtPath:imagePath])
@@ -244,7 +251,7 @@
 
     cell.textLabel.backgroundColor = [UIColor clearColor];
     cell.imageView.backgroundColor = [UIColor clearColor];
-    
+
     cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
 
     return cell;
@@ -334,41 +341,6 @@
 } /* customGradient */
 
 
-//- (UIView *) tableView :(UITableView *)tableView viewForHeaderInSection :(NSInteger)section {
-//
-//    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.sectionHeaderHeight - 2)];
-//    [headerView setBackgroundColor:[UIColor clearColor]];
-//
-//    CAGradientLayer *bgLayer = [self blueGradient];
-//
-//    if ([self.title isEqualToString:@"Math"])
-//        bgLayer = [self customGradient:[UIColor colorWithRed:235.0f / 255.0f green:79.0f / 255.0f blue:66.0f / 255.0f alpha:0.7f]  // 235	79	66
-//                                      :[UIColor colorWithRed:229.0f / 255.0f green:51.0f / 255.0f blue:46.0f / 255.0f alpha:1.0f]];  // 229	51	46
-//    else if ([self.title isEqualToString:@"Reading"])
-//        bgLayer = [self customGradient:[UIColor colorWithRed:(7 / 255.0) green:(175 / 255.0) blue:(228 / 228) alpha:1.0] // 7	175	228
-//                                      :[UIColor colorWithRed:(0 / 255.0)  green:(163 / 255.0)  blue:(223 / 255.0)  alpha:1.0]];      // 0	163	223
-//    else if ([self.title isEqualToString:@"Writing"])
-//        bgLayer = [self customGradient:[UIColor colorWithRed:(80 / 255.0) green:(185 / 255.0) blue:(65 / 255.0) alpha:1.0]
-//                                      :[UIColor colorWithRed:(65 / 255.0)  green:(162 / 255.0)  blue:(52 / 255.0)  alpha:1.0]];
-//    else if ([self.title isEqualToString:@"Behavioral"])
-//        bgLayer = [self customGradient:[UIColor colorWithRed:(249 / 255.0) green:(121 / 255.0) blue:(55 / 255.0) alpha:1.0] // 249	121	55
-//                                      :[UIColor colorWithRed:(232 / 255.0)  green:(85 / 255.0)  blue:(19 / 255.0)  alpha:1.0]];      // 232	85	19
-//
-//    bgLayer.frame = headerView.bounds;
-//    [headerView.layer insertSublayer:bgLayer atIndex:0];
-//    [headerView.layer setMasksToBounds:YES];
-//
-//    UILabel *headerText = [[UILabel alloc] initWithFrame:CGRectMake(10, 0.5f, tableView.bounds.size.width - 10, 18)];
-//    headerText.font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0f];
-//    headerText.text = [tableView.dataSource tableView:tableView titleForHeaderInSection:section];
-//    headerText.textColor = [UIColor whiteColor];
-//    headerText.backgroundColor = [UIColor clearColor];
-//    [headerView addSubview:headerText];
-//
-//    return headerView;
-//} /* tableView */
-
-
 - (void) tableView :(UITableView *)tableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
@@ -382,18 +354,19 @@
 
 
 #pragma mark -
+//
+//- (void) didRotateFromInterfaceOrientation :(UIInterfaceOrientation)fromInterfaceOrientation {
+//
+//    [self.tableView reloadData];
+//} /* didRotateFromInterfaceOrientation */
+//
 
-- (void) didRotateFromInterfaceOrientation :(UIInterfaceOrientation)fromInterfaceOrientation {
-
-    [self.tableView reloadData];
-} /* didRotateFromInterfaceOrientation */
-
+- (BOOL)shouldAutorotate {
+    return YES;
+}
 
 - (BOOL) shouldAutorotateToInterfaceOrientation :(UIInterfaceOrientation)interfaceOrientation {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        return YES;
-    }
-    return UIInterfaceOrientationIsLandscape(interfaceOrientation) || interfaceOrientation == UIInterfaceOrientationPortrait;
+    return YES;
 } /* shouldAutorotateToInterfaceOrientation */
 
 

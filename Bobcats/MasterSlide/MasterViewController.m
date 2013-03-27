@@ -10,6 +10,9 @@
 #import "AboutViewController.h"
 #import "StudentTableViewController.h"
 #import "CustomTableView.h"
+#import "UIImage+UIColor.h"
+#import "ClassDefinitions.h"
+#import "MGBoxLine.h"
 
 #define start_color         [UIColor colorWithHex:0xEEEEEE]
 #define end_color           [UIColor colorWithHex:0xDEDEDE]
@@ -29,11 +32,13 @@
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    self.tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"whitey.png"]];
+    self.tableView.backgroundColor = [UIColor colorWithPatternImage:[[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
+                                                                     resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)]];
     self.clearsSelectionOnViewWillAppear = YES;
     self.contentSizeForViewInPopover = CGSizeMake(400.0, 1024.0);
     self.tableView.rowHeight = 64.0;
-
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     headers = [[NSArray alloc] initWithObjects:@"Math", @"Reading", @"Writing", @"Behavior", nil];
@@ -86,7 +91,7 @@
 
 - (UITableViewCell *) tableView :(UITableView *)tableView cellForRowAtIndexPath :(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"CellIdentifier";
-    TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
 
         if (indexPath.section == 0)
@@ -97,12 +102,17 @@
 
     if (indexPath.section == 0) {
         UILabel *formTitleField = [[UILabel alloc] initWithFrame:CGRectMake(85, 15, 200, 30)];
-        formTitleField.textColor = [UIColor colorWithRed:60.f / 255.0f green:62.f / 255.0f blue:62.f / 255.0f alpha:1.0f]; // 60	62	62
+        formTitleField.textColor = [UIColor darkGrayColor]; // 60	62	62
         formTitleField.text = @"Class List";
         formTitleField.backgroundColor = [UIColor clearColor];
         formTitleField.textAlignment = NSTextAlignmentLeft;
-        formTitleField.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:20.0f];
+        formTitleField.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:21.0f];
         [cell.contentView addSubview:formTitleField];
+
+        UILabel *formSubTitleField = [[UILabel alloc] initWithFrame:CGRectMake(85, 33, 116, 30)];
+        formSubTitleField.textColor = [UIColor darkGrayColor]; // 60	62	62
+        formSubTitleField.backgroundColor = [UIColor clearColor];
+        formSubTitleField.textAlignment = NSTextAlignmentLeft;
 
         UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 35, 35)];
         imageView.layer.shadowColor = [UIColor darkGrayColor].CGColor;
@@ -114,15 +124,12 @@
         imageView.frame = CGRectMake(20, 10, 48, 48);
         imageView.image = im;
         [cell addSubview:imageView]; // 210	206	203
-
-        UILabel *sideBuffer = [[UILabel alloc] initWithFrame:CGRectMake(-1, 0, 6, cell.bounds.size.height)];
-        sideBuffer.layer.cornerRadius = 3.5f;
-        CAGradientLayer *bgLayer = [self blueGradient];
-        bgLayer.frame = sideBuffer.bounds;
-        [sideBuffer.layer insertSublayer:bgLayer atIndex:0];
-
-        [cell.contentView addSubview:sideBuffer];
-    } else {
+        
+        UIImageView *corner = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"GreyCorner"]];
+        corner.frame = CGRectMake(-1, -2, 29, 32);
+        [cell.contentView addSubview:corner];
+        
+        } else {
         UILabel *mainContentLabel = (UILabel *)[cell viewWithTag:100 + indexPath.row];
         mainContentLabel.text = [headers objectAtIndex:indexPath.row];
 
@@ -130,55 +137,136 @@
         UIImage *image = [UIImage imageNamed:[images objectAtIndex:indexPath.row]];
         mainContentValueImage.frame = CGRectMake(20, 10, 48, 48);
         mainContentValueImage.image = image;
+            
+            UIImageView *corner = [[UIImageView alloc] init];
+            corner.frame = CGRectMake(-1, -2, 29, 32);            
+            switch (indexPath.row) {
+                case 0:
+                    corner.image = [UIImage imageNamed:@"RedCorner"];
+                    break;
+                case 1:
+                    corner.image = [UIImage imageNamed:@"BlueCorner"];
+                    break;
+                case 2:
+                    corner.image = [UIImage imageNamed:@"GreenCorner"];
+                    break;
+                case 3:
+                    corner.image = [UIImage imageNamed:@"OrangeCorner"];
+                    break;
+                default:
+                    break;
+            }
+            [cell.contentView addSubview:corner];
 
-        UILabel *sideBuffer = (UILabel *)[cell viewWithTag:150 + indexPath.row];
-
-        CAGradientLayer *bgLayer = nil;
-        if (indexPath.row == 0)
-            bgLayer = [self customGradient:[UIColor colorWithRed:(237 / 255.0) green:(90 / 255.0) blue:(75 / 255.0) alpha:1.0]
-                                          :[UIColor colorWithRed:(233 / 255.0)  green:(65 / 255.0)  blue:(58 / 255.0)  alpha:1.0]];
-        else if (indexPath.row == 1)
-            bgLayer = [self customGradient:[UIColor colorWithRed:(7 / 255.0) green:(175 / 255.0) blue:(228 / 228) alpha:1.0] // 7	175	228
-                                          :[UIColor colorWithRed:(0 / 255.0)  green:(163 / 255.0)  blue:(223 / 255.0)  alpha:1.0]];  // 0	163	223
-        else if (indexPath.row == 2)
-            bgLayer = [self customGradient:[UIColor colorWithRed:(80 / 255.0) green:(185 / 255.0) blue:(65 / 255.0) alpha:1.0]
-                                          :[UIColor colorWithRed:(65 / 255.0)  green:(162 / 255.0)  blue:(52 / 255.0)  alpha:1.0]];
-        else if (indexPath.row == 3)
-            bgLayer = [self customGradient:[UIColor colorWithRed:(249 / 255.0) green:(121 / 255.0) blue:(55 / 255.0) alpha:1.0] // 249	121	55
-                                          :[UIColor colorWithRed:(232 / 255.0)  green:(85 / 255.0)  blue:(19 / 255.0)  alpha:1.0]];  // 232	85	19
-        bgLayer.frame = sideBuffer.bounds;
-        [sideBuffer.layer insertSublayer:bgLayer atIndex:0];
     }
-
+    
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
     UIImageView *iv = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"arrow"]];
     [iv setFrame:CGRectMake(0, 0, 17, 17)];
     cell.accessoryView = iv;
-    
+
     return cell;
 } /* tableView */
 
 
-- (TableViewCell *) getCellContentViewForPassword :(NSString *)cellIdentifier :(int)headtag :(int)imageTag :(int)layerTag {
+- (void) viewWillAppear :(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self reloadSectionSubtitles];
+} /* viewWillAppear */
+
+
+- (int) realloc :(NSMutableArray *)array {
+    return [[[NSMutableArray alloc] initWithArray:array] count];
+} /* realloc */
+
+
+- (void) reloadSectionSubtitles {
+
+    int total = 0, math = 0, reading = 0, writing = 0, behavioral = 0;
+    for (NSArray *array in appDelegate.studentArraySectioned) {
+        for (Student *student in array) {
+
+            switch ([[student classkey] integerValue]) {
+                case kMath_Key :
+                    math++;
+                    break;
+                case kReading_Key :
+                    reading++;
+                    break;
+                case kWriting_Key :
+                    writing++;
+                    break;
+                case kBehavioral_Key :
+                    behavioral++;
+                    break;
+                default :
+                    break;
+            } /* switch */
+        }
+        total += array.count;
+    }
+
+    [(UILabel *)[self.view viewWithTag:400] setText :[NSString stringWithFormat:@"%d students total", total]];
+    [(UILabel *)[self.view viewWithTag:500] setText :[NSString stringWithFormat:@"%d students enrolled", math]];
+    [(UILabel *)[self.view viewWithTag:501] setText :[NSString stringWithFormat:@"%d students enrolled", reading]];
+    [(UILabel *)[self.view viewWithTag:502] setText :[NSString stringWithFormat:@"%d students enrolled", writing]];
+    [(UILabel *)[self.view viewWithTag:503] setText :[NSString stringWithFormat:@"%d students enrolled", behavioral]];
+
+} /* reloadSectionSubtitles */
+
+
+- (UITableViewCell *) getCellContentViewForPassword :(NSString *)cellIdentifier :(int)headtag :(int)imageTag :(int)layerTag {
 
     CGRect CellFrame = CGRectMake(0, 0, 300, 60);
 
-    TableViewCell *cell = [[TableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-    cell.tableViewBackgroundColor = self.tableView.backgroundColor;
-    cell.gradientStartColor = start_color;
-    cell.gradientEndColor = end_color;
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+
+    UIImage *gradientImage44 = [[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.86f alpha:1.0f]]
+                                resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)];
+
+    cell.backgroundColor = [UIColor colorWithPatternImage:gradientImage44];
+
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     [cell setFrame:CellFrame];
 
     UILabel *formTitleField = [[UILabel alloc] initWithFrame:CGRectMake(85, 15, 116, 30)];
-    formTitleField.textColor = [UIColor colorWithRed:60.f / 255.0f green:62.f / 255.0f blue:62.f / 255.0f alpha:1.0f]; // 60	62	62
+    formTitleField.textColor = [UIColor darkGrayColor]; // 60	62	62
     formTitleField.backgroundColor = [UIColor clearColor];
     formTitleField.textAlignment = NSTextAlignmentLeft;
-    formTitleField.font = [UIFont fontWithName:@"ArialRoundedMTBold" size:20.0f];
+    formTitleField.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:21.0f];
     formTitleField.tag = headtag;
     [cell.contentView addSubview:formTitleField];
+    
+    cell.textLabel.backgroundColor = [UIColor clearColor];
+    cell.imageView.backgroundColor = [UIColor clearColor];
+
+    UILabel *formSubTitleField = [[UILabel alloc] initWithFrame:CGRectMake(85, 33, 116, 30)];
+    formSubTitleField.textColor = [UIColor darkGrayColor]; // 60	62	62
+    formSubTitleField.backgroundColor = [UIColor clearColor];
+    formSubTitleField.textAlignment = NSTextAlignmentLeft;
+    formSubTitleField.tag = headtag + 400;
+
+    if (headtag - 99 == kMath_Key)
+        formSubTitleField.text = [NSString stringWithFormat:@"%d students enrolled", appDelegate.mathStudentsArray.count];
+    else if (headtag - 99 == kWriting_Key)
+        formSubTitleField.text = [NSString stringWithFormat:@"%d students enrolled", appDelegate.writingStudentsArray.count];
+    else if (headtag - 99 == kReading_Key)
+        formSubTitleField.text = [NSString stringWithFormat:@"%d students enrolled", appDelegate.readingStudentsArray.count];
+    else if (headtag - 99 == kBehavioral_Key)
+        formSubTitleField.text = [NSString stringWithFormat:@"%d students enrolled", appDelegate.behavioralStudentsArray.count];
+    else {
+        int numberOfStudentsPerClass = 0;
+        for (NSArray *studentArray in appDelegate.studentArraySectioned) {
+            numberOfStudentsPerClass += studentArray.count;
+        }
+        formSubTitleField.text = [NSString stringWithFormat:@"%d students total", numberOfStudentsPerClass];
+    }
+
+    formSubTitleField.font = [UIFont fontWithName:@"Arial-ItalicMT" size:12.0f];
+
+    [cell.contentView addSubview:formSubTitleField];
 
     cell.textLabel.backgroundColor = [UIColor clearColor];
     cell.imageView.backgroundColor = [UIColor clearColor];
@@ -190,14 +278,13 @@
     imageView.layer.shadowRadius = 4.0f;
     imageView.layer.masksToBounds = NO;
     [cell addSubview:imageView];
+    
+    MGBoxLine *line = [MGBoxLine lineWithWidth:cell.width];
+    UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, cell.height + 2.5 - line.height, cell.width, line.height)];
+    [lineView addSubview:line];
+    [cell addSubview:lineView];
 
-
-    UILabel *sideBuffer = [[UILabel alloc] initWithFrame:CGRectMake(-1, 0, 6, cell.bounds.size.height)];
-    sideBuffer.layer.cornerRadius = 3.5f;
-    sideBuffer.tag = layerTag;
-    [cell.contentView addSubview:sideBuffer];
-
-
+    
     return cell;
 } /* getCellContentViewForPassword */
 
@@ -237,41 +324,14 @@
 } /* customGradient */
 
 
-//- (UIView *) tableView :(UITableView *)tableView viewForHeaderInSection :(NSInteger)section {
-//
-//    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, tableView.sectionHeaderHeight - 2)];
-//    [headerView setBackgroundColor:[UIColor clearColor]];
-//
-//    CAGradientLayer *bgLayer = [self blueGradient];
-//    bgLayer.frame = headerView.bounds;
-//    [headerView.layer insertSublayer:bgLayer atIndex:0];
-//
-//    UILabel *headerText = [[UILabel alloc] initWithFrame:CGRectMake(10, 0.5f, tableView.bounds.size.width - 10, 18)];
-//    headerText.font = [UIFont fontWithName:@"Helvetica-Bold" size:16.0f];
-//    headerText.text = [tableView.dataSource tableView:tableView titleForHeaderInSection:section];
-//    headerText.textColor = [UIColor whiteColor];
-//    headerText.backgroundColor = [UIColor clearColor];
-//    [headerView addSubview:headerText];
-//
-//    return headerView;
-//} /* tableView */
-
-
 - (BOOL) shouldAutorotate :(UIInterfaceOrientation)interfaceOrientation {
 
     [self.tableView reloadData];
     return(interfaceOrientation == UIInterfaceOrientationLandscapeRight);
 } /* shouldAutorotate */
 
-
-- (void) tableView :(UITableView *)tableView commitEditingStyle :(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath :(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-    }
-} /* tableView */
-
-
 - (void) tableView :(UITableView *)aTableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
-    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+//    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     NSMutableArray *initwitharray = nil;
     NSString *initwithtitle = nil;
     if (indexPath.section == 1) {

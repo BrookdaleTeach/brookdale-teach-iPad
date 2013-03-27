@@ -41,6 +41,12 @@
     int month;
     int day;
     int year;
+    
+    // Add Classes Buttons
+    UIButton *mathCheckbutton;
+    UIButton *readingCheckbutton;
+    UIButton *writingCheckbutton;
+    UIButton *behavioralCheckbutton;
 }
 @property (nonatomic, retain) IBOutlet UIImageView *imageView;
 @property (nonatomic, retain) UIPopoverController *popoverController;

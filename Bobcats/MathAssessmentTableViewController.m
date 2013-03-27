@@ -40,22 +40,22 @@
 
     self.studentObjectData = [[NSMutableArray alloc] initWithArray:[MathAssessmentModel retrieveStudentDataFromDatabase:[student uid]]];
 
-    titles_math_behaviors = [[NSMutableArray alloc] initWithObjects:@"Student is actively engaged during math instruction",
-                             @"Student works collaboratively with others",
-                             @"Students to solve problems",
-                             @"Student works independently to solve problems",
-                             @"Student makes conjectures and estimates",
-                             @"Student uses a variety of problem solving strategies to solve open-ended problems",
-                             @"Student is able to explain the steps taken to solve problems",
-                             @"Student is able to present multiple solutions",
-                             @"Student participates in classroom discussion",
-                             @"Student completes math assignments in given time frame",
-                             @"Student completes math homework in given time frame",
-                             @"Student reflects on and understands his/her mathematical mistakes", nil];
+    titles_math_behaviors = [[NSMutableArray alloc] initWithObjects:@"Student is actively engaged during math instruction.",
+                             @"Student works collaboratively with others to solve math problems.",
+                             @"Students to solve problems.",
+                             @"Student works independently to solve problems.",
+                             @"Student makes conjectures and estimates.",
+                             @"Student uses a variety of problem solving strategies to solve open-ended problems.",
+                             @"Student is able to explain the steps taken to solve problems.",
+                             @"Student is able to present multiple solutions.",
+                             @"Student participates in classroom discussion.",
+                             @"Student completes math assignments in given time frame.",
+                             @"Student completes math homework in given time frame.",
+                             @"Student reflects on and understands his/her mathematical mistakes.", nil];
 
     titles_math_skills = [[NSMutableArray alloc] initWithObjects:
-                          @"Student is able to add numbers",
-                          @"Student is able to subtract numbers",
+                          @"Student is able to add numbers.",
+                          @"Student is able to subtract numbers.",
                           @"Student is able to multiply numbers",
                           @"Student is able to divide numbers",
                           @"Student understands the relationship between whole numbers, fractions, decimals and percents",

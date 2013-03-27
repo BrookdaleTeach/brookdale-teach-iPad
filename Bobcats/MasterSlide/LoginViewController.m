@@ -12,13 +12,14 @@
 #import "UserCredentials.h"
 
 #define kLoginPassword @"brookdale"
+#define kSETTINGS_PLIST @"settings.plist"
 
 @interface LoginViewController ()
 
 @end
 
 @implementation LoginViewController
-@synthesize appDelegate, splitViewController, rootViewController, detailViewController;
+@synthesize appDelegate, splitViewController, rootViewController, detailViewController, settingsViewController;
 
 - (id) initWithNibName :(NSString *)nibNameOrNil bundle :(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -661,7 +662,6 @@
 - (NSInteger) numberOfSectionsInTableView :(UITableView *)tableView {
     return 1;
 } /* numberOfSectionsInTableView */
-
 
 /*
    textFieldShouldReturn

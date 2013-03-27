@@ -46,6 +46,9 @@
 #define kFormative_Key      6781
 #define kStandardized_Key   6782
 
+// All Class Definitions
+#define kAll_key 5
+
 // Math Class Definitions
 #define kMath_Key                          1
 

@@ -41,13 +41,24 @@
 #import "ReadingAssessmentModel.h"
 #import "WritingAssessmentModel.h"
 #import "BehavioralAssessmentModel.h"
+
+#import "UIImage+UIColor.h"
+
+#import "SettingsViewController.h"
+
+#import "TeacherSettings.h"
+
+#import "MBProgressHUD.h"
+
+#import "StudentsDataLayer.h"
 // Imports//
 
 
 
 // Definitions
-#define HEADER_FONT               [UIFont fontWithName:@"HelveticaNeue" size:18]
-#define ROW_SIZE                  (CGSize) {666, 44 }
+#define DEFAULT_TEACHER_IMAGE     @"teacher.image"
+#define HEADER_FONT               [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:17]
+#define ROW_SIZE                  (CGSize) {686, 44 }
 #define BOX_LANDSCAPE             (CGRect) {12, 135, 768, 960 }
 #define BOX_PORTRAIT              (CGRect) {40, 150, 704, 960 }
 #define kEmailActionSheet         990

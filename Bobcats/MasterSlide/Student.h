@@ -22,12 +22,12 @@
 @property (strong, nonatomic) NSString *parent_phone;
 @property (strong, nonatomic) NSString *relationship;
 @property (strong, nonatomic) NSString *notes;
-@property (nonatomic, readwrite) int classkey;
+@property (strong, nonatomic) NSString *classkey;
 @property (nonatomic, readwrite) int key;
 @property (nonatomic, readwrite) int primaryKey;
 
 
-- (id) initWithName :(NSString *)n firstName :(NSString *)first lastName :(NSString *)last gender :(NSString *)gen dob_month :(int)month dob_day :(int)day dob_year :(int)year image :(NSString *)im uid :(NSString *)d email :(NSString *)em phone :(NSString *)ph address :(NSString *)addr parent_firstName :(NSString *)pf parent_lastName :(NSString *)pl parent_email :(NSString *)pe parent_phone :(NSString *)pp relationship :(NSString *)rel notes :(NSString *)note classkey :(int)ck key :(int)k primaryKey :(int)pk;
+- (id) initWithName :(NSString *)n firstName :(NSString *)first lastName :(NSString *)last gender :(NSString *)gen dob_month :(int)month dob_day :(int)day dob_year :(int)year image :(NSString *)im uid :(NSString *)d email :(NSString *)em phone :(NSString *)ph address :(NSString *)addr parent_firstName :(NSString *)pf parent_lastName :(NSString *)pl parent_email :(NSString *)pe parent_phone :(NSString *)pp relationship :(NSString *)rel notes :(NSString *)note classkey :(NSString *)ck key :(int)k primaryKey :(int)pk;
 
 @end
 

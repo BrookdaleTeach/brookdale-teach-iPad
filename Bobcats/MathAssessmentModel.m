@@ -8,6 +8,7 @@
 
 #import "MathAssessmentModel.h"
 #import <sqlite3.h>
+#import "Student.h"
 
 @implementation MathAssessmentModel
 @synthesize databasePath;
@@ -89,7 +90,6 @@
     }
 } /* insertStudentDataIntoClassDatabase */
 
-
 + (void) insertDataIntoClassDatabase :(NSString *)uid section :(int)s row :(int)r text :(NSString *)text {
     sqlite3 *database;
     NSString *table;
@@ -130,7 +130,6 @@
     }
     sqlite3_close(database);
 } /* insertStudentDataIntoClassDatabase */
-
 
 /*    Check and Create Employee database if not availiable */
 + (NSString *) checkAndCreateDatabase {
@@ -193,7 +192,6 @@
 
                     int x = 1;
                     while ( x < sqlite3_column_count(compiledStatement) - 1) {
-                        NSLog(@"RETRIEVE: %@", [NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, x)]);
                         [temporaryArray addObject:[NSString stringWithUTF8String:(char *)sqlite3_column_text(compiledStatement, x)]];
                         x++;
                     }

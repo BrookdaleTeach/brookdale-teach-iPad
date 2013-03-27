@@ -40,7 +40,7 @@
                                 @"Student spells grade level frequency words correctly.", nil];
 
     titles_writing_organization = [[NSMutableArray alloc] initWithObjects:
-                                   @"Student begins writing pieces and paragraphs with a hook sentences.",
+                                   @"Student begins writing pieces and paragraphs with a hook sentence.",
                                    @"Student uses details to support ideas.",
                                    @"Student uses conclusion sentences to wrap up ideas.",
                                    @"Student organizes ideas in paragraphs.",
