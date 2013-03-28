@@ -28,25 +28,85 @@ Screeshots from the current application v1.0.0
 ### From the Demo App
 
 ![Demo App Screenshot](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.01%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot2](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.32%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot3](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.35%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot4](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027%2C%202013%205.41.47%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot5](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.54%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot6](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.42.40%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot7](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.42.46%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot8](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.43.42%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot9](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.17%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot10](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.19%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot11](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.27%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot12](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.34%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot13](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.48%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot14](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.15.04%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot15](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.15.16%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot16](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.16.12%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot17](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.16.52%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot18](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.17.00%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot19](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.17.03%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot20](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.17.06%20PM.png?raw=true)
+
+##
+
 ![Demo App Screenshot21](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.17.26%20PM.png?raw=true)
 
 
