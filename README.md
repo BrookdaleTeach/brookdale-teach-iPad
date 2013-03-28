@@ -2,7 +2,7 @@
 
 ## An iOS Application Allowing Teachers To Properly, Easy, and Intuitively create Assessments on Students 
 
-Brookdale Teach focuses on the standards of Naperville Illinois's Elementary School giving teachers digital accessibility to creating, reading, updating and deleting Anecdotal Assessments for the following subjects: Math, Reading, Writing, and Behavioral. 
+Brookdale Teach focuses on the standards of Naperville Illinois's Elementary School giving teachers digital accessibility to creating, reading, updating and deleting Anecdotal Assessments and Standardized/Formative Tests for the following subjects: Math, Reading, Writing, and Behavioral. 
 
 ## General Features
 
@@ -27,4 +27,38 @@ Screeshots from the current application v1.0.0
 
 ### From the Demo App
 
-![Demo App Screenshot](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027%2C%202013%205.41.01%20PM.png)
+![Demo App Screenshot](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.01%20PM.png?raw=true)
+![Demo App Screenshot2](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.32%20PM.png?raw=true)
+![Demo App Screenshot3](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.35%20PM.png?raw=true)
+![Demo App Screenshot4](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027%2C%202013%205.41.47%20PM.png?raw=true)
+![Demo App Screenshot5](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.41.54%20PM.png?raw=true)
+![Demo App Screenshot6](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.42.40%20PM.png?raw=true)
+![Demo App Screenshot7](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.42.46%20PM.png?raw=true)
+![Demo App Screenshot8](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%205.43.42%20PM.png?raw=true)
+![Demo App Screenshot9](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.17%20PM.png?raw=true)
+![Demo App Screenshot10](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.19%20PM.png?raw=true)
+![Demo App Screenshot11](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.27%20PM.png?raw=true)
+![Demo App Screenshot12](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Mar%2027,%202013%207.14.34%20PM.png?raw=true)
+![Demo App Screenshot13]()
+![Demo App Screenshot14]()
+![Demo App Screenshot15]()
+![Demo App Screenshot16]()
+![Demo App Screenshot17]()
+![Demo App Screenshot18]()
+![Demo App Screenshot19]()
+![Demo App Screenshot11]()
+![Demo App Screenshot11]()
+![Demo App Screenshot11]()
+
+
+
+
+
+
+
+
+
+
+
+
+
