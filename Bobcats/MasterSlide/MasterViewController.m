@@ -59,6 +59,11 @@
  */
 - (void) viewDidLoad {
     [super viewDidLoad];
+
+    // Reload TableView Subtitles TableView Data
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadSectionSubtitles)
+                                                 name:kMasterShouldReloadTableView object:nil];
+
     self.tableView.backgroundColor = [UIColor colorWithPatternImage:[[UIImage_UIColor imageWithColor:[UIColor colorWithWhite:.9f alpha:1.0f]]
                                                                      resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0)]];
     self.clearsSelectionOnViewWillAppear = YES;
@@ -279,6 +284,31 @@
 
 
 /*
+   returnValueOfSubstringDoesEqual
+   --------
+   Purpose:        Find class key
+   Parameters:     int, NSString
+   Returns:        int
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (int) returnValueOfSubstringDoesEqual :(int)i withStudentClassKey :(NSString *)string {
+
+    // Range
+    NSRange textRange;
+
+    // Range of int
+    textRange = [string rangeOfString:[NSString stringWithFormat:@"%d", i] options:NSCaseInsensitiveSearch];
+
+    // Return yes if found
+    if (textRange.location != NSNotFound)
+        return i;
+
+    return -1;
+} /* returnValueOfSubstringDoesEqual */
+
+
+/*
    reloadSectionSubtitles
    --------
    Purpose:        Reload Section Subtitle data
@@ -292,23 +322,18 @@
     int total = 0, math = 0, reading = 0, writing = 0, behavioral = 0;
     for (NSArray *array in appDelegate.studentArraySectioned) {
         for (Student *student in array) {
-
-            switch ([[student classkey] integerValue]) {
-                case kMath_Key :
-                    math++;
-                    break;
-                case kReading_Key :
-                    reading++;
-                    break;
-                case kWriting_Key :
-                    writing++;
-                    break;
-                case kBehavioral_Key :
-                    behavioral++;
-                    break;
-                default :
-                    break;
-            } /* switch */
+            if ([self returnValueOfSubstringDoesEqual:kMath_Key withStudentClassKey:[student classkey]] == kMath_Key) {
+                math++;
+            }
+            if ([self returnValueOfSubstringDoesEqual:kReading_Key withStudentClassKey:[student classkey]] == kReading_Key) {
+                reading++;
+            }
+            if ([self returnValueOfSubstringDoesEqual:kWriting_Key withStudentClassKey:[student classkey]] == kWriting_Key) {
+                writing++;
+            }
+            if ([self returnValueOfSubstringDoesEqual:kBehavioral_Key withStudentClassKey:[student classkey]] == kBehavioral_Key) {
+                behavioral++;
+            }
         }
         total += array.count;
     }

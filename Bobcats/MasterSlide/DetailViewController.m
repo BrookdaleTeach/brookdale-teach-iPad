@@ -302,11 +302,17 @@
     else
         student = (Student *)[[appDelegate.studentArraySectioned objectAtIndex:section] objectAtIndex:row];
 
+    NSString *determinedDate = @"";
+    
+    if ( [student dob_month] > 0 && [student dob_day] > 0 && [student dob_year] > 0 ) {
+        determinedDate = [NSString stringWithFormat:@"%d/%d/%d", [student dob_month], [student dob_day], [student dob_year]];
+    }
+        
     // Insert student data into array
     tableViewContent = [[NSMutableArray alloc] initWithObjects:
                         [student phone],
                         [student address],
-                        [NSString stringWithFormat:@"%d/%d/%d", [student dob_month], [student dob_day], [student dob_year]],
+                        determinedDate,
                         [student parent_firstName],
                         [student parent_lastName],
                         [student parent_email],

@@ -13,6 +13,8 @@
 #define kDemoSQLWriting_Database    @"writing_demo.sql"
 #define kDemoSQLBehavioral_Database @"behavioral_demo.sql"
 
+// Notification
+#define kMasterShouldReloadTableView @"ReloadMasterTableView"
 
 // Segmented Control Objects Tags
 #define kSegmentControlTagFirst 111

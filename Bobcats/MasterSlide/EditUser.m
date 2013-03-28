@@ -154,6 +154,29 @@
     [scrollView addSubview:[self addClassesCheckboxesView]];
 } /* viewDidLoad */
 
+/*
+ returnValueOfSubstringDoesEqual
+ --------
+ Purpose:        Find class key
+ Parameters:     int, NSString
+ Returns:        int
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+- (int)returnValueOfSubstringDoesEqual:(int)i withStudentClassKey:(NSString *)string {
+    
+    // Range
+    NSRange textRange;
+    
+    // Range of int
+    textRange = [string rangeOfString:[NSString stringWithFormat:@"%d", i]];
+    
+    // Return yes if found
+    if(textRange.location != NSNotFound)
+        return i;
+    
+    return -1;
+}
 
 /*
    addClassesCheckboxesView
@@ -193,6 +216,19 @@
     [addClassesView addSubview:readingCheckbutton];
     [addClassesView addSubview:writingCheckbutton];
     [addClassesView addSubview:behavioralCheckbutton];
+    
+    if ([self returnValueOfSubstringDoesEqual:kMath_Key withStudentClassKey:[student classkey]] == kMath_Key) {
+        [mathCheckbutton setSelected:YES];
+    }
+    if ([self returnValueOfSubstringDoesEqual:kReading_Key withStudentClassKey:[student classkey]] == kReading_Key) {
+        [readingCheckbutton setSelected:YES];
+    }
+    if ([self returnValueOfSubstringDoesEqual:kWriting_Key withStudentClassKey:[student classkey]] == kWriting_Key) {
+        [writingCheckbutton setSelected:YES];
+    }
+    if ([self returnValueOfSubstringDoesEqual:kBehavioral_Key withStudentClassKey:[student classkey]] == kBehavioral_Key) {
+        [behavioralCheckbutton setSelected:YES];
+    }
 
     return addClassesView;
 } /* addClassesCheckboxesView */
@@ -258,7 +294,6 @@
     return demoButton;
 
 } /* drawDemoButton */
-
 
 /*
    useCameraRoll
@@ -413,7 +448,7 @@
     if ([behavioralCheckbutton isSelected])
         [selectedClasses addObject:[NSNumber numberWithInt:kBehavioral_Key]];
 
-    NSLog(@"db path: %@", appDelegate.databasePath);
+    NSArray *parsedDate = [[userInput objectAtIndex:3] componentsSeparatedByString:@"/"];
 
     if (sqlite3_open([appDelegate.databasePath UTF8String], &database) == SQLITE_OK) {
         const char *sql = "UPDATE students SET firstName=?, lastName=?, fullName=?, gender=?, dob_month=?, dob_day=?, dob_year=?, image=?, uid=?, email=?, phone=?, address=?, parent_firstName=?, parent_lastName=?, parent_email=?, parent_phone=?, relationship=?, notes=?, classkey=? WHERE uid=?";
@@ -424,9 +459,23 @@
             sqlite3_bind_text(compiledStatement, 2, [[[userInput objectAtIndex:1] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 3, [[NSString stringWithFormat:@"%@ %@", [userInput objectAtIndex:0], [userInput objectAtIndex:1]] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 4, [@"male" UTF8String], -1, SQLITE_TRANSIENT);
-            sqlite3_bind_int(compiledStatement, 5, month);
-            sqlite3_bind_int(compiledStatement, 6, day);
-            sqlite3_bind_int(compiledStatement, 7, year);
+            
+            if (parsedDate.count >= 1) 
+                sqlite3_bind_int(compiledStatement, 5, [[parsedDate objectAtIndex:0] integerValue]);
+            else
+                sqlite3_bind_int(compiledStatement, 5, -1);
+
+            if (parsedDate.count >= 2)
+                sqlite3_bind_int(compiledStatement, 6, [[parsedDate objectAtIndex:1] integerValue]);
+            else
+                sqlite3_bind_int(compiledStatement, 6, -1);
+
+            if (parsedDate.count >= 3)
+                sqlite3_bind_int(compiledStatement, 7, [[parsedDate objectAtIndex:2] integerValue]);
+            else
+                sqlite3_bind_int(compiledStatement, 7, -1);
+
+            
             sqlite3_bind_text(compiledStatement, 8, [[NSString stringWithFormat:@"%@.jpg", [userInput objectAtIndex:2]] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 9, [[userInput objectAtIndex:2] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 10, [[[userInput objectAtIndex:4] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
@@ -485,6 +534,15 @@
             NSFileManager *filemanager = [NSFileManager defaultManager];
             NSError *err;
             UILabel *uid = (UILabel *)[self.view viewWithTag:3];
+                        
+            if ([mathCheckbutton isSelected])
+                [MathAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
+            if ([readingCheckbutton isSelected])
+                [ReadingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
+            if ([writingCheckbutton isSelected])
+                [WritingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
+            if ([behavioralCheckbutton isSelected])
+                [BehavioralAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
 
             if ([filemanager fileExistsAtPath:imagePath]) {
 
@@ -525,6 +583,9 @@
 
         NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
         [nc postNotificationName:@"UpdateContent" object:self userInfo:userInfo];
+        
+        // Save the data
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMasterShouldReloadTableView object:self];
 
     }
 } /* done */

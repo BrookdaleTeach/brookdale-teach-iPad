@@ -73,10 +73,6 @@
 
     imageSavedAsDefaultTitle = NO;
 
-    month = 9;
-    day = 9;
-    year = 9;
-
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     userInput = [[NSMutableArray alloc] init];
 
@@ -125,6 +121,7 @@
     [scrollView addSubview:restTableView];
 
     [scrollView addSubview:[self addClassesCheckboxesView]];
+
 } /* viewDidLoad */
 
 
@@ -403,6 +400,9 @@
 
     }
 
+    NSLog(@"%d/%d/%d ---> ", month, day, year);
+    NSMutableArray *parsedDate = [[NSMutableArray alloc] initWithArray:[[userInput objectAtIndex:2] componentsSeparatedByString:@"\""]];
+
     if (sqlite3_open([appDelegate.databasePath UTF8String], &database) == SQLITE_OK) {
         const char *sql = "INSERT INTO students (firstName, lastName, fullName, gender, dob_month, dob_day, dob_year, image, uid, email, phone, address, parent_firstName, parent_lastName, parent_email, parent_phone, relationship, notes, classkey, key) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
         sqlite3_stmt *compiledStatement;
@@ -471,7 +471,6 @@
             NSFileManager *filemanager = [NSFileManager defaultManager];
             NSError *err;
             UILabel *uid = (UILabel *)[self.view viewWithTag:3];
-            NSLog(@"UID: %@", uid.text);
 
             if (classKey == 1)
                 [MathAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
@@ -620,6 +619,8 @@
         [datePicker addTarget:self action:@selector(datePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
         datePicker.tag = 123;
         formTitleEntryField.inputView = datePicker;
+
+        [self datePickerValueChanged:self];
     }
 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -753,7 +754,7 @@
  */
 - (BOOL) verifyUserIndex {
     for (int x = 0; x < NUM_OBJECTS; x++) {
-        UILabel *label = (UILabel *)[self.view viewWithTag:x + 1];
+        UILabel *label = (UILabel *)[self.view viewWithTag:x  + 1];
 
         if ((label.text == NULL) || [label.text isEqualToString:@""]) {
             if (x < 4)
