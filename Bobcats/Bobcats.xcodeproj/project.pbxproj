@@ -220,6 +220,8 @@
 		62A7226A1703820F0032243F /* MGScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 62A722571703820F0032243F /* MGScrollView.m */; };
 		62A7226B1703820F0032243F /* MGTableBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 62A722591703820F0032243F /* MGTableBox.m */; };
 		62A7226C1703820F0032243F /* MGTableBoxStyled.m in Sources */ = {isa = PBXBuildFile; fileRef = 62A7225B1703820F0032243F /* MGTableBoxStyled.m */; };
+		62A722731703E76B0032243F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62A722721703E76B0032243F /* SystemConfiguration.framework */; };
+		62A722781703E7E70032243F /* libCrittercism_v3_5_1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 62A722771703E7E70032243F /* libCrittercism_v3_5_1.a */; };
 		62A8DBF916B9E85D00D5909A /* ReadingAssesmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 62A8DBF816B9E85D00D5909A /* ReadingAssesmentViewController.m */; };
 		62A8DBFC16B9E9C200D5909A /* Bobcat Project-V1.docx in Resources */ = {isa = PBXBuildFile; fileRef = 62A8DBFB16B9E9C200D5909A /* Bobcat Project-V1.docx */; };
 		62A8DC0016B9F68100D5909A /* WritingAssesmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 62A8DBFF16B9F68100D5909A /* WritingAssesmentViewController.m */; };
@@ -578,6 +580,10 @@
 		62A722591703820F0032243F /* MGTableBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTableBox.m; sourceTree = "<group>"; };
 		62A7225A1703820F0032243F /* MGTableBoxStyled.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGTableBoxStyled.h; sourceTree = "<group>"; };
 		62A7225B1703820F0032243F /* MGTableBoxStyled.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGTableBoxStyled.m; sourceTree = "<group>"; };
+		62A722721703E76B0032243F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		62A722751703E7E70032243F /* Crittercism.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crittercism.h; sourceTree = "<group>"; };
+		62A722761703E7E70032243F /* CrittercismDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrittercismDelegate.h; sourceTree = "<group>"; };
+		62A722771703E7E70032243F /* libCrittercism_v3_5_1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libCrittercism_v3_5_1.a; sourceTree = "<group>"; };
 		62A8DBF716B9E85C00D5909A /* ReadingAssesmentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReadingAssesmentViewController.h; path = MasterSlide/ReadingAssesmentViewController.h; sourceTree = SOURCE_ROOT; };
 		62A8DBF816B9E85D00D5909A /* ReadingAssesmentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ReadingAssesmentViewController.m; path = MasterSlide/ReadingAssesmentViewController.m; sourceTree = SOURCE_ROOT; };
 		62A8DBFB16B9E9C200D5909A /* Bobcat Project-V1.docx */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Bobcat Project-V1.docx"; sourceTree = "<group>"; };
@@ -702,12 +708,14 @@
 				6216205716D6FC65000FDFC7 /* MessageUI.framework in Frameworks */,
 				6200144216D592E500F5C955 /* CoreText.framework in Frameworks */,
 				621E9DF316B7485800CB73AF /* MobileCoreServices.framework in Frameworks */,
+				62A722731703E76B0032243F /* SystemConfiguration.framework in Frameworks */,
 				53A76163146C7E9600B4F8F6 /* UIKit.framework in Frameworks */,
 				620092BA16B58EA300139E1C /* CoreImage.framework in Frameworks */,
 				620092B816B58E9200139E1C /* QuartzCore.framework in Frameworks */,
 				620092B616B58E7B00139E1C /* Accelerate.framework in Frameworks */,
 				53A76165146C7E9600B4F8F6 /* Foundation.framework in Frameworks */,
 				53A76167146C7E9600B4F8F6 /* CoreGraphics.framework in Frameworks */,
+				62A722781703E7E70032243F /* libCrittercism_v3_5_1.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -751,6 +759,7 @@
 				53A76162146C7E9600B4F8F6 /* UIKit.framework */,
 				53A76164146C7E9600B4F8F6 /* Foundation.framework */,
 				53A76166146C7E9600B4F8F6 /* CoreGraphics.framework */,
+				62A722721703E76B0032243F /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -805,6 +814,7 @@
 		620092AF16B58D9400139E1C /* Third */ = {
 			isa = PBXGroup;
 			children = (
+				62A722741703E7E70032243F /* CrittercismSDK */,
 				62A722361703820F0032243F /* MGBox */,
 				6269AD4516E5413F00DA5126 /* RNBlurModalView */,
 				62C8C9B416E3F082001E1DEF /* MBProgressHUD */,
@@ -1439,6 +1449,16 @@
 				62A722431703820F0032243F /* UIView+MGEasyFrame.m */,
 			);
 			path = Categories;
+			sourceTree = "<group>";
+		};
+		62A722741703E7E70032243F /* CrittercismSDK */ = {
+			isa = PBXGroup;
+			children = (
+				62A722751703E7E70032243F /* Crittercism.h */,
+				62A722761703E7E70032243F /* CrittercismDelegate.h */,
+				62A722771703E7E70032243F /* libCrittercism_v3_5_1.a */,
+			);
+			path = CrittercismSDK;
 			sourceTree = "<group>";
 		};
 		62A8DBEB16B9E54300D5909A /* Delegate */ = {
@@ -2197,6 +2217,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "masterslide/Bobcats-Prefix.pch";
 				INFOPLIST_FILE = "masterslide/Bobcats-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/CrittercismSDK\"",
+				);
 				PRODUCT_NAME = Bobcats;
 				PROVISIONING_PROFILE = "D41741DD-34B0-4555-ADEE-47137FC1DEB9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D41741DD-34B0-4555-ADEE-47137FC1DEB9";
@@ -2212,6 +2236,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "masterslide/Bobcats-Prefix.pch";
 				INFOPLIST_FILE = "masterslide/Bobcats-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/CrittercismSDK\"",
+				);
 				PRODUCT_NAME = Bobcats;
 				PROVISIONING_PROFILE = "D41741DD-34B0-4555-ADEE-47137FC1DEB9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "D41741DD-34B0-4555-ADEE-47137FC1DEB9";

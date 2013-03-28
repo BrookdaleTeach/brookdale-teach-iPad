@@ -5,20 +5,33 @@
 //  Created by Burchfield, Neil on 1/27/13.
 //
 
+/* Imports */
 #import "AppDelegate.h"
 #import "ClassDefinitions.h"
 #import "LoginViewController.h"
 #import "UserCredentials.h"
+#import "Crittercism.h"
+
+/* Definitions */
 
 #define DATABASE_NAME @"students.sql"
 #define DEMO          TRUE
+
+/* Static Definitions */
 
 static BOOL isDemo = NO;
 static NSString *merchantEmail = nil;
 static NSString *merchantPassword = nil;
 static BOOL remember_me;
 
+/*
+ * Main Implementation
+ */
+
 @implementation AppDelegate
+
+/* Sythesizations */
+
 @synthesize window;
 @synthesize alphaIndex;
 @synthesize studentArray = _studentArray;
@@ -43,6 +56,9 @@ static BOOL remember_me;
 - (BOOL) application :(UIApplication *)application didFinishLaunchingWithOptions :(NSDictionary *)launchOptions {
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+
+    // Initilize Crittercism
+    [Crittercism enableWithAppID:@"5153aed25f72163850000002"];
 
     LoginViewController *lvc = [[LoginViewController alloc] initWithNibName:@"LoginViewController" bundle:[NSBundle mainBundle]];
     rootNavigationController = [[UINavigationController alloc] initWithRootViewController:lvc];
@@ -136,20 +152,22 @@ static BOOL remember_me;
     self.behavioralStudentsArray = [[NSMutableArray alloc] init];
 } /* allocStudentArraysByClass */
 
-- (int)returnValueOfSubstringDoesEqual:(int)i withStudentClassKey:(NSString *)string {
-    
+
+- (int) returnValueOfSubstringDoesEqual :(int)i withStudentClassKey :(NSString *)string {
+
     // Range
     NSRange textRange;
-    
+
     // Range of int
     textRange = [string rangeOfString:[NSString stringWithFormat:@"%d", i]];
-    
+
     // Return yes if found
-    if(textRange.location != NSNotFound)
+    if (textRange.location != NSNotFound)
         return i;
 
     return -1;
-}
+} /* returnValueOfSubstringDoesEqual */
+
 
 - (void) setMathStudentsArray {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
@@ -393,6 +411,7 @@ static BOOL remember_me;
     [self setWritingStudentsArray];
     [self setBehavioralStudentsArray];
 } /* readEmployeesFromDatabase */
+
 
 + (BOOL) getRememberMeState {
     return remember_me;
