@@ -1,4 +1,4 @@
-# Brookdale Teach 
+# Brookdale Teach v1.0.0
 
 ## An iOS Application Allowing Teachers To Properly, Easy, and Intuitively create Assessments on Students 
 
