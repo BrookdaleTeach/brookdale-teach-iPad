@@ -16,7 +16,7 @@
  * Class Main Interface
  */
 
-@interface SettingsViewController : UIViewController <UIImagePickerControllerDelegate, UIPopoverControllerDelegate, UINavigationControllerDelegate> {
+@interface SettingsViewController : UIViewController <UIImagePickerControllerDelegate, UIPopoverControllerDelegate, UINavigationControllerDelegate, UITextFieldDelegate> {
 
     /* Local Declarations */
 

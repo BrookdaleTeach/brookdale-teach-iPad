@@ -19,6 +19,12 @@
 #import "WritingTestTableViewController.h"
 #import "BehavioralTestTableViewController.h"
 
+/* Definitions */
+
+#define kTextfieldTagIterator 1921
+#define NUMBERS_ONLY @"1234567890"
+#define CHARACTER_LIMIT 2
+
 /*
  * Class Main Implementation
  */
@@ -130,25 +136,21 @@
    Author:         Neil Burchfield
  */
 - (void) done :(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
-
-    BOOL textfieldNull = NO;
-
+    BOOL isTextFieldNull = NO;
+    
     NSMutableDictionary *dataDictionary = [[NSMutableDictionary alloc] init];
-
+    
     for (int x = 0; x < titles.count; x++) {
-        UITextField *textField = (UITextField *)[self.view viewWithTag:100 + x];
-
-        if (textField.text != nil) {
+        UITextField *textField = (UITextField *)[self.view viewWithTag:kTextfieldTagIterator + x];
+        if (textField.text != nil && ![textField.text isEqualToString:@""]) {
             [dataDictionary setObject:textField.text forKey:[titleKeys objectAtIndex:x]];
-            NSLog(@"dataDictionary: %@", textField.text);
-        } else {
-            textfieldNull = YES;
-            break;
+        }
+        else {
+            isTextFieldNull = YES;
         }
     }
-
-    if (!textfieldNull) {
+    
+    if (!isTextFieldNull) {
         switch (classKey) {
             case 1 :
                 if (editingMode == kEditingMode_EntityExists)
@@ -181,6 +183,7 @@
             default :
                 break;
         } /* switch */
+        [self dismissModalViewControllerAnimated:YES];
     } else {
         UIAlertView *alertNullField = [[UIAlertView alloc] initWithTitle:@"Blank Field"
                                                                  message:@"All Fields Are Required"
@@ -254,12 +257,11 @@
             NSMutableArray *parsedData = [[NSMutableArray alloc] initWithArray:[[[existingColumnData objectAtIndex:ip.row] componentsSeparatedByString:@"/"] mutableCopy] copyItems:YES];
             value = [parsedData objectAtIndex:indexPath.section];
             [preExistingDict setObject:value forKey:[titleKeys objectAtIndex:indexPath.section]];
-            NSLog(@"value: %@ key: %@", value, [titleKeys objectAtIndex:indexPath.section]);
         }
 
         cell = [self getCellContentViewWithTextfield:CellIdentifier
                                                     :[titles objectAtIndex:indexPath.section]
-                                                    :100 + indexPath.section
+                                                    :kTextfieldTagIterator + indexPath.section
                                                     :value];
     }
     return cell;
@@ -300,12 +302,17 @@
     formEntryField.clearButtonMode = UITextFieldViewModeNever; // no clear 'x' button to the right
     [formEntryField setEnabled:YES];
 
-    if (tag == 102) {
+    if (tag == kTextfieldTagIterator + 1) {
+        formEntryField.keyboardType = UIKeyboardTypeNumberPad;
+    }
+    
+    if (tag == kTextfieldTagIterator + 2) {
         datePicker = [[UIDatePicker alloc] init];
         datePicker.datePickerMode = UIDatePickerModeDate;
         [datePicker addTarget:self action:@selector(datePickerValueChanged:) forControlEvents:UIControlEventValueChanged];
         datePicker.tag = 123;
         formEntryField.inputView = datePicker;
+        formEntryField.text = [self dateWithFormatFromString:[NSDate date]];
     }
 
     UILabel *formTitleField = [[UILabel alloc] initWithFrame:CGRectMake(6, 12, 116, 20)];
@@ -329,6 +336,43 @@
 
 
 /*
+ shouldChangeCharactersInRange
+ --------
+ Purpose:        Numbers Only
+ Parameters:     UITextField, NSRange, NSString
+ Returns:        BOOL
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string  {
+    if (textField.tag == kTextfieldTagIterator + 1) {
+        NSUInteger newLength = [textField.text length] + [string length] - range.length;
+        NSCharacterSet *cs = [[NSCharacterSet characterSetWithCharactersInString:NUMBERS_ONLY] invertedSet];
+        NSString *filtered = [[string componentsSeparatedByCharactersInSet:cs] componentsJoinedByString:@""];
+        return (([string isEqualToString:filtered])&&(newLength <= CHARACTER_LIMIT));
+    }
+    else {
+        return YES;
+    }
+}
+
+/*
+ dateWithFormatFromString
+ --------
+ Purpose:        Return Current Date formatted
+ Parameters:     NSDate
+ Returns:        NSString
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+- (NSString *) dateWithFormatFromString:(NSDate *)date {
+    // Use NSDateFormatter to write out the date in a friendly format
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateStyle = NSDateFormatterMediumStyle;
+    return [df stringFromDate:date];
+} /* dateWithFormatFromString */
+
+/*
    datePickerValueChanged
    --------
    Purpose:        Date Picker Listener
@@ -343,7 +387,7 @@
     df.dateStyle = NSDateFormatterMediumStyle;
     datePickerValue = [NSString stringWithFormat:@"%@", [df stringFromDate:datePicker.date]];
 
-    UITextField *textField = (UITextField *)[self.view viewWithTag:102];
+    UITextField *textField = (UITextField *)[self.view viewWithTag:kTextfieldTagIterator + 2];
     textField.text = datePickerValue;
 } /* datePickerValueChanged */
 

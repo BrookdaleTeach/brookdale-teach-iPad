@@ -20,9 +20,9 @@
 /* Static Definitions */
 
 static BOOL isDemo = NO;
+static BOOL remember_me;
 static NSString *merchantEmail = nil;
 static NSString *merchantPassword = nil;
-static BOOL remember_me;
 
 /*
  * Main Implementation
@@ -43,6 +43,12 @@ static BOOL remember_me;
 @synthesize writingStudentsArray = _writingStudentsArray;
 @synthesize behavioralStudentsArray = _behavioralStudentsArray;
 
+// ********************************************************************************/
+// Function: supportedInterfaceOrientationsForWindow
+// Arguments: UIApplication, UIWindow
+// Returns: NSUInteger
+// Description: Application Supported Interfaces
+// ********************************************************************************/
 - (NSUInteger) application :(UIApplication *)application supportedInterfaceOrientationsForWindow :(UIWindow *)window {
     /* iPad */
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
@@ -53,6 +59,12 @@ static BOOL remember_me;
 } /* application */
 
 
+// ********************************************************************************/
+// Function: didFinishLaunchingWithOptions
+// Arguments: UIApplication, NSDictionary
+// Returns: none
+// Description: Application Launch
+// ********************************************************************************/
 - (BOOL) application :(UIApplication *)application didFinishLaunchingWithOptions :(NSDictionary *)launchOptions {
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -70,6 +82,12 @@ static BOOL remember_me;
 } /* application */
 
 
+// ********************************************************************************/
+// Function: loadApplicationFromLogin
+// Arguments: bool
+// Returns: none
+// Description: Load app from login perspective
+// ********************************************************************************/
 - (void) loadApplicationFromLogin :(BOOL)flag {
 
     UserCredentials *uc = [[UserCredentials alloc] init];
@@ -94,6 +112,12 @@ static BOOL remember_me;
 } /* loadApplicationFromLogin */
 
 
+// ********************************************************************************/
+// Function: deleteAllSQL
+// Arguments: none
+// Returns: none
+// Description: Delete all previous data
+// ********************************************************************************/
 - (void) deleteAllSQL {
     /*  Get the path to the documents directory and append the databaseName */
     NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
@@ -107,6 +131,12 @@ static BOOL remember_me;
 } /* deleteAllSQL */
 
 
+// ********************************************************************************/
+// Function: loadApplicationFromDemo
+// Arguments: none
+// Returns: none
+// Description: Set app data if demo
+// ********************************************************************************/
 - (void) loadApplicationFromDemo {
 
     NSError *err = nil;
@@ -140,11 +170,23 @@ static BOOL remember_me;
 } /* loadApplicationFromDemo */
 
 
+// ********************************************************************************/
+// Function: isDemo
+// Arguments: none
+// Returns: none
+// Description: External method if app is demo
+// ********************************************************************************/
 + (BOOL) isDemo {
     return isDemo;
 } /* isDemo */
 
 
+// ********************************************************************************/
+// Function: allocStudentArraysByClass
+// Arguments: none
+// Returns: none
+// Description: Alloc class arrays
+// ********************************************************************************/
 - (void) allocStudentArraysByClass {
     self.mathStudentsArray = [[NSMutableArray alloc] init];
     self.readingStudentsArray = [[NSMutableArray alloc] init];
@@ -153,6 +195,12 @@ static BOOL remember_me;
 } /* allocStudentArraysByClass */
 
 
+// ********************************************************************************/
+// Function: returnValueOfSubstringDoesEqual
+// Arguments: int, string
+// Returns: int
+// Description: Search for existing class keys
+// ********************************************************************************/
 - (int) returnValueOfSubstringDoesEqual :(int)i withStudentClassKey :(NSString *)string {
 
     // Range
@@ -169,6 +217,12 @@ static BOOL remember_me;
 } /* returnValueOfSubstringDoesEqual */
 
 
+// ********************************************************************************/
+// Function: setMathStudentsArray
+// Arguments: none
+// Returns: none
+// Description: Reload Array
+// ********************************************************************************/
 - (void) setMathStudentsArray {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
@@ -185,6 +239,12 @@ static BOOL remember_me;
 } /* setMathStudentsArray */
 
 
+// ********************************************************************************/
+// Function: setReadingStudentsArray
+// Arguments: none
+// Returns: none
+// Description: Reload Array
+// ********************************************************************************/
 - (void) setReadingStudentsArray {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
@@ -201,6 +261,12 @@ static BOOL remember_me;
 } /* setReadingStudentsArray */
 
 
+// ********************************************************************************/
+// Function: setWritingStudentsArray
+// Arguments: none
+// Returns: none
+// Description: Reload Array
+// ********************************************************************************/
 - (void) setWritingStudentsArray {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
@@ -217,6 +283,12 @@ static BOOL remember_me;
 } /* setWritingStudentsArray */
 
 
+// ********************************************************************************/
+// Function: setBehavioralStudentsArray
+// Arguments: none
+// Returns: none
+// Description: Reload Array
+// ********************************************************************************/
 - (void) setBehavioralStudentsArray {
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
     for (int x = 0; x < self.studentArraySectioned.count; x++) {
@@ -233,25 +305,36 @@ static BOOL remember_me;
 } /* setBehavioralStudentsArray */
 
 
+// ********************************************************************************/
+// Function: reloadCoreData
+// Arguments: none
+// Returns: none
+// Description: Reload Application's data
+// ********************************************************************************/
 - (void) reloadCoreData {
+    /*  Get the path to the documents directory and append the databaseName */
     NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                                 /*  Get the path to the documents directory and append the databaseName */
                                                                  NSUserDomainMask, YES);
     NSString *documentsDir = [documentPaths objectAtIndex:0];
     self.databasePath = [documentsDir stringByAppendingPathComponent:DATABASE_NAME];
-    NSLog(@"Reread database path");
+    NSLog(@"%s Reread database path", __PRETTY_FUNCTION__);
 
     /*    Check and create employee database */
     [self checkAndCreateDatabase];
-    NSLog(@"Checked Database");
+    NSLog(@"%s Checked Database", __PRETTY_FUNCTION__);
 
     /*    Read employees from DB and insert into main employeeArray */
     [self readEmployeesFromDatabase];
-    NSLog(@"Read Database");
+    NSLog(@"%s Read Database", __PRETTY_FUNCTION__);
 } /* reloadCoreData */
 
 
-/*    Check and Create Employee database if not availiable */
+// ********************************************************************************/
+// Function: checkAndCreateDatabase
+// Arguments: none
+// Returns: none
+// Description: Check and Create Student database if not availiable
+// ********************************************************************************/
 - (void) checkAndCreateDatabase {
     BOOL success;
     NSFileManager *fileManager = [NSFileManager defaultManager];

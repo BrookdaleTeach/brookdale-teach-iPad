@@ -129,7 +129,6 @@
     }
 } /* viewDidLoad */
 
-
 /*
    pushSettings
    --------
@@ -303,11 +302,11 @@
         student = (Student *)[[appDelegate.studentArraySectioned objectAtIndex:section] objectAtIndex:row];
 
     NSString *determinedDate = @"";
-    
-    if ( [student dob_month] > 0 && [student dob_day] > 0 && [student dob_year] > 0 ) {
+
+    if (([student dob_month] > 0) && ([student dob_day] > 0) && ([student dob_year] > 0)) {
         determinedDate = [NSString stringWithFormat:@"%d/%d/%d", [student dob_month], [student dob_day], [student dob_year]];
     }
-        
+
     // Insert student data into array
     tableViewContent = [[NSMutableArray alloc] initWithObjects:
                         [student phone],
@@ -640,7 +639,15 @@
     }
 
     [ribbon removeFromSuperview];
-    ribbon = [[UIImageView alloc] initWithFrame:CGRectMake(600, -10, 80, 146)];
+    ribbon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_ribbon.png", [nextView lowercaseString]]] highlightedImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_ribbon.png", [nextView lowercaseString]]]];
+    
+    // Layout scroller based on interface orientation
+    if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ) {
+        [ribbon setFrame:CGRectMake(660, -10, 80, 146)];
+    } else {
+        [ribbon setFrame:CGRectMake(600, -10, 80, 146)];
+    }
+    
     ribbon.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@_ribbon.png", [nextView lowercaseString]]];
     ribbon.layer.shadowColor = [UIColor darkGrayColor].CGColor;
     ribbon.layer.shadowOffset = CGSizeMake(-2, 2);
@@ -1095,8 +1102,14 @@
     UIViewController *vc = [[UIViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
     vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(insertNote:)];
-    vc.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
     vc.title = [NSString stringWithFormat:@"%@ Notes", [student fullName]];
+    
+    // Email Button and Actiom
+    UIBarButtonItem *composeNotesBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"Email" style:UIBarButtonItemStyleBordered target:self action:@selector(emailWithContent:)];
+
+    UIBarButtonItem *cancelBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
+
+    vc.navigationItem.leftBarButtonItems = [NSArray arrayWithObjects:cancelBarButtonItem, composeNotesBarButtonItem, nil];
 
     notesTextView = [[UITextView alloc] initWithFrame:CGRectMake(20, 20, 495, 535)];
     notesTextView.contentInset = UIEdgeInsetsMake(12, 10, 0, 0);
@@ -1169,11 +1182,13 @@
         if (!isSettingsHidden) {
             [self.settingsViewController.view setFrame:initial_portrait];
         }
+        [ribbon setFrame:CGRectMake(660, -10, 80, 146)];
     } else {
         [toolbar setFrame:CGRectMake(0, BOX_LANDSCAPE.size.height - 300, BOX_LANDSCAPE.size.width, 44)];
         if (!isSettingsHidden) {
             [self.settingsViewController.view setFrame:initial_landscape];
         }
+        [ribbon setFrame:CGRectMake(600, -10, 80, 146)];
     }
 
     // Reset Scroller based on orientation
@@ -1477,7 +1492,7 @@
                 break;
         } /* switch */
 
-        [mailComposeViewController setSubject:@""];
+        [mailComposeViewController setSubject:[student fullName]];
         [mailComposeViewController setMessageBody:@"" isHTML:NO];
         mailComposeViewController.mailComposeDelegate = self;
 
@@ -1499,6 +1514,19 @@
     [self dismissModalViewControllerAnimated:YES];
 } /* mailComposeController */
 
+/*
+ emailWithContent
+ --------
+ Purpose:        Email w/ Content
+ Parameters:     id
+ Returns:        --
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+- (void) emailWithContent :(id)sender {
+    [self dismissModalViewControllerAnimated:YES];
+    [self performSelector:@selector(loadMailComposerWithContent:) withObject:self afterDelay:0.7f];
+} /* emailWithContent */
 
 /*
    emailWithAttachment
@@ -1514,6 +1542,29 @@
     [self performSelector:@selector(loadMailComposer:) withObject:self afterDelay:0.7f];
 } /* emailWithAttachment */
 
+/*
+ loadMailComposerWithContent
+ --------
+ Purpose:        Load Composer with content
+ Parameters:     id
+ Returns:        --
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+- (void) loadMailComposerWithContent :(id)sender {
+    MFMailComposeViewController *mailComposeViewController = [MFMailComposeViewController new];
+    [mailComposeViewController setSubject:[NSString stringWithFormat:@"My Student Notes on %@", [student fullName]]];
+    [mailComposeViewController setMessageBody:notesTextView.text isHTML:NO];
+    
+    NSMutableDictionary *settingsDictionary = [[NSMutableDictionary alloc]
+                                               initWithContentsOfFile:[self pathToFollowingResource:kTeacherSettingsPlist]];
+    
+    if ([settingsDictionary objectForKey:kTeacherEmail])
+        [mailComposeViewController setToRecipients:[NSArray arrayWithObject:[settingsDictionary objectForKey:kTeacherEmail]]];
+
+    mailComposeViewController.mailComposeDelegate = self;
+    [self presentModalViewController:mailComposeViewController animated:YES];
+} /* loadMailComposerWithContent */
 
 /*
    loadMailComposer
@@ -1526,7 +1577,7 @@
  */
 - (void) loadMailComposer :(id)sender {
     MFMailComposeViewController *mailComposeViewController = [MFMailComposeViewController new];
-    [mailComposeViewController setSubject:@""];
+    [mailComposeViewController setSubject:[NSString stringWithFormat:@"%@'s Student Assessment", [student fullName]]];
     [mailComposeViewController setMessageBody:@"" isHTML:NO];
     mailComposeViewController.mailComposeDelegate = self;
     [mailComposeViewController addAttachmentData:[NSData dataWithContentsOfFile:[self getFilePathForPrintingPDF]]
@@ -1583,15 +1634,13 @@
     [vc setTitle:@"Preview"];
 
     vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Email" style:UIBarButtonItemStyleBordered target:self action:@selector(emailWithAttachment:)];
-    vc.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
-
+    
     [vc.view addSubview:webView];
 
     webView.delegate = self;
 
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
-    navController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    [self.navigationController presentModalViewController:navController animated:YES];
+    vc.modalPresentationStyle = UIModalPresentationPageSheet;
+    [self.navigationController pushViewController:vc animated:YES];
 } /* previewPDFData */
 
 

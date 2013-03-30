@@ -72,5 +72,6 @@
 /* Global Method Declarations */
 
 - (void) loadContentDataView :(int)section :(int)row;
+- (void) pushSettings :(id)sender;
 
 @end

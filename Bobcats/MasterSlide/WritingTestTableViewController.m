@@ -51,7 +51,7 @@
     standardizedTests = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectStandardizedDataIntoClassDatabase:[student uid]]];
     formativeAssessments = [[NSMutableArray alloc] initWithArray:[WritingAssessmentModel selectFormativeDataIntoClassDatabase:[student uid]]];
 
-    [self.tableView reloadData];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 2)] withRowAnimation:UITableViewRowAnimationFade];
 } /* reloadData */
 
 
@@ -124,7 +124,7 @@
             [accessoryText setFont:[UIFont boldSystemFontOfSize:17.0f]];
             [accessoryText setTextAlignment:NSTextAlignmentRight];
             [accessoryText setBackgroundColor:[UIColor clearColor]];
-            [accessoryText setText:[parsedStandard objectAtIndex:1]];
+            [accessoryText setText:[NSString stringWithFormat:@"%@%@", [parsedStandard objectAtIndex:1], @"%"]];
             cell.accessoryView = accessoryText;
         }
     } else if (indexPath.section == 1) {
@@ -143,7 +143,7 @@
             [accessoryText setFont:[UIFont boldSystemFontOfSize:17.0f]];
             [accessoryText setTextAlignment:NSTextAlignmentRight];
             [accessoryText setBackgroundColor:[UIColor clearColor]];
-            [accessoryText setText:[parsedFormative objectAtIndex:1]];
+            [accessoryText setText:[NSString stringWithFormat:@"%@%@", [parsedFormative objectAtIndex:1], @"%"]];
             cell.accessoryView = accessoryText;
         }
     }

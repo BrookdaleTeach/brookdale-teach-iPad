@@ -1461,13 +1461,13 @@
 			path = CrittercismSDK;
 			sourceTree = "<group>";
 		};
-		62A8DBEB16B9E54300D5909A /* Delegate */ = {
+		62A8DBEB16B9E54300D5909A /* AppDelegate */ = {
 			isa = PBXGroup;
 			children = (
 				53A76171146C7E9600B4F8F6 /* AppDelegate.h */,
 				53A76172146C7E9600B4F8F6 /* AppDelegate.m */,
 			);
-			name = Delegate;
+			name = AppDelegate;
 			sourceTree = "<group>";
 		};
 		62A8DBEC16B9E57700D5909A /* AboutViewController */ = {
@@ -1537,7 +1537,7 @@
 		62A8DBF316B9E5EC00D5909A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				62A8DBEB16B9E54300D5909A /* Delegate */,
+				62A8DBEB16B9E54300D5909A /* AppDelegate */,
 				62C8C9B316E3ED5A001E1DEF /* PDFRenderer */,
 				62C8C9A816E3E256001E1DEF /* CustomUI */,
 				62C8C9B016E3EA77001E1DEF /* UserCredentials */,

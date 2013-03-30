@@ -180,9 +180,53 @@
     texfield.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14];
     texfield.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     texfield.tag = tag;
+
+    if (tag == 1)
+        [texfield becomeFirstResponder];
+
+    if (tag <= 3)
+        texfield.returnKeyType = UIReturnKeyNext;
+    else
+        texfield.returnKeyType = UIReturnKeyDone;
+
+    texfield.delegate = self;
     texfield.text = text;
     return texfield;
 } /* texfieldWithTag */
+
+
+/*
+   textFieldShouldReturn
+   --------
+   Purpose:        Dismiss TextView
+   Parameters:     textField
+   Returns:        BOOL
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (BOOL) textFieldShouldReturn :(UITextField *)textField {
+    
+    UITextField *textFieldGrade = (UITextField *)[self.view viewWithTag:2];
+    UITextField *textFieldEmail = (UITextField *)[self.view viewWithTag:3];
+    UITextField *textFieldPhone = (UITextField *)[self.view viewWithTag:4];
+    
+    switch (textField.tag) {
+        case 1:
+            [textFieldGrade becomeFirstResponder];
+            break;
+        case 2:
+            [textFieldEmail becomeFirstResponder];
+            break;
+        case 3:
+            [textFieldPhone becomeFirstResponder];
+            break;
+        default:
+            [textField resignFirstResponder];
+            break;
+    }
+    
+    return YES;
+} /* textFieldShouldReturn */
 
 
 /*
@@ -395,6 +439,70 @@
         [alert show];
     }
 } /* image */
+
+
+/*
+   shouldChangeCharactersInRange
+   --------
+   Purpose:        Format Phone Input
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (BOOL) textField :(UITextField *)textField shouldChangeCharactersInRange :(NSRange)range replacementString :(NSString *)string {
+    NSString *totalString = [NSString stringWithFormat:@"%@%@", textField.text, string];
+
+    if ( textField.tag == 4 ) {
+        if (range.length == 1) {
+            textField.text = [self formatPhoneNumber:totalString deleteLastChar:YES];
+        } else {
+            textField.text = [self formatPhoneNumber:totalString deleteLastChar:NO ];
+        }
+        return NO;
+    }
+    return YES;
+} /* textField */
+
+
+/*
+   formatPhoneNumber
+   --------
+   Purpose:        Format Phone Input
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (NSString *) formatPhoneNumber :(NSString *)simpleNumber deleteLastChar :(BOOL)deleteLastChar {
+    if (simpleNumber.length == 0)
+        return @"";
+
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[\\s-\\(\\)]" options:NSRegularExpressionCaseInsensitive error:&error];
+    simpleNumber = [regex stringByReplacingMatchesInString:simpleNumber options:0 range:NSMakeRange(0, [simpleNumber length]) withTemplate:@""];
+
+    if (simpleNumber.length > 10) {
+        simpleNumber = [simpleNumber substringToIndex:10];
+    }
+
+    if (deleteLastChar) {
+        simpleNumber = [simpleNumber substringToIndex:[simpleNumber length] - 1];
+    }
+
+    if (simpleNumber.length < 7)
+        simpleNumber = [simpleNumber stringByReplacingOccurrencesOfString:@"(\\d{3})(\\d+)"
+                                                               withString:@"($1) $2"
+                                                                  options:NSRegularExpressionSearch
+                                                                    range:NSMakeRange(0, [simpleNumber length])];
+
+    else
+        simpleNumber = [simpleNumber stringByReplacingOccurrencesOfString:@"(\\d{3})(\\d{3})(\\d+)"
+                                                               withString:@"($1) $2-$3"
+                                                                  options:NSRegularExpressionSearch
+                                                                    range:NSMakeRange(0, [simpleNumber length])];
+    return simpleNumber;
+} /* formatPhoneNumber */
 
 
 @end

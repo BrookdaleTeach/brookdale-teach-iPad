@@ -90,7 +90,6 @@
 - (BOOL) plistExists {
     NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *plistLocation = [documentsDirectory stringByAppendingPathComponent:USERNAME_PLIST];
-    NSLog(@"plistlocation: %@", plistLocation);
     return [[NSFileManager defaultManager] fileExistsAtPath:plistLocation];
 } /* plistExists */
 

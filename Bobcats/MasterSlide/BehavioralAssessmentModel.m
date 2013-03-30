@@ -119,7 +119,6 @@
     }
 
     NSString *updateStatement = [NSString stringWithFormat:@"UPDATE %@ SET %@='%@' WHERE uid='%@'", table, object, text, uid];
-    NSLog(@"insert: %@", updateStatement);
 
     if (sqlite3_open([[self checkAndCreateDatabase] UTF8String], &database) == SQLITE_OK) {
 
@@ -299,9 +298,7 @@
             }
         }
 
-        if (sqlite3_step(compiledStatement) != SQLITE_DONE) {
-            NSLog(@"Save Error (Select Formative Data): %s", sqlite3_errmsg(database) );
-        }
+        if (sqlite3_step(compiledStatement) != SQLITE_DONE) {}
 
         sqlite3_finalize(compiledStatement);
     }
@@ -369,9 +366,7 @@
             sqlite3_reset(compiledStatement);
         }
 
-        if (sqlite3_step(compiledStatement) != SQLITE_DONE) {
-            NSLog(@"Save Error (Select Standardized Data): %s", sqlite3_errmsg(database) );
-        }
+        if (sqlite3_step(compiledStatement) != SQLITE_DONE) {}
 
         sqlite3_finalize(compiledStatement);
     }

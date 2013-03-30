@@ -354,15 +354,7 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context){
     NSString *formattedInsertStringData = [NSString stringWithFormat:@"%@%@%@", [itemArray objectAtIndex:[control selectedSegmentIndex]], kContent_Delimiter, cellContentText];
     [ReadingAssessmentModel insertDataIntoClassDatabase:[student uid] section:s row:r text:formattedInsertStringData];
     self.studentObjectData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel retrieveStudentDataFromDatabase:[student uid]] copyItems:YES];
-
-    if (![oldText isEqualToString:modalTextView.text]) {
-        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:row inSection:section]];
-
-        UIImageView *contentStatus = [[UIImageView alloc] initWithFrame:CGRectMake(-30, 21, 18, 18)];
-        contentStatus.image = [UIImage imageNamed:@"check"];
-        [cell.contentView addSubview:contentStatus];
-    }
-
+    
     [self.tableView reloadData];
 } /* cellSegmentedControlAction */
 
@@ -381,6 +373,14 @@ NSInteger static compareViewsByOrigin(id sp1, id sp2, void *context){
 
     [ReadingAssessmentModel insertDataIntoClassDatabase:[student uid] section:section row:row text:formattedInsertStringData];
     self.studentObjectData = [[NSMutableArray alloc] initWithArray:[ReadingAssessmentModel retrieveStudentDataFromDatabase:[student uid]] copyItems:YES];
+    
+    if (![oldText isEqualToString:modalTextView.text]) {
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:row inSection:section]];
+        
+        UIImageView *contentStatus = [[UIImageView alloc] initWithFrame:CGRectMake(-30, 21, 18, 18)];
+        contentStatus.image = [UIImage imageNamed:@"check"];
+        [cell.contentView addSubview:contentStatus];
+    }
 
     [self.tableView reloadData];
 

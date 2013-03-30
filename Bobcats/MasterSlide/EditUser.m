@@ -154,29 +154,31 @@
     [scrollView addSubview:[self addClassesCheckboxesView]];
 } /* viewDidLoad */
 
+
 /*
- returnValueOfSubstringDoesEqual
- --------
- Purpose:        Find class key
- Parameters:     int, NSString
- Returns:        int
- Notes:          --
- Author:         Neil Burchfield
+   returnValueOfSubstringDoesEqual
+   --------
+   Purpose:        Find class key
+   Parameters:     int, NSString
+   Returns:        int
+   Notes:          --
+   Author:         Neil Burchfield
  */
-- (int)returnValueOfSubstringDoesEqual:(int)i withStudentClassKey:(NSString *)string {
-    
+- (int) returnValueOfSubstringDoesEqual :(int)i withStudentClassKey :(NSString *)string {
+
     // Range
     NSRange textRange;
-    
+
     // Range of int
     textRange = [string rangeOfString:[NSString stringWithFormat:@"%d", i]];
-    
+
     // Return yes if found
-    if(textRange.location != NSNotFound)
+    if (textRange.location != NSNotFound)
         return i;
-    
+
     return -1;
-}
+} /* returnValueOfSubstringDoesEqual */
+
 
 /*
    addClassesCheckboxesView
@@ -216,7 +218,7 @@
     [addClassesView addSubview:readingCheckbutton];
     [addClassesView addSubview:writingCheckbutton];
     [addClassesView addSubview:behavioralCheckbutton];
-    
+
     if ([self returnValueOfSubstringDoesEqual:kMath_Key withStudentClassKey:[student classkey]] == kMath_Key) {
         [mathCheckbutton setSelected:YES];
     }
@@ -294,6 +296,7 @@
     return demoButton;
 
 } /* drawDemoButton */
+
 
 /*
    useCameraRoll
@@ -459,8 +462,8 @@
             sqlite3_bind_text(compiledStatement, 2, [[[userInput objectAtIndex:1] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 3, [[NSString stringWithFormat:@"%@ %@", [userInput objectAtIndex:0], [userInput objectAtIndex:1]] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 4, [@"male" UTF8String], -1, SQLITE_TRANSIENT);
-            
-            if (parsedDate.count >= 1) 
+
+            if (parsedDate.count >= 1)
                 sqlite3_bind_int(compiledStatement, 5, [[parsedDate objectAtIndex:0] integerValue]);
             else
                 sqlite3_bind_int(compiledStatement, 5, -1);
@@ -475,7 +478,7 @@
             else
                 sqlite3_bind_int(compiledStatement, 7, -1);
 
-            
+
             sqlite3_bind_text(compiledStatement, 8, [[NSString stringWithFormat:@"%@.jpg", [userInput objectAtIndex:2]] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 9, [[userInput objectAtIndex:2] UTF8String], -1, SQLITE_TRANSIENT);
             sqlite3_bind_text(compiledStatement, 10, [[[userInput objectAtIndex:4] capitalizedString] UTF8String], -1, SQLITE_TRANSIENT);
@@ -507,8 +510,6 @@
 
     sqlite3_close(database);
 
-    //    [appDelegate reloadCoreData];
-
     return success;
 } /* updateEmployeeIntoDatabase */
 
@@ -534,16 +535,24 @@
             NSFileManager *filemanager = [NSFileManager defaultManager];
             NSError *err;
             UILabel *uid = (UILabel *)[self.view viewWithTag:3];
-                        
-            if ([mathCheckbutton isSelected])
-                [MathAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
-            if ([readingCheckbutton isSelected])
-                [ReadingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
-            if ([writingCheckbutton isSelected])
-                [WritingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
-            if ([behavioralCheckbutton isSelected])
-                [BehavioralAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
 
+            if ([mathCheckbutton isSelected] && ([self returnValueOfSubstringDoesEqual:kMath_Key
+                                                                   withStudentClassKey:[student classkey]] != kMath_Key) ) {
+                [MathAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
+            }
+            if ([readingCheckbutton isSelected] && ([self returnValueOfSubstringDoesEqual:kReading_Key
+                                                                      withStudentClassKey:[student classkey]] != kReading_Key) ) {
+                [ReadingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
+            }
+            if ([writingCheckbutton isSelected] && ([self returnValueOfSubstringDoesEqual:kWriting_Key
+                                                                      withStudentClassKey:[student classkey]] != kWriting_Key) ) {
+                [WritingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
+            }
+            if ([behavioralCheckbutton isSelected] && ([self returnValueOfSubstringDoesEqual:kBehavioral_Key
+                                                                         withStudentClassKey:[student classkey]] != kBehavioral_Key) ) {
+                [BehavioralAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
+            }
+            
             if ([filemanager fileExistsAtPath:imagePath]) {
 
                 BOOL result = [filemanager moveItemAtPath:imagePath toPath:[documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", uid.text]] error:&err];
@@ -583,7 +592,7 @@
 
         NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
         [nc postNotificationName:@"UpdateContent" object:self userInfo:userInfo];
-        
+
         // Save the data
         [[NSNotificationCenter defaultCenter] postNotificationName:kMasterShouldReloadTableView object:self];
 
@@ -651,6 +660,71 @@
     else
         return restTitles.count;
 } /* tableView */
+
+
+/*
+   shouldChangeCharactersInRange
+   --------
+   Purpose:        Format Phone Input
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (BOOL) textField :(UITextField *)textField shouldChangeCharactersInRange :(NSRange)range replacementString :(NSString *)string {
+    NSString *totalString = [NSString stringWithFormat:@"%@%@", textField.text, string];
+
+    if ((textField.tag == 6) || (textField.tag == 11)) {
+        if (range.length == 1) {
+            textField.text = [self formatPhoneNumber:totalString deleteLastChar:YES];
+        } else {
+            textField.text = [self formatPhoneNumber:totalString deleteLastChar:NO ];
+        }
+        return false;
+    }
+
+    return YES;
+} /* textField */
+
+
+/*
+   formatPhoneNumber
+   --------
+   Purpose:        Format Phone Input
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (NSString *) formatPhoneNumber :(NSString *)simpleNumber deleteLastChar :(BOOL)deleteLastChar {
+    if (simpleNumber.length == 0)
+        return @"";
+
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[\\s-\\(\\)]" options:NSRegularExpressionCaseInsensitive error:&error];
+    simpleNumber = [regex stringByReplacingMatchesInString:simpleNumber options:0 range:NSMakeRange(0, [simpleNumber length]) withTemplate:@""];
+
+    if (simpleNumber.length > 10) {
+        simpleNumber = [simpleNumber substringToIndex:10];
+    }
+
+    if (deleteLastChar) {
+        simpleNumber = [simpleNumber substringToIndex:[simpleNumber length] - 1];
+    }
+
+    if (simpleNumber.length < 7)
+        simpleNumber = [simpleNumber stringByReplacingOccurrencesOfString:@"(\\d{3})(\\d+)"
+                                                               withString:@"($1) $2"
+                                                                  options:NSRegularExpressionSearch
+                                                                    range:NSMakeRange(0, [simpleNumber length])];
+
+    else
+        simpleNumber = [simpleNumber stringByReplacingOccurrencesOfString:@"(\\d{3})(\\d{3})(\\d+)"
+                                                               withString:@"($1) $2-$3"
+                                                                  options:NSRegularExpressionSearch
+                                                                    range:NSMakeRange(0, [simpleNumber length])];
+    return simpleNumber;
+} /* formatPhoneNumber */
 
 
 /*

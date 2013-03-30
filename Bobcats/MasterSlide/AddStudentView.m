@@ -49,7 +49,6 @@
     if (self) {
         self.title = NSLocalizedString(@"Add Student", nil);
         self.classKey = key;
-        NSLog(@"Add Student Class Key: %d", self.classKey);
     }
     return self;
 } /* init */
@@ -156,6 +155,10 @@
             [self studentToClass:behavioralCheckbutton];
             break;
         default :
+            [self studentToClass:mathCheckbutton];
+            [self studentToClass:writingCheckbutton];
+            [self studentToClass:readingCheckbutton];
+            [self studentToClass:behavioralCheckbutton];
             break;
     } /* switch */
 
@@ -319,7 +322,7 @@
     if (error) {
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"Save failed"
-                                        message:@"Failed to save image" \
+                                        message:@"Failed to save image"
                                        delegate:nil
                               cancelButtonTitle:@"OK"
                               otherButtonTitles:nil];
@@ -356,6 +359,71 @@
 - (void) imagePickerControllerDidCancel :(UIImagePickerController *)picker {
     [self dismissModalViewControllerAnimated:YES];
 } /* imagePickerControllerDidCancel */
+
+
+/*
+   shouldChangeCharactersInRange
+   --------
+   Purpose:        Format Phone Input
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (BOOL) textField :(UITextField *)textField shouldChangeCharactersInRange :(NSRange)range replacementString :(NSString *)string {
+    NSString *totalString = [NSString stringWithFormat:@"%@%@", textField.text, string];
+
+    if ((textField.tag == 6) || (textField.tag == 11)) {
+        if (range.length == 1) {
+            textField.text = [self formatPhoneNumber:totalString deleteLastChar:YES];
+        } else {
+            textField.text = [self formatPhoneNumber:totalString deleteLastChar:NO ];
+        }
+        return NO;
+    }
+
+    return YES;
+} /* textField */
+
+
+/*
+   formatPhoneNumber
+   --------
+   Purpose:        Format Phone Input
+   Parameters:     --
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
+ */
+- (NSString *) formatPhoneNumber :(NSString *)simpleNumber deleteLastChar :(BOOL)deleteLastChar {
+    if (simpleNumber.length == 0)
+        return @"";
+
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[\\s-\\(\\)]" options:NSRegularExpressionCaseInsensitive error:&error];
+    simpleNumber = [regex stringByReplacingMatchesInString:simpleNumber options:0 range:NSMakeRange(0, [simpleNumber length]) withTemplate:@""];
+
+    if (simpleNumber.length > 10) {
+        simpleNumber = [simpleNumber substringToIndex:10];
+    }
+
+    if (deleteLastChar) {
+        simpleNumber = [simpleNumber substringToIndex:[simpleNumber length] - 1];
+    }
+
+    if (simpleNumber.length < 7)
+        simpleNumber = [simpleNumber stringByReplacingOccurrencesOfString:@"(\\d{3})(\\d+)"
+                                                               withString:@"($1) $2"
+                                                                  options:NSRegularExpressionSearch
+                                                                    range:NSMakeRange(0, [simpleNumber length])];
+
+    else
+        simpleNumber = [simpleNumber stringByReplacingOccurrencesOfString:@"(\\d{3})(\\d{3})(\\d+)"
+                                                               withString:@"($1) $2-$3"
+                                                                  options:NSRegularExpressionSearch
+                                                                    range:NSMakeRange(0, [simpleNumber length])];
+    return simpleNumber;
+} /* formatPhoneNumber */
 
 
 /*
@@ -399,9 +467,6 @@
         [selectedClasses addObject:[NSNumber numberWithInt:kBehavioral_Key]];
 
     }
-
-    NSLog(@"%d/%d/%d ---> ", month, day, year);
-    NSMutableArray *parsedDate = [[NSMutableArray alloc] initWithArray:[[userInput objectAtIndex:2] componentsSeparatedByString:@"\""]];
 
     if (sqlite3_open([appDelegate.databasePath UTF8String], &database) == SQLITE_OK) {
         const char *sql = "INSERT INTO students (firstName, lastName, fullName, gender, dob_month, dob_day, dob_year, image, uid, email, phone, address, parent_firstName, parent_lastName, parent_email, parent_phone, relationship, notes, classkey, key) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -472,25 +537,25 @@
             NSError *err;
             UILabel *uid = (UILabel *)[self.view viewWithTag:3];
 
-            if (classKey == 1)
+            if ([mathCheckbutton isSelected])
                 [MathAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
-            else if (classKey == 2)
+            if ([readingCheckbutton isSelected])
                 [ReadingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
-            else if (classKey == 3)
+            if ([writingCheckbutton isSelected])
                 [WritingAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
-            else if (classKey == 4)
+            if ([behavioralCheckbutton isSelected])
                 [BehavioralAssessmentModel insertStudentDataIntoClassDatabase:uid.text];
 
             if ([filemanager fileExistsAtPath:imagePath]) {
 
                 BOOL result = [filemanager moveItemAtPath:imagePath toPath:[documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", uid.text]] error:&err];
-                if (!result)
-                    NSLog(@"Error moving: %@", err);
-                else {
-                    NSLog(@"moved image to %@", imagePath);
+                if (!result) {
+//                    NSLog(@"Error moving: %@", err);
+                } else {
+//                    NSLog(@"moved image to %@", imagePath);
                 }
             } else {
-                NSLog(@"Couldn't find image to move!!!");
+//                NSLog(@"Couldn't find image to move!!!");
             }
 
             resultMessage = [[UIAlertView alloc] initWithTitle:@"Success"
@@ -512,6 +577,9 @@
         [appDelegate reloadCoreData];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"ReloadStudentTableView" object:nil];
         [self dismissModalViewControllerAnimated:YES];
+
+        // Save the data
+        [[NSNotificationCenter defaultCenter] postNotificationName:kMasterShouldReloadTableView object:self];
     }
 } /* done */
 
