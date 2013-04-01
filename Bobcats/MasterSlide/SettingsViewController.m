@@ -13,6 +13,7 @@
 #import "MGLineStyled.h"
 #import "AppDelegate.h"
 #import "TeacherSettings.h"
+#import "Util.h"
 
 /*
  * Class Main Implementation
@@ -123,43 +124,60 @@
 
     // Scroller Rows
     // a default row size
-    CGSize rowSize = (CGSize) {667, 55 };
+    CGSize rowSize = (CGSize) {667, 38 };
 
     // a string on the left and a horse on the right
-    MGLineStyled *header = [MGLineStyled lineWithLeft:@"Teacher Information"
-                                                right:nil size:(CGSize) {667, 45 }];
-    header.leftPadding = 242.0f;
-    header.font = [UIFont fontWithName:@"AppleSDGothicNeo-Medium" size:21.0f];
-    [section.topLines addObject:header];
+    MGLineStyled *firstSectionHeader = [MGLineStyled lineWithLeft:@"Teacher Information"
+                                                            right:nil size:(CGSize) {667, 45 }];
+    firstSectionHeader.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:17.0f];
+    [section.topLines addObject:firstSectionHeader];
 
     // a string on the left and a horse on the right
     MGLineStyled *row1 = [MGLineStyled lineWithLeft:[NSString stringWithFormat:@"%@:", kTeacherName]
                                               right:[self texfieldWithTag:1 andText:name andKeyboardType:UIKeyboardTypeDefault] size:rowSize];
+    row1.leftPadding = 35.0f;
     [section.topLines addObject:row1];
 
     // a string on the left and a horse on the right
     MGLineStyled *row2 = [MGLineStyled lineWithLeft:[NSString stringWithFormat:@"%@:", kTeacherGrade]
                                               right:[self texfieldWithTag:2 andText:grade andKeyboardType:UIKeyboardTypeNumberPad] size:rowSize];
+    row2.leftPadding = 35.0f;
     [section.topLines addObject:row2];
 
 
     // a string on the left and a horse on the right
     MGLineStyled *row3 = [MGLineStyled lineWithLeft:[NSString stringWithFormat:@"%@:", kTeacherEmail]
                                               right:[self texfieldWithTag:3 andText:email andKeyboardType:UIKeyboardTypeEmailAddress] size:rowSize];
+    row3.leftPadding = 35.0f;
     [section.topLines addObject:row3];
 
 
     // a string on the left and a horse on the right
     MGLineStyled *row4 = [MGLineStyled lineWithLeft:[NSString stringWithFormat:@"%@:", kTeacherPhone]
                                               right:[self texfieldWithTag:4 andText:phone andKeyboardType:UIKeyboardTypePhonePad] size:rowSize];
+    row4.leftPadding = 35.0f;
     [section.topLines addObject:row4];
 
     // a string on the left and a horse on the right
     MGLineStyled *row5 = [MGLineStyled lineWithLeft:[NSString stringWithFormat:@"%@:", kTeacherImage]
                                               right:buttonImageView size:rowSize];
     row5.height = 50.0f;
+    row5.leftPadding = 35.0f;
     [section.topLines addObject:row5];
 
+//    // a string on the left and a horse on the right
+//    MGLineStyled *secondSectionHeader = [MGLineStyled lineWithLeft:@"Application Settings"
+//                                                             right:nil size:(CGSize) {667, 45 }];
+//    secondSectionHeader.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:17.0f];
+//    [section.topLines addObject:secondSectionHeader];
+//
+//    // a string on the left and a horse on the right
+//    MGLineStyled *row6 = [MGLineStyled lineWithLeft:@"Default Assessment Status (B,D,S)"
+//                                                       right:[self texfieldWithTag:5 andText:status andKeyboardType:UIKeyboardTypeDefault] size:rowSize];
+//    row6.leftPadding = 35.0f;
+//    [section.topLines addObject:row6];
+//
+//
     [scroller layoutWithSpeed:0.3 completion:nil];
 } /* loadSettingsSection */
 
@@ -174,23 +192,35 @@
    Author:         Neil Burchfield
  */
 - (UITextField *) texfieldWithTag :(NSInteger)tag andText :(NSString *)text andKeyboardType :(UIKeyboardType)keyboardType {
-    UITextField *texfield = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 565, 30)];
+    UITextField *texfield = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 530, 30)];
     texfield.backgroundColor = [UIColor clearColor];
     texfield.keyboardType = keyboardType;
     texfield.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14];
     texfield.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     texfield.tag = tag;
+    texfield.text = text;
 
     if (tag == 1)
         [texfield becomeFirstResponder];
 
-    if (tag <= 3)
+    if (tag <= 3) {
         texfield.returnKeyType = UIReturnKeyNext;
-    else
+    } else if (tag == 5) {
+        texfield.frame = CGRectMake(0, 0, 300, 30);
+        texfield.textAlignment = NSTextAlignmentRight;
+        
+        NSMutableDictionary *settingsDictionary = [[NSMutableDictionary alloc]
+                                                   initWithContentsOfFile:[self pathToFollowingResource:kTeacherSettingsPlist]];
+        
+        if ([settingsDictionary objectForKey:kTeacherAssStat])
+            [texfield setText:[NSArray arrayWithObject:[settingsDictionary objectForKey:kTeacherAssStat]]];
+        else
+            texfield.text = @"B";
+    } else {
         texfield.returnKeyType = UIReturnKeyDone;
+    }
 
     texfield.delegate = self;
-    texfield.text = text;
     return texfield;
 } /* texfieldWithTag */
 
@@ -205,26 +235,30 @@
    Author:         Neil Burchfield
  */
 - (BOOL) textFieldShouldReturn :(UITextField *)textField {
-    
+
+    UITextField *textFieldName = (UITextField *)[self.view viewWithTag:1];
     UITextField *textFieldGrade = (UITextField *)[self.view viewWithTag:2];
     UITextField *textFieldEmail = (UITextField *)[self.view viewWithTag:3];
     UITextField *textFieldPhone = (UITextField *)[self.view viewWithTag:4];
-    
+
     switch (textField.tag) {
-        case 1:
+        case 1 :
             [textFieldGrade becomeFirstResponder];
             break;
-        case 2:
+        case 2 :
             [textFieldEmail becomeFirstResponder];
             break;
-        case 3:
+        case 3 :
             [textFieldPhone becomeFirstResponder];
             break;
-        default:
+        case 5 :
+            [textFieldName becomeFirstResponder];
+            break;
+        default :
             [textField resignFirstResponder];
             break;
-    }
-    
+    } /* switch */
+
     return YES;
 } /* textFieldShouldReturn */
 
@@ -278,11 +312,13 @@
     UITextField *textFieldGrade = (UITextField *)[self.view viewWithTag:2];
     UITextField *textFieldEmail = (UITextField *)[self.view viewWithTag:3];
     UITextField *textFieldPhone = (UITextField *)[self.view viewWithTag:4];
+    UITextField *textFieldStatus = (UITextField *)[self.view viewWithTag:5];
 
     [settingsDictionary setValue:(NSString *)textFieldName.text forKey:kTeacherName];
     [settingsDictionary setValue:(NSString *)textFieldGrade.text forKey:kTeacherGrade];
     [settingsDictionary setValue:(NSString *)textFieldEmail.text forKey:kTeacherEmail];
     [settingsDictionary setValue:(NSString *)textFieldPhone.text forKey:kTeacherPhone];
+    [settingsDictionary setValue:(NSString *)textFieldStatus.text forKey:kTeacherAssStat];
 
     [settingsDictionary writeToFile:[self pathToFollowingResource:kTeacherSettingsPlist] atomically:YES];
 } /* shouldWriteToPlist */
@@ -305,7 +341,8 @@
     grade = [settingsDictionary objectForKey:kTeacherGrade];
     email = [settingsDictionary objectForKey:kTeacherEmail];
     phone = [settingsDictionary objectForKey:kTeacherPhone];
-
+    status = [settingsDictionary objectForKey:kTeacherAssStat];
+    
 } /* shouldRetainPlistData */
 
 
@@ -430,13 +467,7 @@
  */
 - (void) image :(UIImage *)image finishedSavingWithError :(NSError *)error contextInfo :(void *)contextInfo {
     if (error) {
-        UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Save failed"
-                                        message:@"Failed to save Teacher's image" \
-                                       delegate:nil
-                              cancelButtonTitle:@"OK"
-                              otherButtonTitles:nil];
-        [alert show];
+        Alert(@"Save failed", @"Failed to save Teacher's image");
     }
 } /* image */
 
@@ -503,7 +534,6 @@
                                                                     range:NSMakeRange(0, [simpleNumber length])];
     return simpleNumber;
 } /* formatPhoneNumber */
-
 
 @end
 

@@ -129,6 +129,7 @@
     }
 } /* viewDidLoad */
 
+
 /*
    pushSettings
    --------
@@ -640,14 +641,14 @@
 
     [ribbon removeFromSuperview];
     ribbon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_ribbon.png", [nextView lowercaseString]]] highlightedImage:[UIImage imageNamed:[NSString stringWithFormat:@"%@_ribbon.png", [nextView lowercaseString]]]];
-    
+
     // Layout scroller based on interface orientation
     if ( UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ) {
         [ribbon setFrame:CGRectMake(660, -10, 80, 146)];
     } else {
         [ribbon setFrame:CGRectMake(600, -10, 80, 146)];
     }
-    
+
     ribbon.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@_ribbon.png", [nextView lowercaseString]]];
     ribbon.layer.shadowColor = [UIColor darkGrayColor].CGColor;
     ribbon.layer.shadowOffset = CGSizeMake(-2, 2);
@@ -1103,7 +1104,7 @@
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
     vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(insertNote:)];
     vc.title = [NSString stringWithFormat:@"%@ Notes", [student fullName]];
-    
+
     // Email Button and Actiom
     UIBarButtonItem *composeNotesBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:@"Email" style:UIBarButtonItemStyleBordered target:self action:@selector(emailWithContent:)];
 
@@ -1313,7 +1314,9 @@
         ABAddressBookAddRecord(iPhoneAddressBook, newPerson, &error);
         ABAddressBookSave(iPhoneAddressBook, &error);
         if (error != NULL) {
-            NSLog(@"Saving contact failed.");
+            Alert(@"Unable to Save Contact", @"Please Check that Brookdale Teach is able to access your contacts");
+        } else {
+            Alert(@"Contact Saved", [NSString stringWithFormat:@"Stored %@ %@ in Address Book", firstName, lastName]);
         }
     }
 } /* addContactToAddressBook */
@@ -1514,19 +1517,21 @@
     [self dismissModalViewControllerAnimated:YES];
 } /* mailComposeController */
 
+
 /*
- emailWithContent
- --------
- Purpose:        Email w/ Content
- Parameters:     id
- Returns:        --
- Notes:          --
- Author:         Neil Burchfield
+   emailWithContent
+   --------
+   Purpose:        Email w/ Content
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) emailWithContent :(id)sender {
     [self dismissModalViewControllerAnimated:YES];
     [self performSelector:@selector(loadMailComposerWithContent:) withObject:self afterDelay:0.7f];
 } /* emailWithContent */
+
 
 /*
    emailWithAttachment
@@ -1542,29 +1547,31 @@
     [self performSelector:@selector(loadMailComposer:) withObject:self afterDelay:0.7f];
 } /* emailWithAttachment */
 
+
 /*
- loadMailComposerWithContent
- --------
- Purpose:        Load Composer with content
- Parameters:     id
- Returns:        --
- Notes:          --
- Author:         Neil Burchfield
+   loadMailComposerWithContent
+   --------
+   Purpose:        Load Composer with content
+   Parameters:     id
+   Returns:        --
+   Notes:          --
+   Author:         Neil Burchfield
  */
 - (void) loadMailComposerWithContent :(id)sender {
     MFMailComposeViewController *mailComposeViewController = [MFMailComposeViewController new];
     [mailComposeViewController setSubject:[NSString stringWithFormat:@"My Student Notes on %@", [student fullName]]];
     [mailComposeViewController setMessageBody:notesTextView.text isHTML:NO];
-    
+
     NSMutableDictionary *settingsDictionary = [[NSMutableDictionary alloc]
                                                initWithContentsOfFile:[self pathToFollowingResource:kTeacherSettingsPlist]];
-    
+
     if ([settingsDictionary objectForKey:kTeacherEmail])
         [mailComposeViewController setToRecipients:[NSArray arrayWithObject:[settingsDictionary objectForKey:kTeacherEmail]]];
 
     mailComposeViewController.mailComposeDelegate = self;
     [self presentModalViewController:mailComposeViewController animated:YES];
 } /* loadMailComposerWithContent */
+
 
 /*
    loadMailComposer
@@ -1634,7 +1641,7 @@
     [vc setTitle:@"Preview"];
 
     vc.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Email" style:UIBarButtonItemStyleBordered target:self action:@selector(emailWithAttachment:)];
-    
+
     [vc.view addSubview:webView];
 
     webView.delegate = self;

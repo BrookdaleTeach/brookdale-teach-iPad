@@ -17,12 +17,14 @@
 #define kTeacherGrade   @"Grade"
 #define kTeacherPhone   @"Phone"
 #define kTeacherImage   @"Image"
+#define kTeacherAssStat @"AssessmentStatus"
 
 #define kTeacherNameDefault    @"Jane Doe"
 #define kTeacherEmailDefault   @"Jane.Doe@gmail.com"
 #define kTeacherGradeDefault   @"1st"
 #define kTeacherPhoneDefault   @"(847)353-3554"
 #define kTeacherImageDefault   @"teacher.image"
+#define kTeacherAssStatDefault @"B"
 
 // All Keys formatted.
 #define kTeacherSettingsKeys [NSDictionary dictionaryWithObjectsAndKeys: kTeacherName, kTeacherEmail, kTeacherGrade, kTeacherPhone, kTeacherImage, nil]

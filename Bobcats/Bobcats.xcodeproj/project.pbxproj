@@ -151,6 +151,8 @@
 		6216205516D6A9C9000FDFC7 /* UISegmentedControlExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 6216205416D6A9C9000FDFC7 /* UISegmentedControlExtension.m */; };
 		6216205716D6FC65000FDFC7 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6216205616D6FC65000FDFC7 /* MessageUI.framework */; };
 		6216205916D70379000FDFC7 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6216205816D70379000FDFC7 /* AddressBook.framework */; };
+		621961CE17088AA50061469C /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 621961CD17088AA50061469C /* DropboxSDK.framework */; };
+		621961D2170916480061469C /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 621961D1170916480061469C /* Util.m */; };
 		621E9DF316B7485800CB73AF /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 621E9DF216B7485800CB73AF /* MobileCoreServices.framework */; };
 		621E9DF716B76BD600CB73AF /* person.png in Resources */ = {isa = PBXBuildFile; fileRef = 621E9DF616B76BD600CB73AF /* person.png */; };
 		621E9DF916B76EB100CB73AF /* confCellImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 621E9DF816B76EB100CB73AF /* confCellImage.png */; };
@@ -484,6 +486,9 @@
 		6216205416D6A9C9000FDFC7 /* UISegmentedControlExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UISegmentedControlExtension.m; path = ../MasterSlide/UISegmentedControlExtension.m; sourceTree = "<group>"; };
 		6216205616D6FC65000FDFC7 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		6216205816D70379000FDFC7 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		621961CD17088AA50061469C /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
+		621961D0170916480061469C /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Util.h; path = MasterSlide/Util.h; sourceTree = SOURCE_ROOT; };
+		621961D1170916480061469C /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Util.m; path = MasterSlide/Util.m; sourceTree = SOURCE_ROOT; };
 		621E9DF216B7485800CB73AF /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		621E9DF616B76BD600CB73AF /* person.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = person.png; sourceTree = "<group>"; };
 		621E9DF816B76EB100CB73AF /* confCellImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = confCellImage.png; sourceTree = "<group>"; };
@@ -716,6 +721,7 @@
 				53A76165146C7E9600B4F8F6 /* Foundation.framework in Frameworks */,
 				53A76167146C7E9600B4F8F6 /* CoreGraphics.framework in Frameworks */,
 				62A722781703E7E70032243F /* libCrittercism_v3_5_1.a in Frameworks */,
+				621961CE17088AA50061469C /* DropboxSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -744,6 +750,7 @@
 			children = (
 				6200927216B45D5900139E1C /* libsqlite3.0.dylib */,
 				6200927316B45D5900139E1C /* libsqlite3.dylib */,
+				621961CD17088AA50061469C /* DropboxSDK.framework */,
 				62C8C9B116E3EC29001E1DEF /* Security.framework */,
 				6278877516DC033500475A13 /* EventKit.framework */,
 				6278877616DC033500475A13 /* EventKitUI.framework */,
@@ -1085,6 +1092,15 @@
 				621527BD16CD6E2500C63540 /* BehavioralAssessmentModel.m */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		621961CF170916270061469C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				621961D0170916480061469C /* Util.h */,
+				621961D1170916480061469C /* Util.m */,
+			);
+			name = Utilities;
 			sourceTree = "<group>";
 		};
 		622C8DAC16D41ECC00485318 /* ReadingTestTableViewController */ = {
@@ -1537,6 +1553,7 @@
 		62A8DBF316B9E5EC00D5909A /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				621961CF170916270061469C /* Utilities */,
 				62A8DBEB16B9E54300D5909A /* AppDelegate */,
 				62C8C9B316E3ED5A001E1DEF /* PDFRenderer */,
 				62C8C9A816E3E256001E1DEF /* CustomUI */,
@@ -2129,6 +2146,7 @@
 				62A7226A1703820F0032243F /* MGScrollView.m in Sources */,
 				62A7226B1703820F0032243F /* MGTableBox.m in Sources */,
 				62A7226C1703820F0032243F /* MGTableBoxStyled.m in Sources */,
+				621961D2170916480061469C /* Util.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2214,6 +2232,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer: Neil Burchfield (546B4X5N6L)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Neil Burchfield (546B4X5N6L)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "masterslide/Bobcats-Prefix.pch";
 				INFOPLIST_FILE = "masterslide/Bobcats-Info.plist";
@@ -2233,6 +2255,10 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer: Neil Burchfield (546B4X5N6L)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Neil Burchfield (546B4X5N6L)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "masterslide/Bobcats-Prefix.pch";
 				INFOPLIST_FILE = "masterslide/Bobcats-Info.plist";

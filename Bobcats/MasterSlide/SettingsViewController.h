@@ -25,6 +25,7 @@
     NSString *email;
     NSString *phone;
     NSString *imageView;
+    NSString *status;
 }
 
 /* Global Declarations */
