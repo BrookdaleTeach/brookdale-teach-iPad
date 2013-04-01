@@ -151,7 +151,6 @@
 		6216205516D6A9C9000FDFC7 /* UISegmentedControlExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 6216205416D6A9C9000FDFC7 /* UISegmentedControlExtension.m */; };
 		6216205716D6FC65000FDFC7 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6216205616D6FC65000FDFC7 /* MessageUI.framework */; };
 		6216205916D70379000FDFC7 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6216205816D70379000FDFC7 /* AddressBook.framework */; };
-		621961CE17088AA50061469C /* DropboxSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 621961CD17088AA50061469C /* DropboxSDK.framework */; };
 		621961D2170916480061469C /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 621961D1170916480061469C /* Util.m */; };
 		621E9DF316B7485800CB73AF /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 621E9DF216B7485800CB73AF /* MobileCoreServices.framework */; };
 		621E9DF716B76BD600CB73AF /* person.png in Resources */ = {isa = PBXBuildFile; fileRef = 621E9DF616B76BD600CB73AF /* person.png */; };
@@ -486,7 +485,6 @@
 		6216205416D6A9C9000FDFC7 /* UISegmentedControlExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UISegmentedControlExtension.m; path = ../MasterSlide/UISegmentedControlExtension.m; sourceTree = "<group>"; };
 		6216205616D6FC65000FDFC7 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		6216205816D70379000FDFC7 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
-		621961CD17088AA50061469C /* DropboxSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DropboxSDK.framework; sourceTree = "<group>"; };
 		621961D0170916480061469C /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Util.h; path = MasterSlide/Util.h; sourceTree = SOURCE_ROOT; };
 		621961D1170916480061469C /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Util.m; path = MasterSlide/Util.m; sourceTree = SOURCE_ROOT; };
 		621E9DF216B7485800CB73AF /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -702,6 +700,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62A722781703E7E70032243F /* libCrittercism_v3_5_1.a in Frameworks */,
 				6200927416B45D5A00139E1C /* libsqlite3.0.dylib in Frameworks */,
 				6200927516B45D5A00139E1C /* libsqlite3.dylib in Frameworks */,
 				6278877716DC033500475A13 /* EventKit.framework in Frameworks */,
@@ -720,8 +719,6 @@
 				620092B616B58E7B00139E1C /* Accelerate.framework in Frameworks */,
 				53A76165146C7E9600B4F8F6 /* Foundation.framework in Frameworks */,
 				53A76167146C7E9600B4F8F6 /* CoreGraphics.framework in Frameworks */,
-				62A722781703E7E70032243F /* libCrittercism_v3_5_1.a in Frameworks */,
-				621961CE17088AA50061469C /* DropboxSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -750,7 +747,6 @@
 			children = (
 				6200927216B45D5900139E1C /* libsqlite3.0.dylib */,
 				6200927316B45D5900139E1C /* libsqlite3.dylib */,
-				621961CD17088AA50061469C /* DropboxSDK.framework */,
 				62C8C9B116E3EC29001E1DEF /* Security.framework */,
 				6278877516DC033500475A13 /* EventKit.framework */,
 				6278877616DC033500475A13 /* EventKitUI.framework */,
