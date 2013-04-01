@@ -825,7 +825,7 @@
         UILabel *label = (UILabel *)[self.view viewWithTag:x  + 1];
 
         if ((label.text == NULL) || [label.text isEqualToString:@""]) {
-            if (x < 4)
+            if (x < 3)
                 break;
             else
                 [userInput addObject:@" "];
