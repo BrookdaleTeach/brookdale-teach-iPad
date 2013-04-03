@@ -11,11 +11,13 @@
 #import "LoginViewController.h"
 #import "UserCredentials.h"
 #import "Crittercism.h"
+#import "TestFlight.h"
 
 /* Definitions */
 
 #define DATABASE_NAME @"students.sql"
 #define DEMO          TRUE
+#define TESTING       YES
 
 /* Static Definitions */
 
@@ -72,6 +74,12 @@ static NSString *merchantPassword = nil;
     // Initilize Crittercism
     [Crittercism enableWithAppID:@"5153aed25f72163850000002"];
 
+    // Set TestFlight Identifier to user's device
+    [self setupTestflightIdentifierIfTesting];
+
+    // Initilize TestFlight
+    [TestFlight takeOff:@"390cc9c4-a089-41dc-af78-604f98dbef65"];
+
     LoginViewController *lvc = [[LoginViewController alloc] initWithNibName:@"LoginViewController" bundle:[NSBundle mainBundle]];
     rootNavigationController = [[UINavigationController alloc] initWithRootViewController:lvc];
     self.window.rootViewController = rootNavigationController;
@@ -80,6 +88,34 @@ static NSString *merchantPassword = nil;
 
     return YES;
 } /* application */
+
+
+// ********************************************************************************/
+// Function: setupTestflightIdentifierIfTesting
+// Arguments: none
+// Returns: none
+// Description: TestFlight Testing
+// ********************************************************************************/
+- (void) setupTestflightIdentifierIfTesting {
+    #ifdef TESTING
+    /*
+       Disable deprecated-declarations warning.
+       See http://clang.llvm.org/docs/UsersManual.html#diagnostics_pragmas
+
+       Basic workflow:
+
+       1. push current warnings onto stack
+       2. ignore warning we know will get thrown
+       3. do dodgy thing that causes warning
+       4. pop warnings - go back to what we had before we started fiddling with them
+
+     */
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [TestFlight setDeviceIdentifier:[[UIDevice currentDevice] uniqueIdentifier]];
+    #pragma clang diagnostic pop
+    #endif /* ifdef TESTING */
+} /* setupTestflightIdentifierIfTesting */
 
 
 // ********************************************************************************/

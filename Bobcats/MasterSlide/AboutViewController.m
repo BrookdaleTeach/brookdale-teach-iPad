@@ -8,6 +8,7 @@
 /* Imports */
 
 #import "AboutViewController.h"
+#import "TestFlight.h"
 
 /*
  * Class Main Implementation
@@ -35,9 +36,24 @@
     self.webView.delegate = self;
     self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
     [self.view addSubview:self.webView];
+    
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Give Feedback" style:UIBarButtonItemStyleBordered target:self
+                                                                          action:@selector(launchTesflightFeedback:)];
 } /* loadView */
 
+/*
+ launchTesflightFeedback
+ --------
+ Purpose:        Testflight Feedback View
+ Parameters:     id
+ Returns:        --
+ Notes:          --
+ Author:         Neil Burchfield
+ */
+- (void)launchTesflightFeedback:(id)sender {
+    [TestFlight openFeedbackView];
+}
 
 /*
    done

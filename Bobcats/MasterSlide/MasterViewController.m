@@ -15,6 +15,7 @@
 #import "UIImage+UIColor.h"
 #import "ClassDefinitions.h"
 #import "MGBoxLine.h"
+#import "TestFlight.h"
 
 /* Static Definitions */
 
@@ -485,6 +486,9 @@
                                                                  arraySectioned:initwitharray
                                                                        classkey:indexPath.row + 1];
     [self.navigationController pushViewController:stvc animated:YES];
+    
+    [self sendTestFlightCheckPointWithFunction:[NSString stringWithFormat:@"%s", __PRETTY_FUNCTION__]
+                                   withMessage:[NSString stringWithFormat:@"%@ TableView Cell Selected", initwithtitle]];
 } /* tableView */
 
 
@@ -511,6 +515,9 @@
     self.tableView.tableFooterView = footerView;
 } /* insertFooter */
 
+- (void)sendTestFlightCheckPointWithFunction:(NSString *)functionName withMessage:(NSString *)mess {
+    [TestFlight passCheckpoint:[NSString stringWithFormat:@"%@: %@", functionName, mess]];
+}
 
 @end
 

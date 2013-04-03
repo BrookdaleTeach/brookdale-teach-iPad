@@ -12,6 +12,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "CustomUI.h"
 #import "UserCredentials.h"
+#import "TestFlight.h"
 
 /* Definitions */
 
@@ -543,6 +544,8 @@
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     if (sender == loginButton) {
+        [TestFlight passCheckpoint:[NSString stringWithFormat:@"%s: User initilizing in Login Mode", __PRETTY_FUNCTION__]];
+
         if ([password.text isEqualToString:kLoginPassword]) {
             [self cacheCredentialsInPlist];
             [appDelegate loadApplicationFromLogin:NO];
@@ -558,6 +561,8 @@
         alView.delegate = self;
         alView.tag = 912;
         [alView show];
+        
+        [TestFlight passCheckpoint:[NSString stringWithFormat:@"%s: User initilizing in Demo Mode", __PRETTY_FUNCTION__]];
     }
 } /* loadRootView */
 
