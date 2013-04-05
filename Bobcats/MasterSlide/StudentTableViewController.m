@@ -353,7 +353,7 @@
     }
 
     /*    Set Custom Background for favorites Employee Cell View */
-    cell.textLabel.text = [student fullName];
+    cell.textLabel.text = [NSString stringWithFormat:@"         %@", [student fullName]];
     cell.textLabel.font = [UIFont fontWithName:@"AppleSDGothicNeo-Bold" size:17.5f];
     cell.textLabel.textColor = [UIColor colorWithWhite:0.2f alpha:1.0f];
 
@@ -368,10 +368,23 @@
 
     NSFileManager *filemanager = [NSFileManager defaultManager];
 
+    // Set Student Image
+    UIImageView *studentImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, cell.height, cell.height)];
+
     if ([filemanager fileExistsAtPath:imagePath])
-        cell.imageView.image = [UIImage imageWithContentsOfFile:imagePath];
+        studentImageView.image = [UIImage imageWithContentsOfFile:imagePath];
     else
-        cell.imageView.image = [UIImage imageNamed:@"person.png"];
+        studentImageView.image = [UIImage imageNamed:@"person.png"];
+        
+    // Get the Layer of any view
+    CALayer *sivl = [studentImageView layer];
+    [sivl setMasksToBounds:YES];
+    [sivl setCornerRadius:0];
+    // Add a border
+    [sivl setBorderWidth:2.0];
+    [sivl setBorderColor:[[UIColor lightTextColor] CGColor]];
+    
+    [cell.contentView addSubview:studentImageView];
 
     cell.textLabel.backgroundColor = [UIColor clearColor];
     cell.imageView.backgroundColor = [UIColor clearColor];

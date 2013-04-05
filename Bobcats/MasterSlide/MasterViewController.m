@@ -452,7 +452,7 @@
    Author:         Neil Burchfield
  */
 - (void) tableView :(UITableView *)aTableView didSelectRowAtIndexPath :(NSIndexPath *)indexPath {
-
+    [aTableView deselectRowAtIndexPath:indexPath animated:YES];
     NSMutableArray *initwitharray = nil;
     NSString *initwithtitle = nil;
     if (indexPath.section == 1) {
