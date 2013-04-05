@@ -121,6 +121,9 @@ Screeshots from the current application v1.0.0
 
 ##
 
+![Demo App Screenshot](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Apr%205,%202013%2010.37.13%20AM.png?raw=true)
+
+##
 
 ![Demo App Screenshot](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Apr%205,%202013%209.40.16%20AM.png?raw=true)
 
@@ -208,11 +211,3 @@ Screeshots from the current application v1.0.0
 
 
 ![Demo App Screenshot](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Apr%205,%202013%2010.09.52%20AM.png?raw=true)
-
-##
-
-
-![Demo App Screenshot](https://github.com/BrookdaleTeach/brookdale-teach-iPad/blob/master/Screens/iOS%20Simulator%20Screen%20shot%20Apr%205,%202013%2010.37.13%20AM.png?raw=true)
-
-##
-
