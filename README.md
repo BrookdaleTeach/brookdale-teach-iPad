@@ -1,8 +1,8 @@
-# Brookdale Teach v1.0.0
+# iTeach v1.0.0
 
 ## An iOS Application Allowing Teachers To Properly, Easy, and Intuitively create Assessments on Students 
 
-Brookdale Teach focuses on the standards of Naperville Illinois's Elementary School giving teachers digital accessibility to creating, reading, updating and deleting Anecdotal Assessments and Standardized/Formative Tests for the following subjects: Math, Reading, Writing, and Behavioral. 
+iTeach focuses on the standards of Naperville Illinois's Elementary School giving teachers digital accessibility to creating, reading, updating and deleting Anecdotal Assessments and Standardized/Formative Tests for the following subjects: Math, Reading, Writing, and Behavioral. 
 
 ## General Features
 
