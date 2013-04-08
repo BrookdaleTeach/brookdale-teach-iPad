@@ -18,7 +18,7 @@
 		<string>Icon144.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>edu.niu.cs.${PRODUCT_NAME}</string>
+	<string>edu.selfedu.burchfield-rush</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
