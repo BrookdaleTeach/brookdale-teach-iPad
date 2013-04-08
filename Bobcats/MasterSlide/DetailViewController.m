@@ -1584,7 +1584,7 @@
  */
 - (void) loadMailComposer :(id)sender {
     MFMailComposeViewController *mailComposeViewController = [MFMailComposeViewController new];
-    [mailComposeViewController setSubject:[NSString stringWithFormat:@"%@'s Student Assessment", [student fullName]]];
+    [mailComposeViewController setSubject:[NSString stringWithFormat:@"%@'s Behavioral Checklist", [student fullName]]];
     [mailComposeViewController setMessageBody:@"" isHTML:NO];
     mailComposeViewController.mailComposeDelegate = self;
     [mailComposeViewController addAttachmentData:[NSData dataWithContentsOfFile:[self getFilePathForPrintingPDF]]
