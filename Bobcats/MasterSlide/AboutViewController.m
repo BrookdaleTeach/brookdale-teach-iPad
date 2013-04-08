@@ -1,6 +1,6 @@
 //
 //  AboutViewController.m
-//  Bobcats
+//  iTeach
 //
 //  Created by Burchfield, Neil on 1/27/13.
 //
@@ -30,7 +30,7 @@
  */
 - (void) loadView {
     [super loadView];
-    self.title = NSLocalizedString(@"About Bobcats", nil);
+    self.title = NSLocalizedString(@"About iTeach", nil);
     self.webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.webView.delegate = self;

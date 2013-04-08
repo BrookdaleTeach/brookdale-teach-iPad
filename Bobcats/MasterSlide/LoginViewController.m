@@ -185,7 +185,7 @@
     loginLabel.font = [UIFont fontWithName:@"ChalkboardSE-Bold" size:24];
 
     // Setup Login Title Label's text
-    loginLabel.text = @"Brookdale Elementary";
+    loginLabel.text = @"iTeach Elementary";
 
     // Setup Login Title Label's alpha to zero
     loginLabel.alpha = 0;

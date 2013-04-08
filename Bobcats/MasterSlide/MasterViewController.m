@@ -504,7 +504,7 @@
 - (void) insertFooter {
     UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 64)];
     UIButton *aboutButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [aboutButton setTitle:NSLocalizedString(@"About Bobcats", nil) forState:UIControlStateNormal];
+    [aboutButton setTitle:NSLocalizedString(@"About iTeach", nil) forState:UIControlStateNormal];
     [aboutButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
     aboutButton.titleLabel.font = [UIFont systemFontOfSize:14.0];
     aboutButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
